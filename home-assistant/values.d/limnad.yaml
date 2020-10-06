@@ -1,0 +1,36 @@
+# helm upgrade --install hass -n phantom k8s-at-home/home-assistant -f home-assistant/values.d/limnad.yaml --atomic --debug
+
+ingress:
+  enabled: true
+  hosts:
+    - hass.limnad.kix.co.il
+  annotations:
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_linode_v4"
+    nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=$escaped_request_uri"
+  tls:
+    - secretName: hass-limnad-tls
+      hosts:
+        - hass.limnad.kix.co.il
+persistence:
+  enabled: true
+  size: 500Mi
+  storageClass: nfs
+configurator:
+  enabled: true
+  ingress:
+    enabled: true
+    annotations:
+      acme.kubernetes.io/enable: "true"
+      acme.kubernetes.io/dns: "dns_linode_v4"
+      nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=$escaped_request_uri"
+    hosts:
+      - configurator-hass.limnad.kix.co.il
+    tls:
+      - secretName: configurator-hass-limnad-tls
+        hosts:
+          - configurator-hass.limnad.kix.co.il
+monitoring:
+  enabled: false

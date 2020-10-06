@@ -1,0 +1,9 @@
+# helm upgrade --install nfs-server-provisioner -n clusterwide stable/nfs-server-provisioner -f values.d/limnad.yaml
+
+persistence:
+  enabled: true
+  storageClass: linode-block-storage-retain
+  size: 10Gi
+
+storageClass:
+  defaultClass: true

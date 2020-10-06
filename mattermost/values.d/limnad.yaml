@@ -1,0 +1,309 @@
+# helm repo add mattermost https://helm.mattermost.com
+# helm upgrade --install chat -n phantom mattermost/mattermost-team-edition -f mattermost/values.d/limnad.yaml -f mattermost/values.d/limnad.secret.yaml --atomic --debug
+
+persistence:
+  data:
+    enabled: true
+    size: 1Gi
+    storageClass: nfs
+    accessMode: ReadWriteOnce
+    # existingClaim: ""
+  plugins:
+    enabled: true
+    size: 1Gi
+    storageClass: nfs
+    accessMode: ReadWriteOnce
+    # existingClaim: ""
+
+ingress:
+  enabled: true
+  path: /
+  annotations:
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_linode_v4"
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    #    nginx.ingress.kubernetes.io/configuration-snippet: |
+    #      proxy_cache mattermost_cache;
+    #      proxy_cache_revalidate on;
+    #      proxy_cache_min_uses 2;
+    #      proxy_cache_use_stale timeout;
+    #      proxy_cache_lock on;
+    #### To use the nginx cache you will need to set an http-snippet in the ingress-nginx configmap
+    #### http-snippet: |
+    ####     proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=mattermost_cache:10m max_size=3g inactive=120m use_temp_path=off;
+  hosts:
+    - chat.kix.co.il
+  tls:
+    - secretName: mattermost-chat-kix-tls
+      hosts:
+        - chat.kix.co.il
+
+#route:
+#  enabled: false
+
+### If use this please disable the mysql chart by setting mysql.enable to false
+externalDB:
+  enabled: true
+  # postgres or mysql
+  externalDriverType: postgres
+  #
+  #  ## postgres:  "postgres://<USERNAME>:<PASSWORD>@<HOST>:5432/<DATABASE_NAME>?sslmode=disable&connect_timeout=10"
+  #  ## mysql:     "<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s"
+  externalConnectionString: "postgres://x:x@x.db:5432/mattermost?sslmode=disable&connect_timeout=10"
+
+mysql:
+  enabled: false
+  mysqlRootPassword: x
+  mysqlUser: mattermost
+  mysqlPassword: x
+  mysqlDatabase: mattermost
+
+  repository: mysql
+  imageTag: '8.0.18'
+  testFramework:
+    enabled: false
+
+  persistence:
+    enabled: true
+    storageClass: nfs
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    # existingClaim: ""
+
+# NOTE: These acts as the default values for the config.json file read by the
+# mattermost server itself. You can override the configJSON object just like any
+# Helm template value. Since it is an object, the object you provide will merge
+# with these defaults. Also note that this is YAML, so you can choose to use
+# either JSON or YAML as JSON is a subset of YAML. No matter what you choose,
+# the config.json file that will be generated will be correctly JSON formatted.
+
+# IMPORTANT: configJSON is in limnad.secret.yaml
+# this is the redacted version
+
+#configJSON: {
+#  "ServiceSettings": {
+#    "SiteURL": "https://x",
+#    "LicenseFileLocation": "",
+#    "ListenAddress": ":8065",
+#    "ConnectionSecurity": "",
+#    "TLSCertFile": "",
+#    "TLSKeyFile": "",
+#    "UseLetsEncrypt": false,
+#    "LetsEncryptCertificateCacheFile": "./config/letsencrypt.cache",
+#    "Forward80To443": false,
+#    "ReadTimeout": 300,
+#    "WriteTimeout": 300,
+#    "MaximumLoginAttempts": 10,
+#    "GoroutineHealthThreshold": -1,
+#    "GoogleDeveloperKey": "",
+#    "EnableOAuthServiceProvider": true,
+#    "EnableIncomingWebhooks": true,
+#    "EnableOutgoingWebhooks": true,
+#    "EnableCommands": true,
+#    "EnableOnlyAdminIntegrations": false,
+#    "EnableGifPicker": true,
+#    "EnablePostUsernameOverride": false,
+#    "EnablePostIconOverride": false,
+#    "EnableBotAccountCreation": true,
+#    "EnableUserAccessTokens": true,
+#    "EnableLinkPreviews": true,
+#    "EnableTesting": false,
+#    "EnableDeveloper": false,
+#    "EnableSecurityFixAlert": true,
+#    "EnableInsecureOutgoingConnections": false,
+#    "EnableMultifactorAuthentication": false,
+#    "EnforceMultifactorAuthentication": false,
+#    "AllowCorsFrom": "",
+#    "SessionLengthWebInDays": 30,
+#    "SessionLengthMobileInDays": 30,
+#    "SessionLengthSSOInDays": 30,
+#    "SessionCacheInMinutes": 10,
+#    "WebsocketSecurePort": 443,
+#    "WebsocketPort": 80,
+#    "WebserverMode": "gzip",
+#    "EnableCustomEmoji": false,
+#    "RestrictCustomEmojiCreation": "all",
+#    "RestrictPostDelete": "all",
+#    "AllowEditPost": "always",
+#    "PostEditTimeLimit": 300,
+#    "TimeBetweenUserTypingUpdatesMilliseconds": 5000,
+#    "EnablePostSearch": true,
+#    "EnableUserTypingMessages": true,
+#    "EnableUserStatuses": true,
+#    "ClusterLogTimeoutMilliseconds": 2000
+#  },
+#  "TeamSettings": {
+#    "SiteName": "Kix Chat",
+#    "MaxUsersPerTeam": 50000,
+#    "EnableTeamCreation": true,
+#    "EnableUserCreation": true,
+#    "EnableOpenServer": true,
+#    "RestrictCreationToDomains": "",
+#    "EnableCustomBrand": true,
+#    "CustomBrandText": "Kix Chat",
+#    "CustomDescriptionText": "independent and free",
+#    "RestrictDirectMessage": "any",
+#    "RestrictTeamInvite": "all",
+#    "RestrictPublicChannelManagement": "all",
+#    "RestrictPrivateChannelManagement": "all",
+#    "RestrictPublicChannelCreation": "all",
+#    "RestrictPrivateChannelCreation": "all",
+#    "RestrictPublicChannelDeletion": "all",
+#    "RestrictPrivateChannelDeletion": "all",
+#    "RestrictPrivateChannelManageMembers": "all",
+#    "UserStatusAwayTimeout": 300,
+#    "MaxChannelsPerTeam": 50000,
+#    "MaxNotificationsPerChannel": 1000
+#  },
+#  "SqlSettings": {
+#    "DriverName": "",
+#    "DataSource": "",
+#    "DataSourceReplicas": [],
+#    "DataSourceSearchReplicas": [],
+#    "MaxIdleConns": 20,
+#    "MaxOpenConns": 35,
+#    "Trace": false,
+#    "AtRestEncryptKey": "x",
+#    "QueryTimeout": 30
+#  },
+#  "LogSettings": {
+#    "EnableConsole": true,
+#    "ConsoleLevel": "INFO",
+#    "EnableFile": true,
+#    "FileLevel": "INFO",
+#    "FileFormat": "",
+#    "FileLocation": "",
+#    "EnableWebhookDebugging": true,
+#    "EnableDiagnostics": true
+#  },
+#  "PasswordSettings": {
+#    "MinimumLength": 5,
+#    "Lowercase": false,
+#    "Number": false,
+#    "Uppercase": false,
+#    "Symbol": false
+#  },
+#  "FileSettings": {
+#    "EnableFileAttachments": true,
+#    "MaxFileSize": 52428800,
+#    "DriverName": "local",
+#    "Directory": "./data/",
+#    "EnablePublicLink": false,
+#    "PublicLinkSalt": "x",
+#    "ThumbnailWidth": 120,
+#    "ThumbnailHeight": 100,
+#    "PreviewWidth": 1024,
+#    "PreviewHeight": 0,
+#    "ProfileWidth": 128,
+#    "ProfileHeight": 128,
+#    "InitialFont": "luximbi.ttf",
+#    "AmazonS3AccessKeyId": "",
+#    "AmazonS3SecretAccessKey": "",
+#    "AmazonS3Bucket": "",
+#    "AmazonS3Region": "",
+#    "AmazonS3Endpoint": "s3.amazonaws.com",
+#    "AmazonS3SSL": false,
+#    "AmazonS3SignV2": false
+#  },
+#  "EmailSettings": {
+#    "EnableSignUpWithEmail": true,
+#    "EnableSignInWithEmail": true,
+#    "EnableSignInWithUsername": true,
+#    "SendEmailNotifications": true,
+#    "RequireEmailVerification": true,
+#    "FeedbackName": "Kix Chat",
+#    "FeedbackEmail": "support@kix.co.il",
+#    "FeedbackOrganization": "Kix",
+#    "SMTPUsername": "x",
+#    "SMTPPassword": "x",
+#    "EnableSMTPAuth": "true",
+#    "SMTPServer": "smtp.gmail.com",
+#    "SMTPPort": 587,
+#    "ConnectionSecurity": "STARTTLS",
+#    "InviteSalt": "x",
+#    "SendPushNotifications": true,
+#    "PushNotificationServer": "https://push-test.mattermost.com",
+#    "PushNotificationContents": "generic",
+#    "EnableEmailBatching": true,
+#    "EmailBatchingBufferSize": 256,
+#    "EmailBatchingInterval": 30,
+#    "SkipServerCertificateVerification": false
+#  },
+#  "RateLimitSettings": {
+#    "Enable": false,
+#    "PerSec": 10,
+#    "MaxBurst": 100,
+#    "MemoryStoreSize": 10000,
+#    "VaryByRemoteAddr": true,
+#    "VaryByHeader": ""
+#  },
+#  "PrivacySettings": {
+#    "ShowEmailAddress": true,
+#    "ShowFullName": true
+#  },
+#  "SupportSettings": {
+#    "TermsOfServiceLink": "https://about.mattermost.com/default-terms/",
+#    "PrivacyPolicyLink": "https://about.mattermost.com/default-privacy-policy/",
+#    "AboutLink": "https://about.mattermost.com/default-about/",
+#    "HelpLink": "https://about.mattermost.com/default-help/",
+#    "ReportAProblemLink": "https://about.mattermost.com/default-report-a-problem/",
+#    "SupportEmail": "x"
+#  },
+#  "AnnouncementSettings": {
+#    "EnableBanner": false,
+#    "BannerText": "",
+#    "BannerColor": "#f2a93b",
+#    "BannerTextColor": "#333333",
+#    "AllowBannerDismissal": true
+#  },
+#  "GitLabSettings": {
+#    "Enable": true,
+#    "Secret": "x",
+#    "Id": "x",
+#    "Scope": "read_user",
+#    "AuthEndpoint": "https://gitlab.com/oauth/authorize",
+#    "TokenEndpoint": "https://gitlab.com/oauth/token",
+#    "UserApiEndpoint": "https://gitlab.com/api/v4/user"
+#  },
+#  "LocalizationSettings": {
+#    "DefaultServerLocale": "en",
+#    "DefaultClientLocale": "en",
+#    "AvailableLocales": ""
+#  },
+#  "NativeAppSettings": {
+#    "AppDownloadLink": "https://about.mattermost.com/downloads/",
+#    "AndroidAppDownloadLink": "https://about.mattermost.com/mattermost-android-app/",
+#    "IosAppDownloadLink": "https://about.mattermost.com/mattermost-ios-app/"
+#  },
+#  "AnalyticsSettings": {
+#    "MaxUsersForStatistics": 2500
+#  },
+#  "WebrtcSettings": {
+#    "Enable": false,
+#    "GatewayWebsocketUrl": "",
+#    "GatewayAdminUrl": "",
+#    "GatewayAdminSecret": "",
+#    "StunURI": "",
+#    "TurnURI": "",
+#    "TurnUsername": "",
+#    "TurnSharedKey": ""
+#  },
+#  "DisplaySettings": {
+#    "CustomUrlSchemes": [],
+#    "ExperimentalTimezone": true
+#  },
+#  "TimezoneSettings": {
+#    "SupportedTimezonesPath": "timezones.json"
+#  },
+#  "PluginSettings": {
+#    "Enable": true,
+#    "EnableUploads": true,
+#    "Directory": "./plugins",
+#    "ClientDirectory": "./client/plugins",
+#    "Plugins": {},
+#    "PluginStates": {}
+#  }
+#}

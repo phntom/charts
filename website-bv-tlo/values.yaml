@@ -1,0 +1,87 @@
+# helm upgrade --install tlo -n phantom website-bv-tlo
+
+replicaCount: 1
+
+image:
+  repository: phntom/binaryvision-tlo-static
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/app-root: /bv/
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_linode_v4"
+  hosts:
+    - host: tlo.binaryvision.co.il
+      paths: 
+        - /
+    - host: tlo.binaryvision.org.il
+      paths: 
+        - /
+    - host: tlo.limnad.kix.co.il
+      paths: 
+        - /
+    - host: tlo.nix.co.il
+      paths: 
+        - /
+  tls:
+  - secretName: binaryvision-tlo-tls
+    hosts:
+      - tlo.binaryvision.co.il
+      - tlo.binaryvision.org.il
+      - tlo.limnad.kix.co.il
+      - tlo.nix.co.il
+
+resources: {}
+  #limits:
+  #  cpu: 100m
+  #  memory: 64Mi
+  #requests:
+  #   cpu: 100m
+  #  memory: 8Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

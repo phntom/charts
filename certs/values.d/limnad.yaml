@@ -1,0 +1,29 @@
+# helm upgrade --install certs -n clusterwide certs/certs -f certs/values.d/limnad.yaml -f certs/values.d/limnad.secret.yaml
+
+service:
+  type: None
+
+image:
+  registry: phntom
+  repository: certs
+  tag: 1.1.7
+
+schedule: "37 3,15 * * *"
+
+backoffLimit: 1
+
+debug: false
+
+activeDeadlineSeconds: 600
+
+ttlSecondsAfterFinished: 120
+
+successfulJobsHistoryLimit: 1
+
+failedJobsHistoryLimit: 1
+
+manageAllNamespaces: true
+
+#env:
+#  - name: LINODE_V4_API_KEY
+#    value: x

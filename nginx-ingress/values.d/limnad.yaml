@@ -1,0 +1,78 @@
+# helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+# helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+# helm repo update
+# helm upgrade --install nginx-ingress -n clusterwide ingress-nginx/ingress-nginx -f values.d/limnad.yaml -f values.d/limnad.secret.yaml
+
+controller:
+  maxmindLicenseKey: x
+
+  # listen on the nodes (disable to use node balancers)
+  hostNetwork: true
+
+  useComponentLabel: true
+  
+  annotations:
+    keel.sh/pollSchedule: "@every 60m"
+  labels:
+    keel.sh/policy: patch
+    keel.sh/trigger: poll
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - nginx-ingress
+            topologyKey: kubernetes.io/hostname
+  resources:
+    limits:
+      memory: 400Mi
+    requests:
+      memory: 100Mi
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      scrapeInterval: 30s
+
+    prometheusRule:
+      enabled: true
+      rules:
+      - alert: NGINXConfigFailed
+        expr: count(nginx_ingress_controller_config_last_reload_successful == 0) > 0
+        for: 1s
+        labels:
+          severity: critical
+        annotations:
+          description: bad ingress config - nginx config test failed
+          summary: uninstall the latest ingress changes to allow config reloads to resume
+      - alert: NGINXCertificateExpiry
+        expr: (avg(nginx_ingress_controller_ssl_expire_time_seconds) by (host) - time()) < 604800
+        for: 1s
+        labels:
+          severity: critical
+        annotations:
+          description: ssl certificate(s) will expire in less then a week
+          summary: renew expiring certificates to avoid downtime
+      - alert: NGINXTooMany500s
+        expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"5.+"} ) / sum(nginx_ingress_controller_requests) ) > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Too many 5XXs
+          summary: More than 5% of the all requests did return 5XX, this require your attention
+      - alert: NGINXTooMany400s
+        expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"4.+"} ) / sum(nginx_ingress_controller_requests) ) > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: Too many 4XXs
+          summary: More than 5% of the all requests did return 4XX, this require your attention

@@ -1,0 +1,5 @@
+kubectl -n stocks describe pod -l app.kubernetes.io/instance=nasdaq
+
+kubectl -n {{ .Release.Namespace }} get pods -l app.kubernetes.io/instance={{ .Release.Name }} --watch
+
+kubectl -n {{ .Release.Namespace }} logs -l app.kubernetes.io/instance={{ .Release.Name }} --follow

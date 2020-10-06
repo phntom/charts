@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "stocks-nasdaq-crawler.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "stocks-nasdaq-crawler.labels" . | nindent 4 }}
+spec:
+  endpoints:
+    - port: metrics
+      interval: {{ .Values.metrics.interval }}
+      honorLabels: true
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "stocks-nasdaq-crawler.selectorLabels" . | nindent 6  }}

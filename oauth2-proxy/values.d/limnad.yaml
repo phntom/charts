@@ -1,0 +1,29 @@
+extraArgs:
+  provider: github
+  cookie-domain: .limnad.kix.co.il
+
+config:
+  clientID: x
+  clientSecret: x
+  cookieSecret: x
+  configFile: |-
+    email_domains = []
+    upstreams = [ "file:///dev/null" ]
+
+authenticatedEmailsFile:
+  enabled: true
+  restricted_access: |-
+    x@gmail.com
+
+ingress:
+  enabled: true
+  path: /
+  annotations:
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_linode_v4"
+  hosts:
+    - auth.limnad.kix.co.il
+  tls:
+    - secretName: oauth2-letsencrypt
+      hosts:
+        - auth.limnad.kix.co.il

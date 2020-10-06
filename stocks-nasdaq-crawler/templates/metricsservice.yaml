@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "stocks-nasdaq-crawler.serviceAccountName" . }}-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "stocks-nasdaq-crawler.labels" . | nindent 4 }}
+spec:
+  ports:
+    - name: metrics
+      port: {{ .Values.metrics.port }}
+      targetPort: metrics
+  selector:
+    {{- include "stocks-nasdaq-crawler.selectorLabels" . | nindent 4 }}
+  type: ClusterIP

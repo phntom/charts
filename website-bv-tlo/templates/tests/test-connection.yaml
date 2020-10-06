@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "binaryvision-tlo.fullname" . }}-test-connection"
+  labels:
+    {{- include "binaryvision-tlo.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "binaryvision-tlo.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
