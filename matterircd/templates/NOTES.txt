@@ -1,0 +1,13 @@
+MatterIRCd installed
+
+check it's status by running
+kubectl get pod -n {{ .Release.Namespace }} -l app={{ .Release.Name }}
+
+get logs:
+kubectl logs -f -n {{ .Release.Namespace }} -l app={{ .Release.Name }}
+
+port forward irc:
+kubectl port-forward -n {{ .Release.Namespace }} service/{{ include "matterircd.fullname" . }} {{ .Values.service.irc.port }}:{{ .Values.service.irc.port }}
+
+port forward ircs (tls):
+kubectl port-forward -n {{ .Release.Namespace }} service/{{ include "matterircd.fullname" . }} {{ .Values.service.ircs.port }}:{{ .Values.service.ircs.port }}

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "matterircd.fullname" . }}-test-connection"
+  labels:
+    {{- include "matterircd.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "matterircd.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

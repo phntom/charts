@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "matterircd.fullname" . }}-tcp-proxy
+  namespace: {{ .Values.ingress.namespace }}
+data:
+  {{ .Values.service.irc.port }}: "{{.Release.Namespace}}/{{ .Chart.Name }}:{{ .Values.service.irc.port }}"
+  {{ .Values.service.ircs.port }}: "{{.Release.Namespace}}/{{ .Chart.Name }}:{{ .Values.service.ircs.port }}"

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "matterircd.fullname" . }}
+  labels:
+    {{- include "matterircd.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "matterircd.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "matterircd.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "matterircd.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: irc
+              containerPort: 6667
+              protocol: TCP
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - cat /etc/matterircd-tls/tls.key > /etc/ssl/private/key.pem && cat /etc/matterircd-tls/tls.crt /etc/matterircd-tls/ca.crt > /etc/ssl/private/cert.pem && /bin/matterircd --conf /etc/matterircd/matterircd.toml
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /etc/matterircd
+              name: config-volume
+            - mountPath: /etc/matterircd-tls
+              name: tls-certificate-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "matterircd.fullname" . }}.toml
+        - name: tls-certificate-volume
+          secret:
+            secretName: {{ .Values.ingress.tls.secretName }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

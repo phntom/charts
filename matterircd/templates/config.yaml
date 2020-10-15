@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "matterircd.fullname" . }}.toml
+  namespace: {{ .Release.Namespace }}
+data:
+  matterircd.toml: |
+    #interface:port to bind to. (default "127.0.0.1:6667")
+    bind = "0.0.0.0:{{ .Values.service.irc.port }}"
+
+    #enable debug logging (default false)
+    debug = {{ .Values.matterircd.debug | default "false" }}
+
+    #enable trace logging (default false)
+    trace = {{ .Values.matterircd.trace | default "false" }}
+
+    #enable gops agent (https://github.com/google/gops)
+    #used to track down memory leaks/cpu profiling
+    #default false
+    gops = {{ .Values.matterircd.gops | default "false" }}
+
+    #interface:port to bind to. (e.g 127.0.0.1:6697) (deault "")
+    #
+    TLSBind = "0.0.0.0:{{ .Values.service.ircs.port }}"
+
+    #directory to look for key.pem and cert.pem. (default ".")
+    #
+    TLSDir = "/etc/ssl/private"
+    # kubernetes generates ca.crt   tls.crt  tls.key
+
+    #PasteBufferTimeout specifies the amount of time in milliseconds that
+    #messages get kept in matterircd internal buffer before being sent to
+    #mattermost or slack.
+    #Messageis that will be received in this time will be concatenated together
+    #So this can be used to paste stuff like ansi-art or code.
+    #Default 0 (is disabled)
+    #Depending on how fast you type 2500 is a good number
+    PasteBufferTimeout = {{ .Values.matterircd.pasteBufferTimeout | default "2500" }}
+
+    [mattermost]
+    #specify default mattermost server/instance (default "")
+    #
+    DefaultServer = {{ .Values.matterircd.server | quote }}
+
+    #specify default mattermost team (default "")
+    #
+    DefaultTeam = {{ .Values.matterircd.team | quote }}
+
+    #use http connection to mattermost (default false)
+
+    Insecure = false
+
+    #an array of channels that only will be joined on IRC. JoinExlude and JoinInclude will not be checked
+    #regexp is supported
+    #If it's empty, it means all channels get joined (except those defined in JoinExclude)
+    #Messages that get sent to unjoined channels (but you're joined on mattermost) will
+    #get sent to the &messages channel.
+    #default ""
+    #
+    #JoinOnly = ["#onlythischannel"]
+
+    #an array of channels that won't be joined on IRC.
+    #regexp is supported
+    #Messages that get sent to unjoined channels (but you're joined on mattermost) will
+    #get sent to the &messages channel.
+    #You can still /JOIN exclude channels.
+    #default ""
+    #
+    #JoinExclude = ["#town-square","#boringchannel","#.*marketing.*"]
+
+    #an array of channels that will override the settings in JoinExclude
+    #regexp is supported
+    #If it's empty, it means all channels get joined (except those defined in JoinExclude)
+    #Messages that get sent to unjoined channels (but you're joined on mattermost) will
+    #get sent to the &messages channel.
+    #default ""
+    #
+    #JoinInclude = ["#devops","#myteam-marketing"]
+
+    #PartFake: a bool that defines if you do a /LEAVE or /PART on IRC it will also
+    #actually leave the channel on mattermost.
+    #if false it actually leaves the channel on mattermost
+    #if true it removes the channel from irc, but you're still joined on mattermost, messages
+    #of this channel will be sent to &messages channel
+    #Default false
+    #
+    PartFake = true
+
+    #only allow connection to specified mattermost server/instances.
+    #Array, default empty
+    #
+    #Restrict = ["chat.mycompany.com"]
+
+    #skip verification of mattermost certificate chain and hostname (default false)
+    SkipTLSVerify = false
+
+    #also add the main team prefix to the channel name #team/channel (default false)
+    PrefixMainTeam = false
+
+    #Only mark a conversation as viewed when you reply to that conversation or
+    #channel. This prevents Mattermost from clearing mobile app notifications
+    #instantly. Note that this prevents you from always appearing as online
+    #(anti-idle support is turned off) (default false)
+    DisableAutoView = false
+
+    # If users set a Nickname, matterircd could either choose that or the Username
+    # to display in the IRC client. The option PreferNickname controls that, the
+    # default being to show the Username. (default false)
+    PreferNickname = false
+
+    # Disable showing parent post / replies
+    HideReplies = false
+
+    #Only join direct/group messages when someone talks. This stops from cluttering your
+    #irc client with lots of windows.
+    #If set to true dm/group messages will be joined on startup and not only on talk in the channel.
+    JoinDM = false
+
+    #This will add a number between 000 and fff to each message
+    #This number will be referenced when a message is edited/deleted/threaded/reaction
+    #For more information see prefixcontext.md
+    PrefixContext = false
+    # Same as PrefixContext but with the message context at the end.
+    SuffixContext = false
+
+    #This will show (mention yournick) after a message if it contains one of the words configured
+    #in your mattermost "word that trigger mentions" notifications.
+    ShowMentions = false

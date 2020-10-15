@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "matterircd.fullname" . }}
+  labels:
+    {{- include "matterircd.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.irc.port }}
+      targetPort: {{ .Values.service.irc.port }}
+      nodePort: {{ .Values.service.irc.external }}
+      protocol: TCP
+      name: irc
+    - port: {{ .Values.service.ircs.port }}
+      targetPort: {{ .Values.service.ircs.port }}
+      nodePort: {{ .Values.service.ircs.external }}
+      protocol: TCP
+      name: ircs
+  selector:
+    {{- include "matterircd.selectorLabels" . | nindent 4 }}
