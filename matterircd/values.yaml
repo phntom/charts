@@ -47,8 +47,8 @@ service:
 
 matterircd:
   debug: "false"
-  server: chat.kix.co.il
-  team: nix-test
+  server: kix.co.il
+  team: nix
 
 ingress:
   enabled: true

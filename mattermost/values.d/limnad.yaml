@@ -25,6 +25,7 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
     #      proxy_cache mattermost_cache;
     #      proxy_cache_revalidate on;
@@ -35,11 +36,11 @@ ingress:
     #### http-snippet: |
     ####     proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=mattermost_cache:10m max_size=3g inactive=120m use_temp_path=off;
   hosts:
-    - chat.kix.co.il
+    - kix.co.il
   tls:
     - secretName: mattermost-chat-kix-tls
       hosts:
-        - chat.kix.co.il
+        - kix.co.il
 
 #route:
 #  enabled: false
@@ -138,13 +139,13 @@ mysql:
 #  "TeamSettings": {
 #    "SiteName": "Kix Chat",
 #    "MaxUsersPerTeam": 50000,
-#    "EnableTeamCreation": true,
+#    "EnableTeamCreation": false,
 #    "EnableUserCreation": true,
 #    "EnableOpenServer": true,
 #    "RestrictCreationToDomains": "",
 #    "EnableCustomBrand": true,
-#    "CustomBrandText": "Kix Chat",
-#    "CustomDescriptionText": "independent and free",
+#    "CustomBrandText": "Welcome back nix.co.il members! Use GitLab for Google, GitHub, Twitter, Atlassian (O365, Apple) single sign-on! irc.nix.co.il:+30697",
+#    "CustomDescriptionText": "self hosted, independent and free",
 #    "RestrictDirectMessage": "any",
 #    "RestrictTeamInvite": "all",
 #    "RestrictPublicChannelManagement": "all",
@@ -177,7 +178,7 @@ mysql:
 #    "FileFormat": "",
 #    "FileLocation": "",
 #    "EnableWebhookDebugging": true,
-#    "EnableDiagnostics": true
+#    "EnableDiagnostics": false
 #  },
 #  "PasswordSettings": {
 #    "MinimumLength": 5,

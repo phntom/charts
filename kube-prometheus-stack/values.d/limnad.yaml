@@ -196,7 +196,7 @@ alertmanager:
       acme.kubernetes.io/dns: "dns_linode_v4"
       # acme.kubernetes.io/staging: "true"
       nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fredirect%2F$host$escaped_request_uri"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
 
 
     labels: {}
@@ -529,7 +529,7 @@ grafana:
     enabled: true
     annotations:
       nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fredirect%2F$host$escaped_request_uri"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
       acme.kubernetes.io/enable: "true"
       acme.kubernetes.io/dns: "dns_linode_v4"
       # acme.kubernetes.io/staging: "true"
@@ -3036,7 +3036,7 @@ prometheus:
     enabled: true
     annotations:
       nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fredirect%2F$host$escaped_request_uri"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fprometheus$escaped_request_uri"
       acme.kubernetes.io/enable: "true"
       acme.kubernetes.io/dns: "dns_linode_v4"
       # acme.kubernetes.io/staging: "true"
