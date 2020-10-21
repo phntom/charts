@@ -1,0 +1,81 @@
+replicaCount: 1
+ingress:
+  enabled: true
+  annotations:
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_linode_v4"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      set $uri_userid "$cookie_userid $uri";
+      if ($uri_userid ~ '^ /new.*') {
+        return 301 https://pad.kix.co.il/auth/oauth2;
+      }
+
+  path: /
+  hosts:
+    - pad.kix.co.il
+  tls:
+    - secretName: pad-kix-co-il-tls
+      hosts:
+        - pad.kix.co.il
+
+resources: {}
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+persistence:
+  enabled: true
+  size: 100Mi
+  storageClass: "nfs"
+
+postgresql:
+  install: false
+  postgresqlUsername: hackmd
+  postgresqlDatabase: hackmd
+  postgresHost: postgresql.db
+#  postgresPassword: secret
+
+extraVars:
+  - name: CMD_DOMAIN
+    value: pad.kix.co.il
+  - name: CMD_PROTOCOL_USESSL
+    value: "true"
+  - name: CMD_URL_ADDPORT
+    value: "false"
+  - name: CMD_EMAIL
+    value: "false"
+  - name: CMD_ALLOW_EMAIL_REGISTER
+    value: "false"
+  - name: CMD_ALLOW_ANONYMOUS
+    value: "false"
+  - name: CMD_ALLOW_ANONYMOUS_EDITS
+    value: "true"
+  - name: CMD_DEFAULT_PERMISSION
+    value: "private"
+  - name: CMD_AUTO_VERSION_CHECK
+    value: "false"
+  - name: CMD_USECDN
+    value: "false"
+  - name: CMD_OAUTH2_BASEURL
+    value: https://kix.co.il
+  - name: CMD_OAUTH2_PROVIDERNAME
+    value: kix.co.il chat
+  - name: CMD_OAUTH2_CLIENT_ID
+    value: secret
+  - name: CMD_OAUTH2_CLIENT_SECRET
+    value: secret
+  - name: CMD_OAUTH2_AUTHORIZATION_URL
+    value: https://kix.co.il/oauth/authorize
+  - name: CMD_OAUTH2_TOKEN_URL
+    value: https://kix.co.il/oauth/access_token
+  - name: CMD_OAUTH2_USER_PROFILE_URL
+    value: https://kix.co.il/api/v4/users/me
+  - name: CMD_OAUTH2_USER_PROFILE_USERNAME_ATTR
+    value: id
+  - name: CMD_OAUTH2_USER_PROFILE_DISPLAY_NAME_ATTR
+    value: username
+  - name: CMD_OAUTH2_USER_PROFILE_EMAIL_ATTR
+    value: email
