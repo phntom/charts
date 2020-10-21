@@ -10,6 +10,10 @@ controller:
   hostNetwork: true
 
   useComponentLabel: true
+
+  replicaCount: 1
+
+  minAvailable: 0
   
   annotations:
     keel.sh/pollSchedule: "@every 60m"

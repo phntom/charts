@@ -232,8 +232,8 @@ controller:
   #    memory: 64Mi
 
   autoscaling:
-    enabled: true
-    minReplicas: 2
+    enabled: false
+    minReplicas: 1
     maxReplicas: 11
     targetCPUUtilizationPercentage: 50
     targetMemoryUtilizationPercentage: 50

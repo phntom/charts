@@ -1,4 +1,4 @@
-helm upgrade --install prometheus -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/limnad.yaml --atomic --debug
+helm upgrade --install prometheus -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/limnad.yaml -f kube-prometheus-stack/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install oauth2-proxy -n clusterwide stable/oauth2-proxy -f oauth2-proxy/values.d/limnad.yaml -f oauth2-proxy/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install nginx-ingress -n clusterwide ingress-nginx/ingress-nginx -f nginx-ingress/values.d/limnad.yaml -f nginx-ingress/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install certs -n clusterwide certs/certs -f certs/values.d/limnad.yaml -f certs/values.d/limnad.secret.yaml --atomic --debug

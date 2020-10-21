@@ -9,14 +9,17 @@ kind: Ingress
 metadata:
   name: nix-co-il-redirect
   annotations:
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    nginx.ingress.kubernetes.io/permanent-redirect: https://kix.co.il/signup_user_complete/?id=xtce3qn9xpycujbptb39dqy3ur
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_linode_v4"
+    nginx.ingress.kubernetes.io/permanent-redirect: https://kix.co.il/signup_user_complete/?id=hiyeztycyidz9ja4gx6bw18p3h
 spec:
   tls:
     - hosts:
         - nix.co.il
+        - join.nix.co.il
         - www.nix.co.il
         - web.nix.co.il
+        - webchat.nix.co.il
         - chat.kix.co.il
       secretName: nix-co-il-redirect-tls
   rules:
@@ -27,7 +30,28 @@ spec:
             backend:
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
+    - host: www.nix.co.il
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+    - host: join.nix.co.il
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
     - host: web.nix.co.il
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+    - host: webchat.nix.co.il
       http:
         paths:
           - path: /
