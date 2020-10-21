@@ -5,9 +5,9 @@ ingress:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_linode_v4"
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      set $uri_userid "$cookie_userid $uri";
-      if ($uri_userid ~ '^ /new.*') {
-        return 301 https://pad.kix.co.il/auth/oauth2;
+      set $uri_userid "x$cookie_userid$uri";
+      if ($uri_userid ~ 'x/new') {
+        return 302 https://pad.kix.co.il/auth/oauth2;
       }
 
   path: /
