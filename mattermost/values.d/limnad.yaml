@@ -157,6 +157,7 @@ configJSON: {
     "RestrictDirectMessage": "team",
     "EnableTeamListing": true,
     "TeammateNameDisplay": "nickname_full_name",
+    "ExperimentalViewArchivedChannels": false,
     "RestrictTeamInvite": "all",
     "RestrictPublicChannelManagement": "all",
     "RestrictPrivateChannelManagement": "all",
