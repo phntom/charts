@@ -1,6 +1,7 @@
 extraArgs:
   provider: github
   cookie-domain: .limnad.kix.co.il
+  pass-authorization-header: false
 
 config:
   clientID: x
@@ -21,10 +22,20 @@ ingress:
   annotations:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_linode_v4"
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Auth-Request-Email, X-Auth-Request-User, X-Forwarded-Access-Token"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       location ~ ^/go/([a-z]+)(/.*)? {
           return 301 https://$1.limnad.kix.co.il$2;
       }
+    nginx.ingress.kubernetes.io/auth-snippet: |
+      auth_request_set $name_upstream_1 $upstream_cookie_name_1;
+
+      access_by_lua_block {
+        if ngx.var.name_upstream_1 ~= "" then
+          ngx.header["Set-Cookie"] = "name_1=" .. ngx.var.name_upstream_1 .. ngx.var.auth_cookie:match("(; .*)")
+        end
+      }
+
   hosts:
     - auth.limnad.kix.co.il
   tls:

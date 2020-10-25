@@ -141,7 +141,6 @@ alertmanager:
   config:
     global:
       resolve_timeout: 5m
-      slack_api_url: "https://kix.co.il/hooks/np4ixumy9f8gfgopkui1ed598w"
     route:
       group_by:
         - alertname
@@ -153,42 +152,12 @@ alertmanager:
       routes:
         - match:
             alertname: Watchdog
-          receiver: 'null'
-    receivers:
-      - name: 'null'
-      - name: 'nix-alerts'
-        slack_configs:
-        - channel: "alerts"
-          send_resolved: true
-          username: prometheus
-          icon_emoji: prometheus
-          title: |-
-            [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }} for {{ .CommonLabels.job }}
-            {{- if gt (len .CommonLabels) (len .GroupLabels) -}}
-              {{" "}}(
-              {{- with .CommonLabels.Remove .GroupLabels.Names }}
-                {{- range $index, $label := .SortedPairs -}}
-                  {{ if $index }}, {{ end }}
-                  {{- $label.Name }}="{{ $label.Value -}}"
-                {{- end }}
-              {{- end -}}
-              )
-            {{- end }}
-          text: >-
-            {{ with index .Alerts 0 -}}
-              :chart_with_upwards_trend: *<{{ .GeneratorURL }}|Graph>*
-              {{- if .Annotations.runbook }}   :notebook: *<{{ .Annotations.runbook }}|Runbook>*{{ end }}
-            {{ end }}
-
-            *Alert details*:
-
-            {{ range .Alerts -}}
-              *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
-            *Description:* {{ .Annotations.description }}
-            *Details:*
-              {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
-              {{ end }}
-            {{ end }}
+          receiver: 'deadmans'
+          group_wait: 0s
+          group_interval: 1m
+          repeat_interval: 1m
+#    receivers:
+#      - name: 'null'
 
   ## Pass the Alertmanager configuration directives through Helm's templating
   ## engine. If the Alertmanager configuration contains Alertmanager templates,
