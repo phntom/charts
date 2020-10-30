@@ -10,5 +10,6 @@ helm upgrade --install nasdaq -n stocks stocks-nasdaq-crawler -f stocks-nasdaq-c
 helm upgrade --install kix -n phantom website-kix-co-il
 helm upgrade --install binaryvision -n phantom website-binaryvision-static
 helm upgrade --install tlo -n phantom website-bv-tlo
+helm upgrade --install nix-mattermost -n phantom website-web-nix -f website-web-nix/values.yaml -f website-web-nix/values.d/limnad.secret.yaml
 
 helm upgrade --install hass -n phantom k8s-at-home/home-assistant -f home-assistant/values.d/limnad.yaml --atomic --debug

@@ -1,0 +1,42 @@
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+service:
+  name: mattermost-team-edition
+  port: 8065
+
+ingress:
+  enabled: true
+  bearer: x
+  fakeUserId: wvf5bamvs4iitcrsm2hujc7pyy
+  fakeCsrf: f0hzlasu2uu6s9zai93idw5t8e
+  defaultTarget: cn6415d3njgjjb63z6jrese7ho
+  annotations:
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: dns_linode_v4
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+
+
+
+  hosts:
+    - host: nix.co.il
+      paths:
+        - /
+    - host: web.nix.co.il
+      paths:
+        - /
+  tls:
+    - secretName: nix-co-il-tls
+      hosts:
+        - nix.co.il
+        - www.nix.co.il
+        - web.nix.co.il

@@ -29,28 +29,7 @@ spec:
         - chat.kix.co.il
       secretName: nix-co-il-redirect-tls
   rules:
-    - host: nix.co.il
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-    - host: www.nix.co.il
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
     - host: join.nix.co.il
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-    - host: web.nix.co.il
       http:
         paths:
           - path: /
