@@ -24,13 +24,21 @@ metadata:
         return 301 https://nix.co.il/;
       }
       location = / {
+        set $targetx '{{ .Values.ingress.defaultTarget }}';
+        if ( $arg_kix != "n" ) {
+          set $kix b;
+        }
+        if ( $arg_redirect_to != "" ) {
+          set $kix a$kix;
+        }
+        if ( $arg_redirect_to ~* "^%2Fnix%2Fpl%2F(.+)$" ) {
+          set $targetx $1;
+        }
+        if ( $kix = ab ) {
+          return 302 https://kix.co.il/?nix=y&redirect_to=$arg_redirect_to;
+        }
         add_header Set-Cookie "MMUSERID={{ .Values.ingress.fakeUserId }}; Path=/; Secure";
         add_header Set-Cookie "MMCSRF={{ .Values.ingress.fakeCsrf }}; Path=/; Secure";
-        set $targetx '{{ .Values.ingress.defaultTarget }}';
-        if ($arg_redirect_to ~* "^%2Fnix%2Fpl%2F(.+)$") {
-          set $targetx $1;
-          return 302 https://nix.co.il/nix/pl/$targetx;
-        }
         return 302 https://nix.co.il/nix/pl/$targetx;
       }
       location = /blog/phantom {
@@ -38,6 +46,10 @@ metadata:
       }
       location ~ ^/api/v4/users$ {
         return 200 "[{\"id\":\"jpm573upfjr15xkddbi5en87ko\",\"create_at\":1604009326000,\"update_at\":1604010211924,\"delete_at\":0,\"username\":\"nix-website\",\"auth_data\":\"\",\"auth_service\":\"\",\"email\":\"\",\"nickname\":\"\",\"first_name\":\"\",\"last_name\":\"\",\"position\":\"\",\"roles\":\"system_user\",\"last_picture_update\":1604009326934,\"locale\":\"en\",\"timezone\":{\"automaticTimezone\":\"Asia/Jerusalem\",\"manualTimezone\":\"\",\"useAutomaticTimezone\":\"true\"},\"is_bot\":true,\"bot_description\":\"public website anonymous user - https://join.nix.co.il\"},{\"id\":\"5cmngiuzpbdhfe6h1pywjc7pyy\",\"create_at\":1601471823163,\"update_at\":1603656786821,\"delete_at\":0,\"username\":\"phantom\",\"auth_data\":\"\",\"auth_service\":\"\",\"email\":\"\",\"nickname\":\"PHANTOm\",\"first_name\":\"\",\"last_name\":\"\",\"position\":\"\",\"roles\":\"system_admin system_user\",\"last_picture_update\":1603141974322,\"locale\":\"en\",\"timezone\":{\"automaticTimezone\":\"Asia/Jerusalem\",\"manualTimezone\":\"\",\"useAutomaticTimezone\":\"true\"}},{\"id\":\"ia3q1aep4bdrtf8hy3hzkyzhba\",\"create_at\":1603014714661,\"update_at\":1604006996371,\"delete_at\":0,\"username\":\"x-bot\",\"auth_data\":\"\",\"auth_service\":\"\",\"email\":\"\",\"nickname\":\"X\",\"first_name\":\"\",\"last_name\":\"\",\"position\":\"\",\"roles\":\"system_user system_post_all\",\"last_picture_update\":1603141880698,\"locale\":\"en\",\"timezone\":{\"automaticTimezone\":\"Asia/Jerusalem\",\"manualTimezone\":\"\",\"useAutomaticTimezone\":\"true\"},\"is_bot\":true}]";
+      }
+      if ( $arg_url ~* "^(https://kix.co.il/api/v4/image?url=|https%3A%2F%2Fkix.co.il%2Fapi%2Fv4%2Fimage%3Furl%3D)(.+)$" ) {
+        set_unescape_uri $uurl $2;
+        return 302 https://nix.co.il/api/v4/image?url=$uurl;
       }
       if ($request_method = POST) {
         set $post_marker x;

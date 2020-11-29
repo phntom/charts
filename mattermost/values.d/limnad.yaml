@@ -9,7 +9,7 @@ persistence:
     accessMode: ReadWriteOnce
     # existingClaim: ""
   plugins:
-    enabled: true
+    enabled: false
     size: 1Gi
     storageClass: nfs
     accessMode: ReadWriteOnce
@@ -29,6 +29,15 @@ ingress:
     nginx.ingress.kubernetes.io/server-snippet: |
       if ( $query_string = "id=xtce3qn9xpycujbptb39dqy3ur" ) {
         return 301 https://join.nix.co.il/;
+      }
+      if ( $cookie_MMUSERID = "" ) {
+        set $nix b;
+      }
+      if ( $arg_redirect_to ~* "^%2Fnix" ) {
+        set $nix a$nix;
+      }
+      if ( $nix = ab ) {
+        return 302 https://nix.co.il/?kix=n&redirect_to=$arg_redirect_to;
       }
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
     #      proxy_cache mattermost_cache;
@@ -323,7 +332,7 @@ configJSON: {
         "Enable": true
       },
       "com.mattermost.custom-attributes": {
-        "Enable": true
+        "Enable": false
       }
     }
   }
