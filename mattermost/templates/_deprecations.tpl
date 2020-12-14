@@ -40,7 +40,7 @@ deprecations in order to transition to a passthrough configuration in configJSON
 {{- $passthroughs := append $passthroughs (include "mattermost.deprecate.config.emailSettings" .) }}
 {{- $passthroughs := without $passthroughs "" }}
 {{- if $passthroughs }}
-{{- $passthroughsHeader := print "\n\nconfigJSON:" }}
+{{- $passthroughsHeader := print "\n\nconfig:" }}
 {{- $passthroughsMessage := print $passthroughsHeader (join "\n" $passthroughs) }}
 {{- $depMessage := print $depMessage $passthroughsMessage }}}
 {{- end }}

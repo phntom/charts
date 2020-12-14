@@ -75,7 +75,7 @@ spec:
           subPath: config.json
         - mountPath: /mattermost/data
           name: mattermost-data
-        - mountPath: /mattermost/{{ trimPrefix "./" .Values.configJSON.PluginSettings.Directory }}
+        - mountPath: /mattermost/{{ trimPrefix "./" .Values.config.PluginSettings.Directory }}
           name: mattermost-plugins
         {{- if .Values.extraVolumeMounts -}}
         {{ .Values.extraVolumeMounts | toYaml | nindent 8 }}

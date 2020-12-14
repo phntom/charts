@@ -68,272 +68,108 @@ externalDB:
   #  ## mysql:     "<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s"
   externalConnectionString: "postgres://x:x@x.db:5432/mattermost?sslmode=disable&connect_timeout=10"
 
-mysql:
-  enabled: false
-  mysqlRootPassword: x
-  mysqlUser: mattermost
-  mysqlPassword: x
-  mysqlDatabase: mattermost
-
-  repository: mysql
-  imageTag: '8.0.18'
-  testFramework:
-    enabled: false
-
-  persistence:
-    enabled: true
-    storageClass: nfs
-    accessMode: ReadWriteOnce
-    size: 1Gi
-    # existingClaim: ""
-
-# NOTE: These acts as the default values for the config.json file read by the
-# mattermost server itself. You can override the configJSON object just like any
-# Helm template value. Since it is an object, the object you provide will merge
-# with these defaults. Also note that this is YAML, so you can choose to use
-# either JSON or YAML as JSON is a subset of YAML. No matter what you choose,
-# the config.json file that will be generated will be correctly JSON formatted.
-
-# IMPORTANT: configJSON is in limnad.secret.yaml
-# this is the redacted version
-
-configJSON: {
-  "ServiceSettings": {
-    "SiteURL": "https://kix.co.il",
-    "LicenseFileLocation": "",
-    "ListenAddress": ":8065",
-    "ConnectionSecurity": "",
-    "TLSCertFile": "",
-    "TLSKeyFile": "",
-    "UseLetsEncrypt": false,
-    "LetsEncryptCertificateCacheFile": "./config/letsencrypt.cache",
-    "Forward80To443": false,
-    "ReadTimeout": 300,
-    "WriteTimeout": 300,
-    "MaximumLoginAttempts": 10,
-    "GoroutineHealthThreshold": -1,
-    "GoogleDeveloperKey": "",
-    "EnableOAuthServiceProvider": true,
-    "EnableIncomingWebhooks": true,
-    "EnableOutgoingWebhooks": true,
-    "EnableCommands": true,
-    "EnableOnlyAdminIntegrations": false,
-    "EnableGifPicker": true,
-    "EnablePostUsernameOverride": true,
-    "EnablePostIconOverride": false,
-    "EnableBotAccountCreation": true,
-    "EnableUserAccessTokens": true,
-    "EnableLinkPreviews": true,
-    "EnableTesting": false,
-    "EnableDeveloper": false,
-    "EnableSecurityFixAlert": true,
-    "EnableInsecureOutgoingConnections": false,
-    "EnableMultifactorAuthentication": false,
-    "EnforceMultifactorAuthentication": false,
-    "AllowCorsFrom": "",
-    "SessionLengthWebInDays": 30,
-    "SessionLengthMobileInDays": 30,
-    "SessionLengthSSOInDays": 30,
-    "SessionCacheInMinutes": 10,
-    "WebsocketSecurePort": 443,
-    "WebsocketPort": 80,
-    "WebserverMode": "gzip",
-    "EnableCustomEmoji": true,
-    "RestrictCustomEmojiCreation": "all",
-    "RestrictPostDelete": "all",
-    "AllowEditPost": "always",
-    "PostEditTimeLimit": 300,
-    "TimeBetweenUserTypingUpdatesMilliseconds": 5000,
-    "EnablePostSearch": true,
-    "EnableUserTypingMessages": true,
-    "EnableUserStatuses": true,
-    "ClusterLogTimeoutMilliseconds": 2000
-  },
-  "TeamSettings": {
-    "SiteName": "kix chat",
-    "MaxUsersPerTeam": 50000,
-    "EnableTeamCreation": false,
-    "EnableUserCreation": true,
-    "EnableOpenServer": false,
-    "RestrictCreationToDomains": "",
-    "EnableCustomBrand": true,
-    "CustomBrandText": "Welcome back nix.co.il members!
-
-    Use GitLab for Google, GitHub, Twitter, Atlassian (O365, Apple) single sign-on!
-
-    IRC @ irc.nix.co.il:+30697 /msg mattermost help",
-    "CustomDescriptionText": "self hosted, independent and free",
-    "RestrictDirectMessage": "team",
-    "EnableTeamListing": true,
-    "TeammateNameDisplay": "nickname_full_name",
-    "ExperimentalViewArchivedChannels": false,
-    "RestrictTeamInvite": "all",
-    "RestrictPublicChannelManagement": "all",
-    "RestrictPrivateChannelManagement": "all",
-    "RestrictPublicChannelCreation": "all",
-    "RestrictPrivateChannelCreation": "all",
-    "RestrictPublicChannelDeletion": "all",
-    "RestrictPrivateChannelDeletion": "all",
-    "RestrictPrivateChannelManageMembers": "all",
-    "UserStatusAwayTimeout": 300,
-    "MaxChannelsPerTeam": 50000,
-    "MaxNotificationsPerChannel": 1000
-  },
-  "SqlSettings": {
-    "DriverName": "",
-    "DataSource": "",
-    "DataSourceReplicas": [],
-    "DataSourceSearchReplicas": [],
-    "MaxIdleConns": 20,
-    "MaxOpenConns": 35,
-    "Trace": false,
-    "AtRestEncryptKey": "secret",
-    "QueryTimeout": 30
-  },
-  "LogSettings": {
-    "EnableConsole": true,
-    "ConsoleLevel": "INFO",
-    "EnableFile": true,
-    "FileLevel": "INFO",
-    "FileFormat": "",
-    "FileLocation": "",
-    "EnableWebhookDebugging": true,
-    "EnableDiagnostics": false
-  },
-  "PasswordSettings": {
-    "MinimumLength": 5,
-    "Lowercase": false,
-    "Number": false,
-    "Uppercase": false,
-    "Symbol": false
-  },
-  "FileSettings": {
-    "EnableFileAttachments": true,
-    "MaxFileSize": 52428800,
-    "DriverName": "local",
-    "Directory": "./data/",
-    "EnablePublicLink": false,
-    "PublicLinkSalt": "secret",
-    "ThumbnailWidth": 120,
-    "ThumbnailHeight": 100,
-    "PreviewWidth": 1024,
-    "PreviewHeight": 0,
-    "ProfileWidth": 128,
-    "ProfileHeight": 128,
-    "InitialFont": "luximbi.ttf",
-    "AmazonS3AccessKeyId": "secret",
-    "AmazonS3SecretAccessKey": "secret",
-    "AmazonS3Bucket": "secret",
-    "AmazonS3Region": "",
-    "AmazonS3Endpoint": "s3.eu-central-003.backblazeb2.com",
-    "AmazonS3SSL": true,
-    "AmazonS3SignV2": false
-  },
-  "EmailSettings": {
-    "EnableSignUpWithEmail": true,
-    "EnableSignInWithEmail": true,
-    "EnableSignInWithUsername": true,
-    "SendEmailNotifications": true,
-    "RequireEmailVerification": true,
-    "FeedbackName": "Kix Chat",
-    "FeedbackEmail": "support@kix.co.il",
-    "FeedbackOrganization": "kix",
-    "SMTPUsername": "secret",
-    "SMTPPassword": "secret",
-    "EnableSMTPAuth": "true",
-    "SMTPServer": "smtp.gmail.com",
-    "SMTPPort": 587,
-    "ConnectionSecurity": "STARTTLS",
-    "InviteSalt": "secret",
-    "SendPushNotifications": true,
-    "PushNotificationServer": "https://push-test.mattermost.com",
-    "PushNotificationContents": "generic",
-    "EnableEmailBatching": true,
-    "EmailBatchingBufferSize": 256,
-    "EmailBatchingInterval": 30,
-    "SkipServerCertificateVerification": false
-  },
-  "RateLimitSettings": {
-    "Enable": true,
-    "PerSec": 10,
-    "MaxBurst": 100,
-    "MemoryStoreSize": 10000,
-    "VaryByRemoteAddr": false,
-    "VaryByHeader": "X-Real-IP"
-  },
-  "PrivacySettings": {
-    "ShowEmailAddress": false,
-    "ShowFullName": false
-  },
-  "SupportSettings": {
-    "TermsOfServiceLink": "https://about.mattermost.com/default-terms/",
-    "PrivacyPolicyLink": "https://about.mattermost.com/default-privacy-policy/",
-    "AboutLink": "https://about.mattermost.com/default-about/",
-    "HelpLink": "https://about.mattermost.com/default-help/",
-    "ReportAProblemLink": "https://about.mattermost.com/default-report-a-problem/",
-    "SupportEmail": "support@kix.co.il"
-  },
-  "AnnouncementSettings": {
-    "EnableBanner": false,
-    "BannerText": "",
-    "BannerColor": "#f2a93b",
-    "BannerTextColor": "#333333",
-    "AllowBannerDismissal": true
-  },
-  "GitLabSettings": {
-    "Enable": true,
-    "Secret": "secret",
-    "Id": "secret",
-    "Scope": "read_user",
-    "AuthEndpoint": "https://gitlab.com/oauth/authorize",
-    "TokenEndpoint": "https://gitlab.com/oauth/token",
-    "UserApiEndpoint": "https://gitlab.com/api/v4/user"
-  },
-  "LocalizationSettings": {
-    "DefaultServerLocale": "en",
-    "DefaultClientLocale": "en",
-    "AvailableLocales": ""
-  },
-  "NativeAppSettings": {
-    "AppDownloadLink": "https://about.mattermost.com/downloads/",
-    "AndroidAppDownloadLink": "https://about.mattermost.com/mattermost-android-app/",
-    "IosAppDownloadLink": "https://about.mattermost.com/mattermost-ios-app/"
-  },
-  "AnalyticsSettings": {
-    "MaxUsersForStatistics": 2500
-  },
-  "WebrtcSettings": {
-    "Enable": false,
-    "GatewayWebsocketUrl": "",
-    "GatewayAdminUrl": "",
-    "GatewayAdminSecret": "",
-    "StunURI": "",
-    "TurnURI": "",
-    "TurnUsername": "",
-    "TurnSharedKey": ""
-  },
-  "DisplaySettings": {
-    "CustomUrlSchemes": [],
-    "ExperimentalTimezone": true
-  },
-  "TimezoneSettings": {
-    "SupportedTimezonesPath": "timezones.json"
-  },
-  "PluginSettings": {
-    "Enable": true,
-    "EnableUploads": true,
-    "RequirePluginSignature": false,
-    "Directory": "./plugins",
-    "ClientDirectory": "./client/plugins",
-    "Plugins": {
-    },
-    "PluginStates": {
-      "com.github.moussetc.mattermost.plugin.giphy": {
-        "Enable": true
-      },
-      "com.mattermost.custom-attributes": {
-        "Enable": false
-      }
-    }
-  }
-}
+config:
+  AnnouncementSettings:
+    EnableBanner: false
+    BannerText: ''
+    BannerColor: '#f2a93b'
+    BannerTextColor: '#333333'
+    AllowBannerDismissal: true
+  ServiceSettings:
+    EnableSecurityFixAlert: false
+    SiteURL: https://kix.co.il
+    EnableOAuthServiceProvider: true
+    EnablePostUsernameOverride: true
+    EnablePostIconOverride: true
+    EnableBotAccountCreation: true
+    EnableUserAccessTokens: true
+    EnableMultifactorAuthentication: true
+    PostEditTimeLimit: 300
+    ExperimentalChannelSidebarOrganization: default_off
+    GoogleDeveloperKey: xxx
+  TeamSettings:
+    SiteName: kix chat
+    MaxUsersPerTeam: 50000
+    EnableTeamCreation: false
+    EnableCustomBrand: true
+    CustomBrandText: welcome back nix.co.il members!
+    CustomDescriptionText: self hosted, independent and free
+    RestrictDirectMessage: team
+    EnableTeamListing: false
+    EnableXToLeaveChannelsFromLHS: true
+    TeammateNameDisplay: nickname_full_name
+    ExperimentalEnableAutomaticReplies: true
+    MaxChannelsPerTeam: 50000
+    RestrictPrivateChannelManageMembers: all
+    RestrictPrivateChannelDeletion: team_admin
+    RestrictPublicChannelDeletion: team_admin
+    RestrictTeamInvite: all
+  SqlSettings:
+    AtRestEncryptKey: xxx
+  LogSettings:
+    ConsoleLevel: INFO
+    EnableWebhookDebugging: false
+    EnableDiagnostics: false
+  NotificationLogSettings:
+    ConsoleLevel: INFO
+  FileSettings:
+    PublicLinkSalt: xxx
+  EmailSettings:
+    InviteSalt: xxx
+    RequireEmailVerification: true
+    FeedbackName: Kix Chat
+    FeedbackEmail: support@kix.co.il
+    FeedbackOrganization: kix
+    SMTPUsername: xxx
+    SMTPPassword: xxx
+    SMTPServer: smtp.gmail.com
+    SMTPPort: 587
+    ConnectionSecurity: STARTTLS
+    PushNotificationContents: full
+    EnableEmailBatching: true
+    UseChannelInEmailNotifications: true
+  RateLimitSettings:
+    Enable: true
+    VaryByHeader: X-Real-IP
+  PrivacySettings:
+    ShowEmailAddress: false
+    ShowFullName: false
+  SupportSettings:
+    TermsOfServiceLink: https://nix.co.il/nix/pl/4x6i3g7i87dgmpbwjpwk537zxo
+    PrivacyPolicyLink: https://nix.co.il/nix/pl/mw54memp97f788jdztp4p8y6yc
+    AboutLink: https://nix.co.il/nix/pl/cn6415d3njgjjb63z6jrese7ho
+    HelpLink: https://kix.co.il/nix/channels/help
+    ReportAProblemLink: https://kix.co.il/nix/channels/help
+    SupportEmail: support@kix.co.il
+  GitLabSettings:
+    Enable: true
+    Secret: xxx
+    Id: xxx
+    Scope: read_user
+    AuthEndpoint: https://gitlab.com/oauth/authorize
+    TokenEndpoint: https://gitlab.com/oauth/token
+    UserApiEndpoint: https://gitlab.com/api/v4/user
+  PluginSettings:
+    EnableUploads: true
+    Plugins:
+      com.github.moussetc.mattermost.plugin.giphy:
+        provider: tenor
+        apikey: xxx
+        language: en
+        rating: r
+        rendition: downsized
+        renditiongfycat: 100pxGif
+        renditiontenor: mediumgif
+      com.github.matterpoll.matterpoll:
+        ExperimentalUI: true
+    PluginStates:
+      com.mattermost.plugin-todo:
+        Enable: true
+      memes:
+        Enable: true
+      com.github.moussetc.mattermost.plugin.giphy:
+        Enable: true
+      com.github.matterpoll.matterpoll:
+        Enable: true
+      com.mattermost.custom-attributes":
+        Enable: false
