@@ -1,6 +1,8 @@
 # helm repo add mattermost https://helm.mattermost.com
 # helm upgrade --install chat -n phantom mattermost/mattermost-team-edition -f mattermost/values.d/limnad.yaml -f mattermost/values.d/limnad.secret.yaml --atomic --debug
 
+nameOverride: mattermost-integ
+
 persistence:
   data:
     enabled: true
@@ -21,6 +23,8 @@ ingress:
   annotations:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_linode_v4"
+    nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fmmbeta$escaped_request_uri"
     nginx.ingress.kubernetes.io/proxy-body-size: 50m
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
@@ -49,11 +53,11 @@ ingress:
     #### http-snippet: |
     ####     proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=mattermost_cache:10m max_size=3g inactive=120m use_temp_path=off;
   hosts:
-    - kix.co.il
+    - mmbeta.limnad.kix.co.il
   tls:
-    - secretName: mattermost-chat-kix-tls
+    - secretName: mattermost-chat-beta-kix-tls
       hosts:
-        - kix.co.il
+        - mmbeta.limnad.kix.co.il
 
 #route:
 #  enabled: false
@@ -77,7 +81,7 @@ config:
     AllowBannerDismissal: true
   ServiceSettings:
     EnableSecurityFixAlert: false
-    SiteURL: https://kix.co.il
+    SiteURL: https://mmbeta.limnad.kix.co.il
     EnableOAuthServiceProvider: true
     EnablePostUsernameOverride: true
     EnablePostIconOverride: true
@@ -87,6 +91,8 @@ config:
     PostEditTimeLimit: 300
     ExperimentalChannelSidebarOrganization: default_off
     GoogleDeveloperKey: xxx
+    EnableLocalMode: true
+    EnableDeveloper: true
   TeamSettings:
     SiteName: kix chat
     MaxUsersPerTeam: 50000
@@ -145,7 +151,7 @@ config:
     ReportAProblemLink: https://kix.co.il/nix/channels/help
     SupportEmail: support@kix.co.il
   GitLabSettings:
-    Enable: true
+    Enable: false
     Secret: xxx
     Id: xxx
     Scope: read_user

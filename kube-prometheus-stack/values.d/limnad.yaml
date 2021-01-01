@@ -2,19 +2,19 @@
 
 ## Provide a name in place of kube-prometheus-stack for `app:` labels
 ##
-nameOverride: ""
+#nameOverride: ""
 
 ## Override the deployment namespace
 ##
-namespaceOverride: ""
+#namespaceOverride: ""
 
 ## Provide a k8s version to auto dashboard import script example: kubeTargetVersionOverride: 1.16.6
 ##
-kubeTargetVersionOverride: ""
+#kubeTargetVersionOverride: ""
 
 ## Provide a name to substitute for the full names of resources
 ##
-fullnameOverride: ""
+#fullnameOverride: ""
 
 ## Labels to apply to all resources
 ##
@@ -74,7 +74,7 @@ defaultRules:
 
 ## Provide custom recording or alerting rules to be deployed into the cluster.
 ##
-additionalPrometheusRulesMap: {}
+#additionalPrometheusRulesMap: {}
 #  rule-name:
 #    groups:
 #    - name: my_group
@@ -83,25 +83,25 @@ additionalPrometheusRulesMap: {}
 #        expr: 100 * my_record
 
 ##
-global:
-  rbac:
-    create: true
-    pspEnabled: true
-    pspAnnotations: {}
-      ## Specify pod annotations
-      ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#apparmor
-      ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#seccomp
-      ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#sysctl
-      ##
-      # seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
-      # seccomp.security.alpha.kubernetes.io/defaultProfileName: 'docker/default'
-    # apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
-
-  ## Reference to one or more secrets to be used when pulling images
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-  ##
-  imagePullSecrets: []
-  # - name: "image-pull-secret"
+#global:
+#  rbac:
+#    create: true
+#    pspEnabled: true
+#    pspAnnotations: {}
+#      ## Specify pod annotations
+#      ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#apparmor
+#      ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#seccomp
+#      ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#sysctl
+#      ##
+#      # seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+#      # seccomp.security.alpha.kubernetes.io/defaultProfileName: 'docker/default'
+#    # apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
+#
+#  ## Reference to one or more secrets to be used when pulling images
+#  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+#  ##
+#  imagePullSecrets: []
+#  # - name: "image-pull-secret"
 
 ## Configuration for alertmanager
 ## ref: https://prometheus.io/docs/alerting/alertmanager/
@@ -393,10 +393,10 @@ alertmanager:
 
     ## Image of Alertmanager
     ##
-    image:
-      repository: quay.io/prometheus/alertmanager
-      tag: v0.21.0
-      sha: ""
+#    image:
+#      repository: quay.io/prometheus/alertmanager
+#      tag: v0.21.0
+#      sha: ""
 
     ## If true then the user will be responsible to provide a secret with alertmanager configuration
     ## So when true the config part will be ignored (including templateFiles) and the one in the secret will be used
@@ -2733,10 +2733,15 @@ prometheusOperator:
 
   # If true prometheus operator will create and update its CRDs on startup
   # Only for prometheusOperator.image.tag < v0.39.0
-  manageCrds: true
+  manageCrds: false
+
+  tls:
+    enabled: true
+    # Value must match version names from https://golang.org/pkg/crypto/tls/#pkg-constants
+    tlsMinVersion: VersionTLS13
 
   tlsProxy:
-    enabled: true
+    enabled: false
     image:
       repository: squareup/ghostunnel
       tag: v1.5.2
@@ -2748,7 +2753,7 @@ prometheusOperator:
   ## rules from making their way into prometheus and potentially preventing the container from starting
   admissionWebhooks:
     failurePolicy: Fail
-    enabled: true
+    enabled: false
     ## If enabled, generate a self-signed certificate, then patch the webhook configurations with the generated data.
     ## On chart upgrades (or if the secret exists) the cert will not be re-generated. You can use this to provide your own
     ## certs ahead of time if you wish.
@@ -2825,7 +2830,7 @@ prometheusOperator:
 
   ## Deploy CRDs used by Prometheus Operator.
   ##
-  createCustomResource: false
+  createCustomResource: true
 
   ## Attempt to clean up CRDs created by Prometheus Operator.
   ##
@@ -2934,25 +2939,25 @@ prometheusOperator:
 
   ## Prometheus-operator image
   ##
-  image:
-    repository: quay.io/coreos/prometheus-operator
-    tag: v0.38.1
-    sha: ""
-    pullPolicy: IfNotPresent
+#  image:
+#    repository: quay.io/coreos/prometheus-operator
+#    tag: v0.38.1
+#    sha: ""
+#    pullPolicy: IfNotPresent
 
   ## Configmap-reload image to use for reloading configmaps
   ##
-  configmapReloadImage:
-    repository: docker.io/jimmidyson/configmap-reload
-    tag: v0.3.0
-    sha: ""
+#  configmapReloadImage:
+#    repository: docker.io/jimmidyson/configmap-reload
+#    tag: v0.3.0
+#    sha: ""
 
   ## Prometheus-config-reloader image to use for config and rule reloading
   ##
-  prometheusConfigReloaderImage:
-    repository: quay.io/coreos/prometheus-config-reloader
-    tag: v0.38.1
-    sha: ""
+#  prometheusConfigReloaderImage:
+#    repository: quay.io/coreos/prometheus-config-reloader
+#    tag: v0.38.1
+#    sha: ""
 
   ## Set the prometheus config reloader side-car CPU limit
   ##
@@ -3224,10 +3229,10 @@ prometheus:
 
     ## Image of Prometheus.
     ##
-    image:
-      repository: quay.io/prometheus/prometheus
-      tag: v2.20.1
-      sha: "788260ebd13613456c168d2eed8290f119f2b6301af2507ff65908d979c66c17"
+#    image:
+#      repository: quay.io/prometheus/prometheus
+#      tag: v2.20.1
+#      sha: "788260ebd13613456c168d2eed8290f119f2b6301af2507ff65908d979c66c17"
 
     ## Tolerations for use with node taints
     ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/

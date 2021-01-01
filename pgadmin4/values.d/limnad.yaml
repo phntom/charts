@@ -1,0 +1,25 @@
+# helm repo add runix https://helm.runix.net/
+# helm upgrade --install pgadmin4 -n db runix/pgadmin4 -f pgadmin4/values.d/limnad.yaml -f pgadmin4/values.d/limnad.secret.yaml
+
+ingress:
+  enabled: true
+  annotations:
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_linode_v4"
+    nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fpg$escaped_request_uri"
+  hosts:
+    - host: pg.limnad.kix.co.il
+      paths:
+        - /
+  tls:
+    - secretName: pg-limnad-kix-tls
+      hosts:
+        - pg.limnad.kix.co.il
+
+env:
+  email: xxx
+  password: xxx
+
+persistentVolume:
+  enabled: false

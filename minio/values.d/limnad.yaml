@@ -1,0 +1,27 @@
+replicas: 1
+persistence:
+  storageClass: nfs
+  size: 1Gi
+ingress:
+  enabled: true
+  annotations:
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: dns_linode_v4
+  hosts:
+    - s3.limnad.kix.co.il
+  tls:
+    - secretName: s3-limnad-kix-co-il
+      hosts:
+        - s3.limnad.kix.co.il
+resources:
+  requests:
+    memory: 50Mi
+
+buckets:
+  - name: nix-chat
+    policy: none
+  - name: stocks
+    policy: none
+metrics:
+  serviceMonitor:
+    enabled: true

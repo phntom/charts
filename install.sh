@@ -14,5 +14,8 @@ helm upgrade --install kix -n phantom website-kix-co-il
 helm upgrade --install binaryvision -n phantom website-binaryvision-static
 helm upgrade --install tlo -n phantom website-bv-tlo
 helm upgrade --install nix-mattermost -n phantom website-web-nix -f website-web-nix/values.yaml -f website-web-nix/values.d/limnad.secret.yaml
-
+helm upgrade --install pgadmin4 -n db runix/pgadmin4 -f pgadmin4/values.d/limnad.yaml -f pgadmin4/values.d/limnad.secret.yaml
 helm upgrade --install hass -n hass k8s-at-home/home-assistant -f home-assistant/values.d/limnad.yaml --atomic --debug
+
+helm upgrade --install chat-beta -n phantom mattermost -f mattermost/values.d/limnad-integ.yaml -f  mattermost/values.d/limnad-integ.secret.yaml --atomic --debug
+helm upgrade --install firefly-iii -n stocks firefly-iii -f firefly-iii/values.d/limnad.yaml -f  firefly-iii/values.d/limnad.secret.yaml --atomic --debug
