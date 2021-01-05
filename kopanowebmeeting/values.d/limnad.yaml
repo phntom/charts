@@ -1,0 +1,13 @@
+ingress:
+  enabled: true
+  annotations:
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_linode_v4"
+  hosts:
+    - host: kopano.kix.co.il
+      paths:
+        - /
+  tls:
+    - secretName: kopano-kix-co-il-tls
+      hosts:
+        - kopano.kix.co.il

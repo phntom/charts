@@ -113,9 +113,9 @@ config:
   SqlSettings:
     AtRestEncryptKey: xxx
   LogSettings:
-    ConsoleLevel: INFO
-    EnableWebhookDebugging: false
-    EnableDiagnostics: false
+    ConsoleLevel: DEBUG
+    EnableWebhookDebugging: true
+    EnableDiagnostics: true
   NotificationLogSettings:
     ConsoleLevel: INFO
   FileSettings:
@@ -168,6 +168,7 @@ config:
     UserApiEndpoint: https://gitlab.com/api/v4/user
   PluginSettings:
     EnableUploads: true
+    EnableMarketplace: false
     Plugins:
       com.github.moussetc.mattermost.plugin.giphy:
         provider: tenor
@@ -179,14 +180,17 @@ config:
         renditiontenor: mediumgif
       com.github.matterpoll.matterpoll:
         ExperimentalUI: true
+      kopanowebmeetings:
+        KWMServerURL: https://kopano.kix.co.il
+        KWMServerInternalURL: http://kopano-kopanowebmeeting.phantom.svc.cluster.local:8778
+        StunURI: stun:stun.l.google.com:19302
+        TurnURI: turn:turn.anyfirewall.com:443?transport=tcp
+        TurnUsername: webrtc
+        TurnSharedKey: webrtc
     PluginStates:
-      com.mattermost.plugin-todo:
-        Enable: true
-      memes:
-        Enable: true
-      com.github.moussetc.mattermost.plugin.giphy:
-        Enable: true
-      com.github.matterpoll.matterpoll:
-        Enable: true
-      com.mattermost.custom-attributes":
+      mattermost-webrtc-video:
         Enable: false
+      kopanowebmeetings:
+        Enable: false
+      il.co.nix.x:
+        Enable: true

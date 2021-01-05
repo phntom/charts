@@ -182,5 +182,5 @@ config:
         Enable: true
       com.github.matterpoll.matterpoll:
         Enable: true
-      com.mattermost.custom-attributes":
+      com.mattermost.custom-attributes:
         Enable: false
