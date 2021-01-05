@@ -1,0 +1,32 @@
+fireflyiii:
+  url: 'https://firefly.kix.co.il'
+ingress:
+  enabled: true
+  annotations:
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_linode_v4"
+  hosts:
+    - host: firefly.kix.co.il
+      paths:
+        - /
+  tls:
+    - secretName: firefly-kix-tls
+      hosts:
+        - firefly.kix.co.il
+
+persistence:
+  enabled: false
+  storageClassName: "nfs"
+
+oauth2-proxy:
+  config:
+    clientID: xxx
+    clientSecret: xxx
+    cookieSecret: xxx
+  extraArgs:
+    provider: github
+    cookie-domain: .firefly.kix.co.il
+    # false is "true" for boolean variables
+  ingress:
+    hosts:
+      - firefly.kix.co.il
