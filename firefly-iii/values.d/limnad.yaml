@@ -24,9 +24,12 @@ oauth2-proxy:
     clientSecret: xxx
     cookieSecret: xxx
   extraArgs:
-    provider: github
-    cookie-domain: .firefly.kix.co.il
-    # false is "true" for boolean variables
+    provider: facebook
+    provider-display-name: kix.co.il chat
+    redirect-url: https://firefly.kix.co.il/oauth2/callback
+    login-url: https://kix.co.il/oauth/authorize
+    redeem-url: https://kix.co.il/oauth/access_token
+    profile-url: https://kix.co.il/api/v4/users/me
   ingress:
     hosts:
       - firefly.kix.co.il
