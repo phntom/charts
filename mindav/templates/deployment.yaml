@@ -44,6 +44,8 @@ spec:
               httpHeaders:
               - name: Authorization
                 value: Basic {{ printf "%s:%s" .Values.mindav.webdav.user .Values.mindav.webdav.password | b64enc }}
+              - name: X-Auth-Request-User
+                value: healthz@
           readinessProbe:
             httpGet:
               path: /v1/webdav/healthz
@@ -51,6 +53,8 @@ spec:
               httpHeaders:
                 - name: Authorization
                   value: Basic {{ printf "%s:%s" .Values.mindav.webdav.user .Values.mindav.webdav.password | b64enc }}
+                - name: X-Auth-Request-User
+                  value: healthz@
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

@@ -14,11 +14,9 @@ metadata:
   labels:
     {{- include "mindav.labels" . | nindent 4 }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /v1/webdav/u/$authEmail/$1
+    nginx.ingress.kubernetes.io/rewrite-target: /v1/webdav/$1
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header Authorization "Basic {{ printf "%s:%s" .Values.mindav.webdav.user .Values.mindav.webdav.password | b64enc }}";
-      auth_request_set $authEmail $upstream_http_x_auth_request_user;
-      more_set_headers 'X-Test: /v1/webdav/u/$authEmail/$1';
     {{- if .Values.oauth2proxy.enable }}
     nginx.ingress.kubernetes.io/auth-url: "https://{{ .Values.oauth2proxy.domain }}/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://{{ .Values.oauth2proxy.domain }}/oauth2/start?rd=$escaped_request_uri"

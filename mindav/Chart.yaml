@@ -3,7 +3,7 @@ name: mindav
 description: Basic AWS S3 WebDAV interface implemented in Rust
 type: application
 version: "0.1.0"
-appVersion: "0.1.6"
+appVersion: "0.1.7"
 dependencies:
   - name: oauth2-proxy
     alias: oauth2proxy
