@@ -30,7 +30,10 @@ spec:
   template:
     metadata:
     {{- if .Values.controller.podAnnotations }}
-      annotations: {{ toYaml .Values.controller.podAnnotations | nindent 8 }}
+      annotations: 
+      {{- range $key, $value := .Values.controller.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
     {{- end }}
       labels:
         {{- include "ingress-nginx.selectorLabels" . | nindent 8 }}
@@ -96,8 +99,8 @@ spec:
           {{- end }}
           {{- if .Values.controller.admissionWebhooks.enabled }}
             - --validating-webhook=:{{ .Values.controller.admissionWebhooks.port }}
-            - --validating-webhook-certificate=/usr/local/certificates/cert
-            - --validating-webhook-key=/usr/local/certificates/key
+            - --validating-webhook-certificate={{ .Values.controller.admissionWebhooks.certificate }}
+            - --validating-webhook-key={{ .Values.controller.admissionWebhooks.key }}
           {{- end }}
           {{- if .Values.controller.maxmindLicenseKey }}
             - --maxmind-license-key={{ .Values.controller.maxmindLicenseKey }}
@@ -106,10 +109,11 @@ spec:
             - --health-check-path={{ .Values.controller.healthCheckPath }}
           {{- end }}
           {{- range $key, $value := .Values.controller.extraArgs }}
-            {{- if $value }}
-            - --{{ $key }}={{ $value }}
-            {{- else }}
+            {{- /* Accept keys without values or with false as value */}}
+            {{- if eq ($value | quote | len) 2 }}
             - --{{ $key }}
+            {{- else }}
+            - --{{ $key }}={{ $value }}
             {{- end }}
           {{- end }}
           securityContext:
@@ -227,6 +231,9 @@ spec:
     {{- end }}
     {{- if .Values.controller.affinity }}
       affinity: {{ toYaml .Values.controller.affinity | nindent 8 }}
+    {{- end }}
+    {{- if .Values.controller.topologySpreadConstraints }}
+      topologySpreadConstraints: {{ toYaml .Values.controller.topologySpreadConstraints | nindent 8 }}
     {{- end }}
       serviceAccountName: {{ template "ingress-nginx.serviceAccountName" . }}
       terminationGracePeriodSeconds: {{ .Values.controller.terminationGracePeriodSeconds }}
