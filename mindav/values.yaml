@@ -16,7 +16,7 @@ replicaCount: 1
 
 image:
   repository: phntom/mindav
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
@@ -34,13 +34,13 @@ podAnnotations: {}
 podSecurityContext: {}
 #  fsGroup: 2000
 
-securityContext:
-   capabilities:
-     drop:
-     - ALL
-   readOnlyRootFilesystem: true
-   runAsNonRoot: true
-   runAsUser: 1000
+securityContext: {}
+#   capabilities:
+#     drop:
+#     - ALL
+#   readOnlyRootFilesystem: true
+#   runAsNonRoot: true
+#   runAsUser: 1000
 
 service:
   type: ClusterIP
