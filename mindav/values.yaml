@@ -16,7 +16,7 @@ replicaCount: 1
 
 image:
   repository: phntom/mindav
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
@@ -58,16 +58,15 @@ ingress:
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, HEAD, POST, PUT, OPTIONS, MOVE, DELETE, COPY, LOCK, UNLOCK"
     nginx.ingress.kubernetes.io/cors-allow-headers: "Origin, Content-Type, Cache-Control, Accept, Authorization, If-Match, Destination, Overwrite"
     nginx.ingress.kubernetes.io/cors-expose-headers: "ETag"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://app.keeweb.info"
-#    nginx.ingress.kubernetes.io/cors-allow-origin: "https://pw.kix.co.il"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://pwd.kix.co.il"
   hosts:
-    - host: webdav.kix.co.il
+    - host: pwd.kix.co.il
       paths:
-        - path: /
+        - path: /webdav/
   tls:
-    - secretName: webdav-kix-co-il-tls
+    - secretName: pwd-kix-co-il-tls
       hosts:
-        - webdav.kix.co.il
+        - pwd.kix.co.il
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -110,7 +109,7 @@ oauth2proxy:
     provider: facebook
     provider-display-name: kix.co.il chat
     redeem-url: https://kix.co.il/oauth/access_token
-    redirect-url: https://webdav.kix.co.il/oauth2/callback
+    redirect-url: https://pwd.kix.co.il/oauth2/callback
     # false is "true" for boolean variables
   ingress:
     enabled: true
