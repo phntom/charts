@@ -3,25 +3,26 @@
 {{- $svcPort := .Values.service.port -}}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+  {{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
+  {{- else -}}
 apiVersion: extensions/v1beta1
-{{- end }}
+  {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $fullName }}-mobile
   labels:
-    {{- include "mindav.labels" . | nindent 4 }}
+  {{- include "mindav.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /v1/webdav/$1
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header X-URI-Prefix "https://{{ .Values.ingress.host.host }}/{{ .Values.ingress.host.path }}";
-    {{- if .Values.oauth2proxy.enable }}
-    nginx.ingress.kubernetes.io/auth-url: "https://{{ .Values.oauth2proxy.domain }}/oauth2/auth"
-    nginx.ingress.kubernetes.io/auth-signin: "https://{{ .Values.oauth2proxy.domain }}/oauth2/start?rd=$escaped_request_uri"
-    nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User"
-    {{- end }}
+      proxy_set_header X-URI-Prefix "https://{{ .Values.ingress.host.host }}/{{ .Values.ingress.host.mobilePath }}";
+      proxy_set_header X-Auth-Request-User "kixtoken@";
+      set $testauth x$http_authorization;
+      if ($testauth = x) {
+        more_set_headers "WWW-Authenticate: Basic realm=\"Authentication Required - Personl Access Token from kix.co.il\"";
+        return 401 Unauthorized;
+      }
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -32,16 +33,16 @@ spec:
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
-        {{- end }}
+      {{- end }}
       secretName: {{ .secretName }}
-    {{- end }}
+  {{- end }}
   {{- end }}
   rules:
     - host: {{ .Values.ingress.host.host | quote }}
       http:
         paths:
-          - path: "{{ .Values.ingress.host.path }}/(.*)"
+          - path: "{{ .Values.ingress.host.mobilePath }}/(.*)"
             backend:
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
-  {{- end }}
+{{- end }}

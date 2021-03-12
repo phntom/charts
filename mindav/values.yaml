@@ -59,10 +59,15 @@ ingress:
     nginx.ingress.kubernetes.io/cors-allow-headers: "Origin, Content-Type, Cache-Control, Accept, Authorization, If-Match, Destination, Overwrite"
     nginx.ingress.kubernetes.io/cors-expose-headers: "ETag"
     nginx.ingress.kubernetes.io/cors-allow-origin: "https://pwd.kix.co.il"
-  hosts:
-    - host: pwd.kix.co.il
-      paths:
-        - path: /webdav/
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "4m"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "8"
+    nginx.ingress.kubernetes.io/proxy-body-size: "32m"
+    nginx.ingress.kubernetes.io/client-body-buffer-size: "32m"
+  host:
+    host: pwd.kix.co.il
+    path: /webdav
+    mobilePath: /m
   tls:
     - secretName: pwd-kix-co-il-tls
       hosts:
