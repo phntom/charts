@@ -114,6 +114,17 @@ config:
     ConsoleLevel: INFO
   FileSettings:
     PublicLinkSalt: xxx
+    DriverName: amazons3
+    AmazonS3AccessKeyId: xxx
+    AmazonS3SecretAccessKey: xxx
+    AmazonS3Bucket: xxx
+    AmazonS3Endpoint: xxx
+    AmazonS3PathPrefix: ''
+    AmazonS3Region: ''
+    AmazonS3SSE: true
+    AmazonS3SSL: true
+    AmazonS3SignV2: false
+    AmazonS3Trace: false
   EmailSettings:
     InviteSalt: xxx
     RequireEmailVerification: true
@@ -123,7 +134,7 @@ config:
     SMTPUsername: xxx
     SMTPPassword: xxx
     SMTPServer: smtp.gmail.com
-    SMTPPort: 587
+    SMTPPort: "587"
     ConnectionSecurity: STARTTLS
     PushNotificationContents: full
     EnableEmailBatching: true
@@ -234,12 +245,12 @@ config:
             GroupIDs: [ ]
     PluginStates:
       com.mattermost.plugin-todo:
-        Enable: true
+        Enable: false
       memes:
         Enable: true
       com.github.moussetc.mattermost.plugin.giphy:
         Enable: true
       com.github.matterpoll.matterpoll:
-        Enable: true
+        Enable: false
       com.mattermost.custom-attributes:
-        Enable: true
+        Enable: false
