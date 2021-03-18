@@ -68,12 +68,12 @@ spec:
                 - name: S3_BUCKET
                   value: {{ .Values.s3.bucket | quote }}
                 - name: S3_PREFIX
-                  value: {{ .Values.s3.prefix | quote }}
+                  value: {{ trimSuffix "/" .Values.s3.prefix | quote }}
                 - name: S3_REGION
                   value: {{ .Values.s3.region | quote }}
                 {{- if .Values.s3.endpoint }}
                 - name: S3_ENDPOINT
-                  value: {{ .Values.s3.endpoint | quote }}
+                  value: {{ printf "https://%s" (trimPrefix "https://" .Values.s3.endpoint) | quote }}
                 {{- end }}
                 - name: S3_S3V4
                   value: {{ ternary "yes" "no" .Values.s3.v4signature | quote }}

@@ -2,9 +2,9 @@ s3:
   accessKeyId: xxx
   secretAccessKey: xxx
   bucket: backup-prod
-  endpoint: "eu-central-1.linodeobjects.com"
-  prefix: "postgresql/"
-  v4signature: false
+  endpoint: "https://eu-central-1.linodeobjects.com"
+  prefix: "postgresql"
+  v4signature: true
 postgresql:
   database: all
   host: postgresql.db.svc.cluster.local
