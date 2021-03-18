@@ -1,3 +1,5 @@
+image:
+  tag: "2.3.2"
 replicaCount: 1
 ingress:
   enabled: true
@@ -38,7 +40,7 @@ postgresql:
   postgresHost: postgresql.db
 #  postgresPassword: secret
 
-extraVars:
+extraVarsX:
   - name: CMD_DOMAIN
     value: pad.kix.co.il
   - name: CMD_PROTOCOL_USESSL
@@ -79,3 +81,14 @@ extraVars:
     value: username
   - name: CMD_OAUTH2_USER_PROFILE_EMAIL_ATTR
     value: email
+  - name: CMD_IMAGE_UPLOAD_TYPE
+    value: string
+  - name: CMD_S3_ACCESS_KEY_ID
+    value: secret
+  - name: CMD_S3_SECRET_ACCESS_KEY
+    value: secret
+  - name: CMD_S3_BUCKET
+    value: hackmd-prod
+  - name: CMD_S3_ENDPOINT
+    value: eu-central-1.linodeobjects.com
+
