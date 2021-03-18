@@ -1,0 +1,16 @@
+s3:
+  accessKeyId: xxx
+  secretAccessKey: xxx
+  bucket: backup-prod
+  endpoint: "eu-central-1.linodeobjects.com"
+  prefix: "postgresql/"
+  v4signature: false
+postgresql:
+  database: all
+  host: postgresql.db.svc.cluster.local
+  port: 5432
+  user: xxx
+  password: xxx
+encryption:
+  enabled: true
+  password: xxx

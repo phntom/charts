@@ -1,0 +1,93 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "postgresql-backup.fullname" . | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{ include "postgresql-backup.labels" . | nindent 4 }}
+spec:
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels: {{ include "postgresql-backup.selectorLabels" . | nindent 12 }}
+          {{- with .Values.podAnnotations }}
+          annotations: {{ toYaml . | nindent 12 }}
+          {{- end }}
+        spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ include "postgresql-backup.serviceAccountName" . }}
+          securityContext: {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
+          containers:
+            - name: {{ include "postgresql-backup.name" . }}
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+              env:
+                - name: POSTGRES_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "postgresql-backup.fullname" . }}
+                      key: POSTGRES_DATABASE
+                - name: POSTGRES_HOST
+                  value: {{ .Values.postgresql.host | quote }}
+                - name: POSTGRES_PORT
+                  value: {{ .Values.postgresql.port | quote }}
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "postgresql-backup.fullname" . }}
+                      key: POSTGRES_USER
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "postgresql-backup.fullname" . }}
+                      key: POSTGRES_PASSWORD
+                - name: POSTGRES_EXTRA_OPTS
+                  value: {{ .Values.postgresql.extraArgs | quote }}
+                - name: S3_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "postgresql-backup.fullname" . }}
+                      key: S3_ACCESS_KEY_ID
+                - name: S3_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "postgresql-backup.fullname" . }}
+                      key: S3_SECRET_ACCESS_KEY
+                - name: S3_BUCKET
+                  value: {{ .Values.s3.bucket | quote }}
+                - name: S3_PREFIX
+                  value: {{ .Values.s3.prefix | quote }}
+                - name: S3_REGION
+                  value: {{ .Values.s3.region | quote }}
+                {{- if .Values.s3.endpoint }}
+                - name: S3_ENDPOINT
+                  value: {{ .Values.s3.endpoint | quote }}
+                {{- end }}
+                - name: S3_S3V4
+                  value: {{ ternary "yes" "no" .Values.s3.v4signature | quote }}
+                {{- if .Values.encryption.enabled }}
+                - name: ENCRYPTION_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "postgresql-backup.fullname" . }}
+                      key: ENCRYPTION_PASSWORD
+                {{- end }}
+              resources: {{- toYaml .Values.resources | nindent 16 }}
+              securityContext: {{- toYaml .Values.securityContext | nindent 16 }}
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit | default 1 }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit | default 1 }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy | default "Forbid" | quote }}
+

@@ -1,0 +1,7 @@
+* Installed postgresql-backup for {{ .Values.postgresql.host }} db {{ .Values.postgresql.database }}
+* Data will be copied every {{ .Values.cronjob.schedule }} to
+s3://{{ .Values.s3.bucket }}/{{ .Values.s3.prefix }}/{{ .Values.postgresql.database }}_%Y-%m-%dT%H:%M:%SZ.sql.gz{{ ternary ".enc" "" .Values.encryption.enabled }}
+{{- if .Values.encryption.enabled }}
+* Decode your data using:
+openssl aes-256-cbc -d -in backup.sql.gz.enc -out backup.sql.gz
+{{- end }}
