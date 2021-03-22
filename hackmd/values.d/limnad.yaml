@@ -29,7 +29,7 @@ resources: {}
   #  memory: 128Mi
 
 persistence:
-  enabled: true
+  enabled: false
   size: 100Mi
   storageClass: "nfs"
 

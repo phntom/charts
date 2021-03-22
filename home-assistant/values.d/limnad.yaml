@@ -1,44 +1,77 @@
 # helm upgrade --install hass -n phantom k8s-at-home/home-assistant -f home-assistant/values.d/limnad.yaml --atomic --debug
 image:
-  tag: 0.118.0.dev20201030
-#  tag: 0.117.1
+  tag: 2021.3.4
+configurator:
+  enabled: false
+prometheus:
+  serviceMonitor:
+    enabled: true
 ingress:
   enabled: true
   hosts:
-    - ha.limnad.kix.co.il
-    - ha.kix.co.il
+    - host: ha.limnad.kix.co.il
+      paths:
+        - path: /
+          pathType: Prefix
   annotations:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_linode_v4"
     nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fha$escaped_request_uri"
-#    nginx.ingress.kubernetes.io/configuration-snippet: |
-#      if ($host = ha.limnad.kix.co.il) {
-#        return 301 https://ha.kix.co.il/$request_uri;
-#      }
   tls:
     - secretName: ha-limnad-tls
       hosts:
-        - ha.kix.co.il
         - ha.limnad.kix.co.il
-persistence:
-  enabled: true
-  size: 500Mi
-  storageClass: nfs
-configurator:
-  enabled: true
-  ingress:
-    enabled: true
-    annotations:
-      acme.kubernetes.io/enable: "true"
-      acme.kubernetes.io/dns: "dns_linode_v4"
-      nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fconfigurator-hass$escaped_request_uri"
-    hosts:
-      - configurator-hass.limnad.kix.co.il
-    tls:
-      - secretName: configurator-hass-limnad-tls
-        hosts:
-          - configurator-hass.limnad.kix.co.il
-monitoring:
-  enabled: false
+common:
+  additionalVolumes:
+    - name: hass-db
+      emptyDir: {}
+  additionalVolumeMounts:
+    - mountPath: /config
+      name: hass-db
+  initContainers:
+    - name: s3sync-startup
+      command: [ "startup" ]
+      image: phntom/s3-sync
+      env:
+        - name: S3_URL
+          value: s3://prometheus-prod/hass/
+        - name: S3_DIRECTORY
+          value: /config/
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: s3-hass-prod-key
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-hass-prod-key
+              key: AWS_SECRET_ACCESS_KEY
+      volumeMounts:
+        - mountPath: /config
+          name: hass-db
+  additionalContainers:
+    - image: phntom/s3-sync
+      name: s3-sync
+      env:
+        - name: S3_URL
+          value: s3://prometheus-prod/hass/
+        - name: S3_DIRECTORY
+          value: /config/
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: s3-hass-prod-key
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-hass-prod-key
+              key: AWS_SECRET_ACCESS_KEY
+      volumeMounts:
+        - mountPath: /config
+          name: hass-db
+      resources:
+        limits:
+          cpu: "100m"

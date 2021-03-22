@@ -1849,6 +1849,9 @@ prometheus:
         volumeMounts:
           - mountPath: /prometheus
             name: prometheus-prometheus-kube-prometheus-prometheus-db
+        resources:
+          limits:
+            cpu: "100m"
     initContainers:
       - name: s3-sync-startup
         command: [ "startup" ]
