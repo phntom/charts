@@ -5,3 +5,17 @@ s3://{{ .Values.s3.bucket }}/{{ .Values.s3.prefix }}/{{ .Values.postgresql.datab
 * Decode your data using:
 openssl aes-256-cbc -d -in backup.sql.gz.enc -out backup.sql.gz
 {{- end }}
+
+Restore playbook:
+* alias s="aws s3 --endpoint-url=https://eu-central-1.linodeobjects.com"
+* aws configure
+* apt-get update && apt-get install postgresql awscli -y
+{{- if .Values.encryption.enabled }}
+* openssl aes-256-cbc -d -in all_2021-03-23T11:06:12Z.sql.gz.enc -out all_2021-03-23T11:06:12Z.sql.gz
+{{- end }}
+* s ls s3://{{ .Values.s3.bucket }}/{{ .Values.s3.prefix }}/
+* s cp s3://{{ .Values.s3.bucket }}/{{ .Values.s3.prefix }}/{{ .Values.postgresql.database }}_2021-03-23T11:06:12Z.sql.gz.enc /root/
+* gzip -d {{ .Values.postgresql.database }}_2021-03-23T11\:06\:12Z.sql.gz
+* psql -h postgresql.db -U postgres -W < {{ .Values.postgresql.database }}_2021-03-23T11\:06\:12Z.sql
+
+{{/* helm install --dry-run --generate-name postgresql-backup -f postgresql-backup/values.d/limnad.yaml  -f postgresql-backup/values.d/limnad.secret.yaml | grep Restore -A20 */}}
