@@ -7,6 +7,10 @@ defaultRules:
     kubeApiserverAvailability: false
     kubeApiserverError: false
     kubeApiserverSlos: false
+    kubeScheduler: false
+
+kubeControllerManager:
+  enabled: false
 
 namespaceOverride: prometheus
 
@@ -103,6 +107,52 @@ alertmanager:
 #            requests:
 #              storage: 100Mi
     externalUrl: https://alerts.limnad.kix.co.il/
+    containers:
+      - image: phntom/s3-sync
+        name: s3-sync
+        env:
+          - name: S3_URL
+            value: s3://prometheus-prod/alertmanager/
+          - name: S3_DIRECTORY
+            value: /alertmanager/
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: s3-prometheus-prod-key
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: s3-prometheus-prod-key
+                key: AWS_SECRET_ACCESS_KEY
+        volumeMounts:
+          - mountPath: /alertmanager
+            name: alertmanager-prometheus-kube-prometheus-alertmanager-db
+        resources:
+          limits:
+            cpu: "50m"
+    initContainers:
+      - name: s3-sync-startup
+        command: [ "startup" ]
+        image: phntom/s3-sync
+        env:
+          - name: S3_URL
+            value: s3://prometheus-prod/alertmanager/
+          - name: S3_DIRECTORY
+            value: /alertmanager/
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: s3-prometheus-prod-key
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: s3-prometheus-prod-key
+                key: AWS_SECRET_ACCESS_KEY
+        volumeMounts:
+          - mountPath: /alertmanager
+            name: alertmanager-prometheus-kube-prometheus-alertmanager-db
 
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
