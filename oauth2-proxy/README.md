@@ -1,20 +1,17 @@
-# ⚠️ Repo Archive Notice
-
-As of Nov 13, 2020, charts in this repo will no longer be updated.
-For more information, see the Helm Charts [Deprecation and Archive Notice](https://github.com/helm/charts#%EF%B8%8F-deprecation-and-archive-notice), and [Update](https://helm.sh/blog/charts-repo-deprecation/).
-
 # oauth2-proxy
 
-[oauth2-proxy](https://github.com/pusher/oauth2_proxy) is a reverse proxy and static file server that provides authentication using Providers (Google, GitHub, and others) to validate accounts by email, domain or group.
-
-## DEPRECATION NOTICE
-
-This chart is deprecated and no longer supported.
+[oauth2-proxy](https://oauth2-proxy.github.io/oauth2-proxy/) is a reverse proxy and static file server that provides authentication using Providers (Google, GitHub, and others) to validate accounts by email, domain or group.
 
 ## TL;DR;
 
-```console
-$ helm install stable/oauth2-proxy
+* Download values.yaml - rename to values-integ.yaml (or anything you want)
+* Edit the values to suit your needs
+* Deploy with:
+
+```shell
+helm repo add phntom https://phntom.kix.co.il/charts/
+helm repo update
+helm install oauth2-proxy-integ phntom/oauth2-proxy -f values-integ.yaml 
 ```
 
 ## Introduction
@@ -26,7 +23,7 @@ This chart bootstraps an oauth2-proxy deployment on a [Kubernetes](http://kubern
 To install the chart with the release name `my-release`:
 
 ```console
-$ helm install stable/oauth2-proxy --name my-release
+$ helm install oauth2-proxy-test stable/oauth2-proxy
 ```
 
 The command deploys oauth2-proxy on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.

@@ -21,3 +21,5 @@
 *.tmproj
 
 OWNERS
+
+*.secret.yaml

@@ -43,7 +43,7 @@ spec:
       serviceAccountName: {{ template "oauth2-proxy.serviceAccountName" . }}
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
           - --http-address=0.0.0.0:4180

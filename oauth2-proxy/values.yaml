@@ -29,8 +29,8 @@ config:
   # existingConfig: config
 
 image:
-  repository: "quay.io/pusher/oauth2_proxy"
-  tag: "v5.1.0"
+  repository: "bitnami/oauth2-proxy"
+  tag: ""
   pullPolicy: "IfNotPresent"
 
 # Optionally specify an array of imagePullSecrets.

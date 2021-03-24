@@ -1,14 +1,26 @@
-helm repo add minio https://helm.min.io/
+helm repo add phntom https://phntom.kix.co.il/charts/
+helm repo update
+
+helm create namespace phantom
+helm create namespace clusterwide
+
+# from chartmuseum
+helm upgrade --install chartmuseum -n phantom phntom/chartmuseum -f chartmuseum/values.d/limnad.yaml -f chartmuseum/values.d/limnad.secret.yaml --atomic --debug
+# or from file
+helm upgrade --install chartmuseum -n phantom chartmuseum -f chartmuseum/values.d/limnad.yaml -f chartmuseum/values.d/limnad.secret.yaml --atomic --debug
+
+helm upgrade --install oauth2-proxy -n clusterwide phntom/oauth2-proxy -f oauth2-proxy/values.d/limnad.yaml -f oauth2-proxy/values.d/limnad.secret.yaml --atomic --debug
+
+
+
 
 helm upgrade --install prometheus -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/limnad.yaml -f kube-prometheus-stack/values.d/limnad.secret.yaml --atomic --debug
-helm upgrade --install oauth2-proxy -n clusterwide stable/oauth2-proxy -f oauth2-proxy/values.d/limnad.yaml -f oauth2-proxy/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install nginx-ingress -n clusterwide ingress-nginx/ingress-nginx -f nginx-ingress/values.d/limnad.yaml -f nginx-ingress/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install certs -n clusterwide certs/certs -f certs/values.d/limnad.yaml -f certs/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install postgresql -n db bitnami/postgresql -f postgresql/values.d/limnad.yaml -f postgresql/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install mattermost-prod -n chat mattermost -f mattermost/values.d/limnad.yaml -f mattermost/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install -n phantom hackmd stable/hackmd -f hackmd/values.d/limnad.yaml -f hackmd/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install -n db minio minio/minio -f minio/values.d/limnad.yaml --atomic --debug
-helm upgrade --install chartmuseum -n phantom chartmuseum -f chartmuseum/values.d/limnad.yaml -f chartmuseum/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install nasdaq -n stocks stocks-nasdaq-crawler -f stocks-nasdaq-crawler/values.d/limnad.secret.yaml
 helm upgrade --install kix -n phantom website-kix-co-il
 helm upgrade --install binaryvision -n phantom website-binaryvision-static
