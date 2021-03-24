@@ -13,6 +13,7 @@ ingress:
 
 env:
   open:
+    CONTEXT_PATH: /charts
     STORAGE: amazon
     STORAGE_TIMESTAMP_TOLERANCE: 1s
     STORAGE_AMAZON_BUCKET: chartmuseum-prod
