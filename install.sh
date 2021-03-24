@@ -1,19 +1,25 @@
 helm repo add phntom https://phntom.kix.co.il/charts/
 helm repo update
 
-helm create namespace phantom
-helm create namespace clusterwide
 helm create namespace chat
+helm create namespace clusterwide
+helm create namespace db
+helm create namespace phantom
 
-# from chartmuseum
+### from chartmuseum
 helm upgrade --install chartmuseum -n phantom phntom/chartmuseum -f chartmuseum/values.d/limnad.yaml -f chartmuseum/values.d/limnad.secret.yaml --atomic --debug
-# or from file
+### or directly from the folder
 helm upgrade --install chartmuseum -n phantom chartmuseum -f chartmuseum/values.d/limnad.yaml -f chartmuseum/values.d/limnad.secret.yaml --atomic --debug
+###
 
 helm upgrade --install oauth2-proxy -n clusterwide phntom/oauth2-proxy -f oauth2-proxy/values.d/limnad.yaml -f oauth2-proxy/values.d/limnad.secret.yaml --atomic --debug
 
 helm upgrade --install mattermost-prod -n chat phntom/mattermost -f mattermost/values.d/limnad.yaml -f mattermost/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install mattermost-integ -n chat phntom/mattermost -f mattermost/values.d/limnad-integ.yaml -f mattermost/values.d/limnad-integ.secret.yaml --atomic --debug
+
+helm upgrade --install docker -n db phntom/docker-registry -f docker-registry/values.d/limnad.yaml -f docker-registry/values.d/limnad.secret.yaml --debug --atomic
+
+###
 
 helm upgrade --install prometheus -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/limnad.yaml -f kube-prometheus-stack/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install nginx-ingress -n clusterwide ingress-nginx/ingress-nginx -f nginx-ingress/values.d/limnad.yaml -f nginx-ingress/values.d/limnad.secret.yaml --atomic --debug
@@ -31,4 +37,3 @@ helm upgrade --install hass -n hass k8s-at-home/home-assistant -f home-assistant
 
 helm upgrade --install firefly-iii -n stocks firefly-iii -f firefly-iii/values.d/limnad.yaml -f  firefly-iii/values.d/limnad.secret.yaml --atomic --debug
 
-helm upgrade --install docker -n db stable/docker-registry -f docker-registry/values.d/limnad.yaml -f docker-registry/values.d/limnad.secret.yaml --debug --atomic
