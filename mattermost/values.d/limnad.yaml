@@ -1,9 +1,11 @@
 # helm repo add mattermost https://helm.mattermost.com
 # helm upgrade --install chat -n phantom mattermost/mattermost-team-edition -f mattermost/values.d/limnad.yaml -f mattermost/values.d/limnad.secret.yaml --atomic --debug
 
+nameOverride: mattermost-team-edition
+
 persistence:
   data:
-    enabled: true
+    enabled: false
     size: 1Gi
     storageClass: nfs
     accessMode: ReadWriteOnce
@@ -66,7 +68,7 @@ externalDB:
   #
   #  ## postgres:  "postgres://<USERNAME>:<PASSWORD>@<HOST>:5432/<DATABASE_NAME>?sslmode=disable&connect_timeout=10"
   #  ## mysql:     "<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s"
-  externalConnectionString: "postgres://x:x@x.db:5432/mattermost?sslmode=disable&connect_timeout=10"
+  externalConnectionString: "postgres://xxx:x@x.db:5432/mattermost?sslmode=disable&connect_timeout=10"
 
 config:
   AnnouncementSettings:
@@ -141,7 +143,7 @@ config:
     UseChannelInEmailNotifications: true
   RateLimitSettings:
     Enable: true
-    VaryByHeader: X-Real-IP
+    VaryByHeader: X-Forward-For
     PerSec: 15
     VaryByRemoteAddr: false
     VaryByUser: true
@@ -247,9 +249,9 @@ config:
       com.mattermost.plugin-todo:
         Enable: false
       memes:
-        Enable: true
+        Enable: false
       com.github.moussetc.mattermost.plugin.giphy:
-        Enable: true
+        Enable: false
       com.github.matterpoll.matterpoll:
         Enable: false
       com.mattermost.custom-attributes:

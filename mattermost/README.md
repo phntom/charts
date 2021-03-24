@@ -2,13 +2,16 @@
 
 [Mattermost](https://mattermost.com/) is a hybrid cloud enterprise messaging workspace that brings your messaging and tools together to get more done, faster.
 
-## TL;DR;
+## TL;DR
 
-```bash
-$ helm repo add mattermost https://helm.mattermost.com
-$ helm install mattermost/mattermost-team-edition \
-  --set mysql.mysqlUser=sampleUser \
-  --set mysql.mysqlPassword=samplePassword \
+* Download values.yaml - rename to values-integ.yaml (or anything you want)
+* Edit the values to suit your needs
+* Deploy with:
+
+```shell
+helm repo add phntom https://phntom.kix.co.il/charts/
+helm repo update
+helm install mattermost-integ phntom/mattermost -f values-integ.yaml 
 ```
 
 ## Introduction
@@ -25,14 +28,10 @@ cluster using the [Helm](https://helm.sh) package manager.
 
 ## Installing the Chart
 
-To install the chart with the release name `my-release`:
+To install the chart with the release name `mattermost-integ`:
 
 ```bash
-$ helm install --name my-release stable/mattermost-team-edition
-```
- **Helm v3 command**
-```bash
-$ helm install my-release stable/mattermost-team-edition
+$ helm install mattermost-integ phntom/mattermost
 ```
 
 The command deploys Mattermost on the Kubernetes cluster in the default configuration. The [configuration](#configuration)

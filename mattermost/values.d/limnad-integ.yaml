@@ -5,7 +5,7 @@ nameOverride: mattermost-integ
 
 persistence:
   data:
-    enabled: true
+    enabled: false
     size: 1Gi
     storageClass: nfs
     accessMode: ReadWriteOnce
@@ -120,6 +120,17 @@ config:
     ConsoleLevel: INFO
   FileSettings:
     PublicLinkSalt: xxx
+    DriverName: amazons3
+    AmazonS3AccessKeyId: xxx
+    AmazonS3SecretAccessKey: xxx
+    AmazonS3Bucket: xxx
+    AmazonS3Endpoint: xxx
+    AmazonS3PathPrefix: ''
+    AmazonS3Region: ''
+    AmazonS3SSE: true
+    AmazonS3SSL: true
+    AmazonS3SignV2: false
+    AmazonS3Trace: false
   EmailSettings:
     InviteSalt: xxx
     RequireEmailVerification: true
@@ -136,7 +147,7 @@ config:
     UseChannelInEmailNotifications: true
   RateLimitSettings:
     Enable: true
-    VaryByHeader: X-Real-IP
+    VaryByHeader: X-Forward-For
     PerSec: 15
     VaryByRemoteAddr: false
     VaryByUser: true
@@ -242,9 +253,9 @@ config:
       com.mattermost.plugin-todo:
         Enable: false
       memes:
-        Enable: true
+        Enable: false
       com.github.moussetc.mattermost.plugin.giphy:
-        Enable: true
+        Enable: false
       com.github.matterpoll.matterpoll:
         Enable: false
       com.mattermost.custom-attributes:
