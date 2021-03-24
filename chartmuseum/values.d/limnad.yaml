@@ -26,7 +26,7 @@ env:
     DISABLE_API: false
     ALLOW_OVERWRITE: false
     DISABLE_FORCE_OVERWRITE: true
-    CHART_URL: https://phntom.kix.co.il/charts/
+    CHART_URL: https://phntom.kix.co.il
     AUTH_ANONYMOUS_GET: true
     BEARER_AUTH: false
     AUTH_REALM:
