@@ -1,3 +1,5 @@
+restore: false
+
 s3:
   accessKeyId: xxx
   secretAccessKey: xxx
@@ -17,15 +19,15 @@ encryption:
   enabled: true
   password: xxx
 cronjob:
-  schedule: '27 * * * *'
+  schedule: '*/5 * * * *'
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: OnFailure
 
 image:
-  repository: itbm/postgresql-backup-s3
-  pullPolicy: IfNotPresent
+  repository: phntom/postgresql-backup-s3
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
