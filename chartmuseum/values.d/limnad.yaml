@@ -23,7 +23,7 @@ env:
     LOG_JSON: true
     DISABLE_STATEFILES: false
     DISABLE_METRICS: false
-    DISABLE_API: true
+    DISABLE_API: false
     ALLOW_OVERWRITE: false
     DISABLE_FORCE_OVERWRITE: true
     CHART_URL: https://phntom.kix.co.il/charts/
