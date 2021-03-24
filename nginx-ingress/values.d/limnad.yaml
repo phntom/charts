@@ -81,3 +81,24 @@ controller:
         annotations:
           description: Too many 4XXs
           summary: More than 5% of the all requests did return 4XX, this require your attention
+
+  config:
+    redirect-to-https: "true"
+    use-forwarded-headers: "false"
+    force-ssl-redirect: "true"
+    log-format-escape-json: "true"
+    retry-non-idempotent: "true"
+    hsts: "true"
+    hsts-behind-proxy: "true"
+    hsts-include-subdomains: "true"
+    hsts-max-age: "31536000"
+    proxy-hide-headers: "X-Auth-Request-User,X-App-Message"
+    log-format-upstream: '{"time": "$time_iso8601", "remote_addr": "$remote_addr", "x-forward-for": "$proxy_add_x_forwarded_for", "request_id": "$req_id",
+              "remote_user": "$upstream_http_x_auth_request_user", "bytes_sent": $bytes_sent, "request_time": $request_time, "status":$status, "vhost": "$host", "request_proto": "$server_protocol",
+              "path": "$uri", "request_query": "$args", "request_length": $request_length, "duration": $request_time,"method": "$request_method", "http_referrer": "$http_referer",
+              "http_user_agent": "$http_user_agent", "app_message": "$upstream_http_x_app_message"}'
+    server-tokens: "false"
+  addHeaders:
+    X-Content-Type-Options: "nosniff"
+    X-Frame-Options: SAMEORIGIN
+    Strict-Transport-Security: max-age=31536000; includeSubDomains
