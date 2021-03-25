@@ -1,27 +1,40 @@
-replicas: 1
-persistence:
-  storageClass: nfs
-  size: 1Gi
-ingress:
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+
+accessKey:
+  password: XXXXXXXXXX
+secretKey:
+  password: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+gateway:
   enabled: true
+  type: s3
+  replicaCount: 1
+  auth:
+    s3:
+      serviceEndpoint: https://eu-central-1.linodeobjects.com
+      accessKey: XXXXXXXXXXXXXXXXXXXX
+      secretKey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+#extraEnv:
+#  - name: MINIO_KMS_AUTO_ENCRYPTION
+#    value: on
+
+disableWebUI: true
+ingress:
+  enabled: false
   annotations:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: dns_linode_v4
-  hosts:
-    - s3.limnad.kix.co.il
-  tls:
-    - secretName: s3-limnad-kix-co-il
-      hosts:
-        - s3.limnad.kix.co.il
-resources:
-  requests:
-    memory: 50Mi
+  hostname: s3.limnad.kix.co.il
+  tls: true
 
-buckets:
-  - name: nix-chat
-    policy: none
-  - name: stocks
-    policy: none
+persistence:
+  enabled: false
+
+#resources:
+#  requests:
+#    memory: 50Mi
+
 metrics:
   serviceMonitor:
     enabled: true

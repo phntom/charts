@@ -1,5 +1,5 @@
 mindav:
-  debug: false
+  debug: true
   webdav:
     driver: minio
     user: xxx
@@ -8,7 +8,7 @@ mindav:
     endpoint: minio.db.svc.cluster.local:9000
     key: xxx
     secret: xxx
-    bucket: webdav
+    bucket: minio-prod
     ssl: false
     memoryUpload: false
 
