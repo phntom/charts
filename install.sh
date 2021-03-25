@@ -5,6 +5,7 @@ helm create namespace chat
 helm create namespace clusterwide
 helm create namespace db
 helm create namespace phantom
+helm create namespace stocks
 
 ### from chartmuseum
 helm upgrade --install chartmuseum -n phantom phntom/chartmuseum -f chartmuseum/values.d/limnad.yaml -f chartmuseum/values.d/limnad.secret.yaml --atomic --debug
@@ -18,8 +19,11 @@ helm upgrade --install mattermost-prod -n chat phntom/mattermost -f mattermost/v
 helm upgrade --install mattermost-integ -n chat phntom/mattermost -f mattermost/values.d/limnad-integ.yaml -f mattermost/values.d/limnad-integ.secret.yaml --atomic --debug
 helm upgrade --install matterircd-prod -n chat phntom/matterircd --atomic --debug
 helm upgrade --install website-web-nix -n chat phntom/website-web-nix --atomic --debug -f website-web-nix/values.d/limnad.secret.yaml
+helm upgrade --install website-kix -n chat phntom/website-kix-co-il --atomic --debug
 
 helm upgrade --install docker -n db phntom/docker-registry -f docker-registry/values.d/limnad.yaml -f docker-registry/values.d/limnad.secret.yaml --debug --atomic
+
+helm upgrade --install nasdaq -n stocks phntom/stocks-nasdaq-crawler -f stocks-nasdaq-crawler/values.d/limnad.secret.yaml
 
 ###
 
@@ -29,7 +33,6 @@ helm upgrade --install certs -n clusterwide certs/certs -f certs/values.d/limnad
 helm upgrade --install postgresql -n db bitnami/postgresql -f postgresql/values.d/limnad.yaml -f postgresql/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install -n phantom hackmd stable/hackmd -f hackmd/values.d/limnad.yaml -f hackmd/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install -n db minio minio/minio -f minio/values.d/limnad.yaml --atomic --debug
-helm upgrade --install nasdaq -n stocks stocks-nasdaq-crawler -f stocks-nasdaq-crawler/values.d/limnad.secret.yaml
 helm upgrade --install kix -n phantom website-kix-co-il
 helm upgrade --install binaryvision -n phantom website-binaryvision-static
 helm upgrade --install tlo -n phantom website-bv-tlo
