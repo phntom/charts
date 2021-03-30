@@ -5,10 +5,10 @@ s3:
   secretAccessKey: xxx
   bucket: backup-prod
   endpoint: "https://eu-central-1.linodeobjects.com"
-  prefix: "postgresql-data"
+  prefix: "postgresql-data11/hourly"
   v4signature: true
 postgresql:
-  database: all
+  database: "mattermost hackmd fireflyiii"
   host: postgresql.db.svc.cluster.local
   port: 5432
   user: xxx

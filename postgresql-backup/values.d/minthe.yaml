@@ -4,12 +4,12 @@ s3:
   accessKeyId: xxx
   secretAccessKey: xxx
   bucket: backup-prod
-  endpoint: "https://fra1.digitaloceanspaces.com"
-  prefix: "postgresql-data/hourly"
+  endpoint: "https://eu-central-1.linodeobjects.com"
+  prefix: "postgresql-data11/hourly"
   v4signature: true
 postgresql:
-  database: all
-  host: postgresql.db.svc.cluster.local
+  database: "mattermost hackmd fireflyiii"
+  host: postgresql-ha-pgpool.db.svc.cluster.local
   port: 5432
   user: xxx
   password: xxx
