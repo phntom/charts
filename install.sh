@@ -1,14 +1,14 @@
 helm repo add phntom https://phntom.kix.co.il/charts/
 helm repo update
 
-helm create namespace chat
-helm create namespace clusterwide
-helm create namespace db
-helm create namespace phantom
-helm create namespace stocks
+kubectl create namespace chat
+kubectl create namespace clusterwide
+kubectl create namespace db
+kubectl create namespace phantom
+kubectl create namespace stocks
 
 helm upgrade --install prometheus -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/limnad.yaml -f kube-prometheus-stack/values.d/limnad.secret.yaml --atomic --debug
-helm upgrade --install nginx-ingress -n clusterwide ingress-nginx/ingress-nginx -f nginx-ingress/values.d/limnad.yaml -f nginx-ingress/values.d/limnad.secret.yaml --atomic --debug
+helm upgrade --install nginx-ingress -n web ingress-nginx/ingress-nginx -f nginx-ingress/values.d/minthe.yaml -f nginx-ingress/values.d/minthe.secret.yaml --atomic --debug
 helm upgrade --install certs -n clusterwide certs/certs -f certs/values.d/limnad.yaml -f certs/values.d/limnad.secret.yaml --atomic --debug
 
 ### from chartmuseum
@@ -34,7 +34,7 @@ helm upgrade --install pwd-mindav -n phantom mindav -f mindav/values.d/limnad.se
 
 ###
 
-helm upgrade --install postgresql -n db bitnami/postgresql -f postgresql/values.d/limnad.yaml -f postgresql/values.d/limnad.secret.yaml --atomic --debug
+helm upgrade --install postgresql -n db bitnami/postgresql -f postgresql/values.d/minthe.yaml -f postgresql/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install -n phantom hackmd stable/hackmd -f hackmd/values.d/limnad.yaml -f hackmd/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install kix -n phantom website-kix-co-il
 helm upgrade --install binaryvision -n phantom website-binaryvision-static

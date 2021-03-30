@@ -1,12 +1,12 @@
-# helm upgrade --install certs -n clusterwide certs/certs -f certs/values.d/limnad.yaml -f certs/values.d/limnad.secret.yaml
+# helm upgrade --install certs -n web certs/certs -f certs/values.d/limnad.yaml -f certs/values.d/limnad.secret.yaml
 
 service:
   type: None
 
 image:
-  registry: phntom
+  registry: mathnao
   repository: certs
-  tag: 1.1.7
+  tag: 1.1.8
 
 schedule: "37 3,15 * * *"
 
@@ -14,7 +14,7 @@ backoffLimit: 1
 
 debug: false
 
-activeDeadlineSeconds: 600
+activeDeadlineSeconds: 800
 
 ttlSecondsAfterFinished: 120
 

@@ -1,4 +1,4 @@
-# helm upgrade --install kix -n phantom website-kix-co-il
+# helm upgrade --install kix -n web website-kix-co-il
 
 replicaCount: 1
 
@@ -50,10 +50,10 @@ ingress:
       paths:
         - /blog(/|$)(.*)
   tls:
-    - secretName: kix-static-tls
+    - secretName: kix-co-il-tls
       hosts:
         - kix.co.il
-        - www.kix.co.il
+        - "*.kix.co.il"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

@@ -1,0 +1,110 @@
+# helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+# helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+# helm repo update
+# helm upgrade --install nginx-ingress -n clusterwide nginx-ingress -f nginx-ingress/values.d/limnad.yaml -f nginx-ingress/values.d/limnad.secret.yaml
+
+dhParam: xxx
+controller:
+  maxmindLicenseKey: xxx
+
+  extraArgs:
+    default-ssl-certificate: "web/kix-co-il-tls"
+
+  # listen on the nodes (disable to use node balancers)
+  hostNetwork: false
+
+  useComponentLabel: true
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+
+  minAvailable: 1
+
+  annotations:
+    keel.sh/pollSchedule: "@every 60m"
+  labels:
+    keel.sh/policy: patch
+    keel.sh/trigger: poll
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - nginx-ingress
+            topologyKey: kubernetes.io/hostname
+  resources:
+    limits:
+      memory: 400Mi
+    requests:
+      memory: 100Mi
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      scrapeInterval: 30s
+
+    prometheusRule:
+      enabled: false
+      rules:
+        - alert: NGINXConfigFailed
+          expr: count(nginx_ingress_controller_config_last_reload_successful == 0) > 0
+          for: 1s
+          labels:
+            severity: critical
+          annotations:
+            description: bad ingress config - nginx config test failed
+            summary: uninstall the latest ingress changes to allow config reloads to resume
+        - alert: NGINXCertificateExpiry
+          expr: (avg(nginx_ingress_controller_ssl_expire_time_seconds) by (host) - time()) < 604800
+          for: 1s
+          labels:
+            severity: critical
+          annotations:
+            description: ssl certificate(s) will expire in less then a week
+            summary: renew expiring certificates to avoid downtime
+        - alert: NGINXTooMany500s
+          expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"5.+"} ) / sum(nginx_ingress_controller_requests) ) > 25
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            description: Too many 5XXs
+            summary: More than 5% of the all requests did return 5XX, this require your attention
+        - alert: NGINXTooMany400s
+          expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"4.+"} ) / sum(nginx_ingress_controller_requests) ) > 25
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            description: Too many 4XXs
+            summary: More than 5% of the all requests did return 4XX, this require your attention
+
+  config:
+    redirect-to-https: "true"
+    use-forwarded-headers: "false"
+    force-ssl-redirect: "true"
+    log-format-escape-json: "true"
+    retry-non-idempotent: "true"
+    hsts: "true"
+    hsts-behind-proxy: "true"
+    hsts-include-subdomains: "true"
+    hsts-max-age: "31536000"
+    proxy-hide-headers: "X-Auth-Request-User,X-App-Message"
+    log-format-upstream: '{"time": "$time_iso8601", "remote_addr": "$remote_addr", "x-forward-for": "$proxy_add_x_forwarded_for", "request_id": "$req_id",
+              "remote_user": "$upstream_http_x_auth_request_user", "bytes_sent": $bytes_sent, "request_time": $request_time, "status":$status, "vhost": "$host", "request_proto": "$server_protocol",
+              "path": "$uri", "request_query": "$args", "request_length": $request_length, "duration": $request_time,"method": "$request_method", "http_referrer": "$http_referer",
+              "http_user_agent": "$http_user_agent", "app_message": "$upstream_http_x_app_message"}'
+    server-tokens: "false"
+  addHeaders:
+    X-Content-Type-Options: "nosniff"
+    X-Frame-Options: SAMEORIGIN
+    Strict-Transport-Security: max-age=31536000; includeSubDomains
