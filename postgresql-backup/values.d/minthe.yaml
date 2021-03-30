@@ -1,11 +1,11 @@
-restore: false
+restore: true
 
 s3:
   accessKeyId: xxx
   secretAccessKey: xxx
   bucket: backup-prod
-  endpoint: "https://eu-central-1.linodeobjects.com"
-  prefix: "postgresql-data"
+  endpoint: "https://fra1.digitaloceanspaces.com"
+  prefix: "postgresql-data/hourly"
   v4signature: true
 postgresql:
   database: all

@@ -38,22 +38,20 @@ spec:
                 secretKeyRef:
                   name: {{ template "postgresql-backup.fullname" . }}
                   key: POSTGRES_DATABASE
-            - name: POSTGRES_HOST
+            - name: PGHOST
               value: {{ .Values.postgresql.host | quote }}
-            - name: POSTGRES_PORT
+            - name: PGPORT
               value: {{ .Values.postgresql.port | quote }}
-            - name: POSTGRES_USER
+            - name: PGUSER
               valueFrom:
                 secretKeyRef:
                   name: {{ template "postgresql-backup.fullname" . }}
-                  key: POSTGRES_USER
+                  key: PGUSER
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "postgresql-backup.fullname" . }}
                   key: PGPASSWORD
-            - name: POSTGRES_EXTRA_OPTS
-              value: {{ .Values.postgresql.extraArgs | quote }}
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
