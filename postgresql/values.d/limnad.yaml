@@ -1,29 +1,21 @@
 # helm repo add bitnami https://charts.bitnami.com/bitnami
 # helm upgrade --install postgresql -n db bitnami/postgresql -f postgresql/values.d/limnad.yaml -f postgresql/values.d/limnad.secret.yaml --atomic --debug
 
-postgresqlDatabase: master
-
 metrics:
   enabled: true
   serviceMonitor:
     enabled: true
   prometheusRule:
-    enabled: true
-    rules:
-     - alert: HugeReplicationLag
-       expr: pg_replication_lag{service="{{ template "postgresql.fullname" . }}-metrics"} / 3600 > 1
-       for: 1m
-       labels:
-         severity: critical
-       annotations:
-         description: replication for {{ template "postgresql.fullname" . }} PostgreSQL is lagging by {{ "{{ $value }}" }} hour(s).
-         summary: PostgreSQL replication is lagging by {{ "{{ $value }}" }} hour(s).
+    enabled: false
+    rules: []
 
-postgresqlPassword: x
+postgresqlUsername: postgres
+postgresqlPassword: xxx
+postgresqlDatabase: postgres
 
 persistence:
-  storageClass: nfs
-  size: 2Gi
+  storageClass: linode-block-storage-retain
+  size: 10Gi
 
 resources:
   requests:
