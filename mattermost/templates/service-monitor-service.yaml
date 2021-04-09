@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  {{- if .Values.service.annotations }}
+  annotations:
+  {{ toYaml .Values.service.annotations | indent 4 }}
+  {{- end }}
+  name: "{{ include "mattermost-team-edition.name" . }}-monitor"
+  labels:
+    app.kubernetes.io/name: {{ include "mattermost-team-edition.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    monitor: "yes"
+    helm.sh/chart: {{ include "mattermost-team-edition.chart" . }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "mattermost-team-edition.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  type: ClusterIP
+  ports:
+    - port: 8067
+      targetPort: http
+      protocol: TCP
+      name: "{{ include "mattermost-team-edition.name" . }}"

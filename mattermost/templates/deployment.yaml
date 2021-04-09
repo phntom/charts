@@ -70,9 +70,11 @@ spec:
             path: /api/v4/system/ping
             port: http
         volumeMounts:
-        - mountPath: /mattermost/config/config.json
+        - mountPath: /mattermost/config-ro/config.json
           name: config-json
           subPath: config.json
+        - mountPath: /mattermost/config
+          name: config-json-rw
         - mountPath: /mattermost/data
           name: mattermost-data
         - mountPath: /mattermost/{{ trimPrefix "./" .Values.config.PluginSettings.Directory }}
@@ -89,6 +91,9 @@ spec:
       - name: config-json
         secret:
           secretName: {{ include "mattermost-team-edition.fullname" . }}-config-json
+      - name: config-json-rw
+        emptyDir:
+          medium: Memory
       - name: mattermost-data
       {{ if .Values.persistence.data.enabled }}
         persistentVolumeClaim:

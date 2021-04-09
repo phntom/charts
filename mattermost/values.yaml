@@ -139,7 +139,19 @@ extraEnvVars: []
   #   value: postgres://$(POSTGRES_USER_GITLAB):$(POSTGRES_PASSWORD_GITLAB)@$(POSTGRES_HOST_GITLAB):$(POSTGRES_PORT_GITLAB)/$(POSTGRES_DB_NAME_MATTERMOST)?sslmode=disable&connect_timeout=10
 
 ## Additional init containers
-extraInitContainers: []
+extraInitContainers:
+  - name: "init-config-rw"
+    image: "alpine"
+    command:
+      - sh
+      - "-c"
+      - "cp -v /mattermost/config-ro/config.json /mattermost/config/config.json; chown -R 2000:2000 /mattermost/config/"
+    volumeMounts:
+      - mountPath: /mattermost/config-ro/config.json
+        name: config-json
+        subPath: config.json
+      - mountPath: /mattermost/config
+        name: config-json-rw
   # This is an example of extra Init Container when using with the deployment with GitLab Helm Charts
   # - name: bootstrap-database
   #   image: "postgres:9.6-alpine"
@@ -416,7 +428,7 @@ config:
     ExportFromTimestamp: 0
   MetricsSettings:
     BlockProfileRate: 0
-    Enable: false
+    Enable: true
     ListenAddress: :8067
   NativeAppSettings:
     AndroidAppDownloadLink: https://about.mattermost.com/mattermost-android-app/
@@ -586,7 +598,8 @@ config:
     ManagedResourcePaths: ''
     MaximumLoginAttempts: 10
     MinimumHashtagLength: 3
-    PostEditTimeLimit: -1
+    AllowEditPost: time_limit
+    PostEditTimeLimit: "3600"
     ReadTimeout: 300
     SessionCacheInMinutes: 10
     SessionIdleTimeoutInMinutes: 43200
@@ -645,7 +658,7 @@ config:
     ExperimentalEnableAutomaticReplies: false
     ExperimentalHideTownSquareinLHS: false
     ExperimentalPrimaryTeam: ''
-    ExperimentalTownSquareIsReadOnly: false
+    ExperimentalTownSquareIsReadOnly: true
     ExperimentalViewArchivedChannels: true
     LockTeammateNameDisplay: false
     MaxChannelsPerTeam: 2000

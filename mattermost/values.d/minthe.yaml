@@ -1,5 +1,4 @@
-# helm repo add mattermost https://helm.mattermost.com
-# helm upgrade --install chat -n phantom mattermost/mattermost-team-edition -f mattermost/values.d/limnad.yaml -f mattermost/values.d/limnad.secret.yaml --atomic --debug
+# helm upgrade --install chat -n web mattermost/mattermost-team-edition -f mattermost/values.d/minthe.yaml -f mattermost/values.d/minthe.secret.yaml --atomic --debug
 
 nameOverride: mattermost-team-edition
 
@@ -53,9 +52,10 @@ ingress:
   hosts:
     - kix.co.il
   tls:
-    - secretName: mattermost-chat-kix-tls
+    - secretName: kix-co-il-tls
       hosts:
         - kix.co.il
+        - "*.kix.co.il"
 
 #route:
 #  enabled: false
@@ -255,4 +255,20 @@ config:
       com.github.matterpoll.matterpoll:
         Enable: true
       com.mattermost.custom-attributes:
-        Enable: false
+        Enable: true
+#  ClusterSettings:
+#    AdvertiseAddress: 'mattermost.web.svc'
+#    BindAddress: ''
+#    ClusterName: 'chat-prod'
+#    Enable: true
+#    EnableExperimentalGossipEncryption: false
+#    GossipPort: 8074
+#    IdleConnTimeoutMilliseconds: 90000
+#    MaxIdleConns: 100
+#    MaxIdleConnsPerHost: 128
+#    NetworkInterface: ''
+#    OverrideHostname: ''
+#    ReadOnlyConfig: true
+#    StreamingPort: 8075
+#    UseExperimentalGossip: false
+#    UseIpAddress: false
