@@ -29,49 +29,83 @@ common:
   additionalVolumeMounts:
     - mountPath: /config
       name: hass-db
-  initContainers:
-    - name: s3sync-startup
-      command: [ "startup" ]
-      image: phntom/s3-sync
+#  initContainers:
+#    - name: s3sync-startup
+#      command: [ "startup" ]
+#      image: phntom/s3-sync
+#      env:
+#        - name: S3_URL
+#          value: s3://hass-prod/v1/
+#        - name: S3_DIRECTORY
+#          value: /config/
+#        - name: AWS_ACCESS_KEY_ID
+#          valueFrom:
+#            secretKeyRef:
+#              name: s3-hass-prod-key
+#              key: AWS_ACCESS_KEY_ID
+#        - name: AWS_SECRET_ACCESS_KEY
+#          valueFrom:
+#            secretKeyRef:
+#              name: s3-hass-prod-key
+#              key: AWS_SECRET_ACCESS_KEY
+#      volumeMounts:
+#        - mountPath: /config
+#          name: hass-db
+#  additionalContainers:
+#    - image: phntom/s3-sync
+#      name: s3-sync
+#      env:
+#        - name: S3_URL
+#          value: s3://hass-prod/v1/
+#        - name: S3_DIRECTORY
+#          value: /config/
+#        - name: AWS_ACCESS_KEY_ID
+#          valueFrom:
+#            secretKeyRef:
+#              name: s3-hass-prod-key
+#              key: AWS_ACCESS_KEY_ID
+#        - name: AWS_SECRET_ACCESS_KEY
+#          valueFrom:
+#            secretKeyRef:
+#              name: s3-hass-prod-key
+#              key: AWS_SECRET_ACCESS_KEY
+#      volumeMounts:
+#        - mountPath: /config
+#          name: hass-db
+#      resources:
+#        limits:
+#          cpu: "50m"
+  addons:
+    vpn:
+      enabled: true
+      type: wireguard
+      configFile: |-
+        [Interface]
+        Address = 192.168.60.1/24
+        ListenPort = 51820
+        PrivateKey = WEdNmwB7JFRKJMmNXpyxUVGVJdIu7qrlKA0xAnqpwno=
+        [Peer]
+        PublicKey = ZUPH9oQeDwbPuxRtkj7IiwDIGqOxyYhJECZK2X7boi4=
+        AllowedIPs = 192.168.60.2/32
+        Endpoint = tlv.home.kix.co.il:20296
+        [Peer]
+        PublicKey = YLzXOOvZ9ZschS5vmKxyp/0I7TXMy8vmBwASL9zrOis=
+        AllowedIPs = 192.168.60.3/32, 192.168.86.0/24
+        Endpoint = 46.31.99.161:28315
       env:
-        - name: S3_URL
-          value: s3://prometheus-prod/hass/
-        - name: S3_DIRECTORY
-          value: /config/
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: s3-hass-prod-key
-              key: AWS_ACCESS_KEY_ID
-        - name: AWS_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: s3-hass-prod-key
-              key: AWS_SECRET_ACCESS_KEY
-      volumeMounts:
-        - mountPath: /config
-          name: hass-db
-  additionalContainers:
-    - image: phntom/s3-sync
-      name: s3-sync
-      env:
-        - name: S3_URL
-          value: s3://prometheus-prod/hass/
-        - name: S3_DIRECTORY
-          value: /config/
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: s3-hass-prod-key
-              key: AWS_ACCESS_KEY_ID
-        - name: AWS_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: s3-hass-prod-key
-              key: AWS_SECRET_ACCESS_KEY
-      volumeMounts:
-        - mountPath: /config
-          name: hass-db
-      resources:
-        limits:
-          cpu: "100m"
+        PUID: "1000"
+        PGID: "1000"
+        TZ: "Asia/Jerusalem"
+        SERVERURL: "auto"
+        SERVERPORT: "26197"
+        INTERNAL_SUBNET: 192.168.60.1/24
+        ALLOWEDIPS: 192.168.60.0/24
+        #      livenessProbe: {}
+        # exec:
+        #    command:
+        #      - sh
+        #      - -c
+        #      - if [ $(curl -s https://ipinfo.io/country) == 'US' ]; then exit 0; else exit $?; fi
+        #  initialDelaySeconds: 30
+        #  periodSeconds: 60
+        #  failureThreshold: 1

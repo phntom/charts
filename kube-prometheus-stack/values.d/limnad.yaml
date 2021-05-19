@@ -108,13 +108,16 @@ alertmanager:
 #              storage: 100Mi
     externalUrl: https://alerts.limnad.kix.co.il/
     containers:
-      - image: phntom/s3-sync
+      - image: phntom/s3-sync:linode
+        imagePullPolicy: Always
         name: s3-sync
         env:
           - name: S3_URL
             value: s3://prometheus-prod/alertmanager/
           - name: S3_DIRECTORY
             value: /alertmanager/
+          - name: SLEEP_AFTER_PUSH
+            value: "300"
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
@@ -134,7 +137,8 @@ alertmanager:
     initContainers:
       - name: s3-sync-startup
         command: [ "startup" ]
-        image: phntom/s3-sync
+        image: phntom/s3-sync:linode
+        imagePullPolicy: Always
         env:
           - name: S3_URL
             value: s3://prometheus-prod/alertmanager/
@@ -1851,6 +1855,9 @@ prometheus:
           - prometheus.limnad.kix.co.il
 
   prometheusSpec:
+    image:
+      tag: v2.25.2
+      sha: "c24ab4ef6187"
     externalUrl: ""
     ruleSelector:
       matchLabels: {}
@@ -1879,13 +1886,16 @@ prometheus:
           periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 3
-      - image: phntom/s3-sync
+      - image: phntom/s3-sync:linode
+        imagePullPolicy: Always
         name: s3-sync
         env:
           - name: S3_URL
             value: s3://prometheus-prod/prometheus/
           - name: S3_DIRECTORY
             value: /prometheus/
+          - name: SLEEP_AFTER_PUSH
+            value: "300"
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
@@ -1905,7 +1915,8 @@ prometheus:
     initContainers:
       - name: s3-sync-startup
         command: [ "startup" ]
-        image: phntom/s3-sync
+        image: phntom/s3-sync:linode
+        imagePullPolicy: Always
         env:
           - name: S3_URL
             value: s3://prometheus-prod/prometheus/

@@ -25,7 +25,7 @@ metrics:
     rules: []
 
 persistence:
-  enabled: true
+  enabled: false
   storageClass: do-block-storage
   size: 2Gi
 
