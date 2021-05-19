@@ -94,8 +94,8 @@ config:
     MaxUsersPerTeam: 50000
     EnableTeamCreation: false
     EnableCustomBrand: true
-    CustomBrandText: welcome back nix.co.il members!
-    CustomDescriptionText: self hosted, independent and free
+    CustomBrandText: Welcome nix.co.il members!
+    CustomDescriptionText: self hosted, privacy oriented, independent and free
     RestrictDirectMessage: team
     EnableTeamListing: false
     EnableXToLeaveChannelsFromLHS: true
@@ -255,4 +255,6 @@ config:
       com.github.matterpoll.matterpoll:
         Enable: true
       com.mattermost.custom-attributes:
-        Enable: false
+        Enable: true
+      com.mattermost.agenda:
+        Enable: true
