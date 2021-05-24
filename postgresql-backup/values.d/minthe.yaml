@@ -5,7 +5,7 @@ s3:
   secretAccessKey: xxx
   bucket: backup-prod
   endpoint: "https://eu-central-1.linodeobjects.com"
-  prefix: "postgresql-data11/hourly"
+  prefix: "postgresql-data11/hourly/2021-05/24/17"
   v4signature: true
 postgresql:
   database: "mattermost hackmd fireflyiii"
