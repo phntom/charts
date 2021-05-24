@@ -140,7 +140,7 @@ config:
     SMTPPort: "587"
     ConnectionSecurity: STARTTLS
     PushNotificationContents: full
-    EnableEmailBatching: true
+    EnableEmailBatching: false
     UseChannelInEmailNotifications: true
   RateLimitSettings:
     Enable: true
@@ -259,19 +259,19 @@ config:
         Enable: true
       com.mattermost.agenda:
         Enable: true
-#  ClusterSettings:
-#    AdvertiseAddress: 'mattermost.web.svc'
-#    BindAddress: ''
-#    ClusterName: 'chat-prod'
-#    Enable: true
-#    EnableExperimentalGossipEncryption: false
-#    GossipPort: 8074
-#    IdleConnTimeoutMilliseconds: 90000
-#    MaxIdleConns: 100
-#    MaxIdleConnsPerHost: 128
-#    NetworkInterface: ''
-#    OverrideHostname: ''
-#    ReadOnlyConfig: true
-#    StreamingPort: 8075
-#    UseExperimentalGossip: false
-#    UseIpAddress: false
+  ClusterSettings:
+    AdvertiseAddress: 'mattermost-team-edition.web.svc'
+    BindAddress: ''
+    ClusterName: 'chat-prod'
+    Enable: true
+    EnableExperimentalGossipEncryption: false
+    GossipPort: 8074
+    IdleConnTimeoutMilliseconds: 90000
+    MaxIdleConns: 100
+    MaxIdleConnsPerHost: 128
+    NetworkInterface: ''
+    OverrideHostname: ''
+    ReadOnlyConfig: true
+    StreamingPort: 8075
+    UseExperimentalGossip: false
+    UseIpAddress: false
