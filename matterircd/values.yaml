@@ -37,17 +37,15 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: NodePort
+  type: ClusterIP
   irc:
     port: 6667
-    external: 30667
   ircs:
     port: 6697
-    external: 30697
 
 matterircd:
   debug: "false"
-  server: kix.co.il
+  server: mattermost-team-edition.web.svc
   team: nix
 
 ingress:
