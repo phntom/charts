@@ -37,11 +37,9 @@ spec:
             - name: irc
               containerPort: 6667
               protocol: TCP
-              hostPort: 6667
             - name: ircs
               containerPort: 6697
               protocol: TCP
-              hostPort: 6697
           command:
             - /bin/sh
             - -c

@@ -21,7 +21,7 @@ helm upgrade --install oauth2-proxy -n clusterwide phntom/oauth2-proxy -f oauth2
 
 helm upgrade --install mattermost-prod -n chat phntom/mattermost -f mattermost/values.d/limnad.yaml -f mattermost/values.d/limnad.secret.yaml --atomic --debug
 helm upgrade --install mattermost-integ -n chat phntom/mattermost -f mattermost/values.d/limnad-integ.yaml -f mattermost/values.d/limnad-integ.secret.yaml --atomic --debug
-helm upgrade --install matterircd-prod -n web phntom/matterircd --atomic --debug
+helm upgrade --install matterircd -n phantom phntom/matterircd --atomic --debug
 helm upgrade --install website-web-nix -n chat phntom/website-web-nix --atomic --debug -f website-web-nix/values.d/limnad.secret.yaml
 helm upgrade --install website-kix -n chat phntom/website-kix-co-il --atomic --debug
 
