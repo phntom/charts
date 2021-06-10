@@ -265,7 +265,7 @@ config:
     AdvertiseAddress: 'mattermost-team-edition.web.svc'
     BindAddress: ''
     ClusterName: 'chat-prod'
-    Enable: true
+    Enable: false
     EnableExperimentalGossipEncryption: false
     GossipPort: 8074
     IdleConnTimeoutMilliseconds: 90000
