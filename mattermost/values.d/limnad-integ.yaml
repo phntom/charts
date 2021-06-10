@@ -1,5 +1,5 @@
 # helm repo add mattermost https://helm.mattermost.com
-# helm upgrade --install chat -n phantom mattermost/mattermost-team-edition -f mattermost/values.d/limnad.yaml -f mattermost/values.d/limnad.secret.yaml --atomic --debug
+# helm upgrade --install mattermost-integ -n chat phntom/mattermost -f mattermost/values.d/limnad-integ.yaml -f mattermost/values.d/limnad-integ.secret.yaml --atomic --debug
 
 nameOverride: mattermost-integ
 
@@ -98,8 +98,8 @@ config:
     MaxUsersPerTeam: 50000
     EnableTeamCreation: false
     EnableCustomBrand: true
-    CustomBrandText: welcome back nix.co.il members!
-    CustomDescriptionText: self hosted, independent and free
+    CustomBrandText: Welcome nix.co.il members!
+    CustomDescriptionText: self hosted, privacy oriented, independent and free
     RestrictDirectMessage: team
     EnableTeamListing: false
     EnableXToLeaveChannelsFromLHS: true
@@ -251,12 +251,32 @@ config:
             GroupIDs: [ ]
     PluginStates:
       com.mattermost.plugin-todo:
-        Enable: false
+        Enable: true
       memes:
         Enable: false
       com.github.moussetc.mattermost.plugin.giphy:
         Enable: false
       com.github.matterpoll.matterpoll:
-        Enable: false
+        Enable: true
       com.mattermost.custom-attributes:
+        Enable: true
+      com.mattermost.agenda:
+        Enable: true
+      com.mattermost.plugin-incident-management:
         Enable: false
+  ClusterSettings:
+    AdvertiseAddress: 'mattermost-team-edition.web.svc'
+    BindAddress: ''
+    ClusterName: 'chat-prod'
+    Enable: false
+    EnableExperimentalGossipEncryption: false
+    GossipPort: 8074
+    IdleConnTimeoutMilliseconds: 90000
+    MaxIdleConns: 100
+    MaxIdleConnsPerHost: 128
+    NetworkInterface: ''
+    OverrideHostname: ''
+    ReadOnlyConfig: true
+    StreamingPort: 8075
+    UseExperimentalGossip: false
+    UseIpAddress: false

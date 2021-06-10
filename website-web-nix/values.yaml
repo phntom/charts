@@ -36,5 +36,4 @@ ingress:
     - secretName: nix-co-il-tls
       hosts:
         - nix.co.il
-        - www.nix.co.il
-        - web.nix.co.il
+        - "*.nix.co.il"

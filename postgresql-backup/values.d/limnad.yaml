@@ -1,15 +1,17 @@
-restore: false
+#  helm upgrade --install postgresql-backup -n db postgresql-backup -f postgresql-backup/values.d/limnad.yaml  -f postgresql-backup/values.d/limnad.secret.yaml
+
+restore: true
 
 s3:
   accessKeyId: xxx
   secretAccessKey: xxx
   bucket: backup-prod
   endpoint: "https://eu-central-1.linodeobjects.com"
-  prefix: "postgresql-data11/hourly"
+  prefix: "postgresql-data11/hourly/2021-06/10/08"
   v4signature: true
 postgresql:
   database: "mattermost hackmd fireflyiii"
-  host: postgresql.db.svc.cluster.local
+  host: postgresql-ha-pgpool.db.svc.cluster.local
   port: 5432
   user: xxx
   password: xxx

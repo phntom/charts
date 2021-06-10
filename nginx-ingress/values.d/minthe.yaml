@@ -8,7 +8,7 @@ controller:
   maxmindLicenseKey: xxx
 
   extraArgs:
-    default-ssl-certificate: "web/kix-co-il-tls"
+    default-ssl-certificate: "chat/kix-co-il-tls"
 
   # listen on the nodes (disable to use node balancers)
   hostNetwork: true
@@ -111,14 +111,5 @@ controller:
     X-Frame-Options: SAMEORIGIN
     Strict-Transport-Security: max-age=31536000; includeSubDomains
 
-  containerPort:
-    ircs: 6697
-  controller:
-    service:
-      ports:
-        ircs: 6697
-      targetPorts:
-        ircs: ircs
 tcp:
   6697: "web/matterircd:6697"
-  6667: "web/matterircd:6667"

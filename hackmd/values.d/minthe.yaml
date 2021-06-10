@@ -16,11 +16,10 @@ ingress:
   path: /
   hosts:
     - pad.kix.co.il
-#  tls:
-#    - secretName: kix-co-il-tls
-#      hosts:
-#        - kix.co.il
-#        - "*.kix.co.il"
+  tls:
+    - secretName: pad-kix-co-il-tls
+      hosts:
+        - pad.kix.co.il
 resources: {}
   # limits:
   #  cpu: 100m
@@ -36,7 +35,7 @@ persistence:
 
 postgresql:
   install: false
-  postgresqlUsername: hackmd-prod
+  postgresqlUsername: hackmd
   postgresqlDatabase: hackmd
   postgresHost: postgresql-ha-pgpool.db.svc.cluster.local
 #  postgresPassword: secret

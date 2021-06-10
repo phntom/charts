@@ -1,0 +1,36 @@
+# helm upgrade --install postgresql-ha -n db bitnami/postgresql-ha --debug --atomic -f postgresql-ha/values.d/limnad.yaml -f postgresql-ha/values.d/limnad.secret.yaml
+
+postgresql:
+  podAntiAffinityPreset: hard
+  initContainers: []
+  # add auto repair here
+  pdb:
+    create: true
+  username: postgres
+  password: xxx
+  repmgrUsername: repmgr
+  repmgrPassword: xxx
+pgpool:
+  customUsers:
+    usernames: xxx,xxx
+    passwords: xxx,xxx
+
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+  prometheusRule:
+    enabled: false
+    rules: []
+
+persistence:
+  enabled: true
+  storageClass: linode-block-storage-retain
+  size: 10Gi
+
+resources:
+  requests:
+    memory: 36Mi
+    cpu: 100m
+

@@ -1,11 +1,11 @@
-restore: true
+restore: false
 
 s3:
   accessKeyId: xxx
   secretAccessKey: xxx
   bucket: backup-prod
   endpoint: "https://eu-central-1.linodeobjects.com"
-  prefix: "postgresql-data11/hourly/2021-05/24/17"
+  prefix: "postgresql-data11/hourly"
   v4signature: true
 postgresql:
   database: "mattermost hackmd fireflyiii"

@@ -167,13 +167,16 @@ config:
     TokenEndpoint: https://gitlab.com/oauth/token
     UserApiEndpoint: https://gitlab.com/api/v4/user
   GoogleSettings:
-    Enable: false
+    Enable: true
     Secret: xxx
     Id: xxx
-    Scope: read_user
-    AuthEndpoint: https://gitlab.com/oauth/authorize
-    TokenEndpoint: https://gitlab.com/oauth/token
-    UserApiEndpoint: https://gitlab.com/api/v4/user
+    Scope: profile openid email
+    AuthEndpoint: ""
+    TokenEndpoint: ""
+    UserApiEndpoint: ""
+    DiscoveryEndpoint: "https://accounts.google.com/.well-known/openid-configuration"
+    ButtonText: ""
+    ButtonColor: ""
   PluginSettings:
     EnableUploads: true
     Plugins:
