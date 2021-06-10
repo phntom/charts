@@ -6,7 +6,7 @@ service:
 image:
   registry: mathnao
   repository: certs
-  tag: 1.1.8
+  tag: latest
 
 schedule: "37 3,15 * * *"
 

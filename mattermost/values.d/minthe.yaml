@@ -167,7 +167,7 @@ config:
     TokenEndpoint: https://gitlab.com/oauth/token
     UserApiEndpoint: https://gitlab.com/api/v4/user
   GoogleSettings:
-    Enable: true
+    Enable: false
     Secret: xxx
     Id: xxx
     Scope: read_user
@@ -259,6 +259,8 @@ config:
         Enable: true
       com.mattermost.agenda:
         Enable: true
+      com.mattermost.plugin-incident-management:
+        Enable: false
   ClusterSettings:
     AdvertiseAddress: 'mattermost-team-edition.web.svc'
     BindAddress: ''

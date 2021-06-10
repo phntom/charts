@@ -8,11 +8,11 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "mattermost-team-edition.chart" . }}
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 2
+      maxSurge: 1
       maxUnavailable: 0
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
@@ -56,16 +56,16 @@ spec:
           containerPort: {{ .Values.service.internalPort }}
           protocol: TCP
         livenessProbe:
-          initialDelaySeconds: 90
+          initialDelaySeconds: 10
           timeoutSeconds: 5
-          periodSeconds: 15
+          periodSeconds: 10
           httpGet:
             path: /api/v4/system/ping
             port: http
         readinessProbe:
-          initialDelaySeconds: 15
-          timeoutSeconds: 5
-          periodSeconds: 15
+          initialDelaySeconds: 2
+          timeoutSeconds: 2
+          periodSeconds: 2
           httpGet:
             path: /api/v4/system/ping
             port: http
