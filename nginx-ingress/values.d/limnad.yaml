@@ -7,14 +7,20 @@ dhParam: xxx
 controller:
   maxmindLicenseKey: xxx
 
+  extraArgs:
+    default-ssl-certificate: "chat/kix-co-il-tls"
+
   # listen on the nodes (disable to use node balancers)
   hostNetwork: true
 
   useComponentLabel: true
 
-  replicaCount: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
 
-  minAvailable: 0
+  minAvailable: 1
 
   annotations:
     keel.sh/pollSchedule: "@every 60m"
@@ -49,38 +55,38 @@ controller:
     prometheusRule:
       enabled: true
       rules:
-      - alert: NGINXConfigFailed
-        expr: count(nginx_ingress_controller_config_last_reload_successful == 0) > 0
-        for: 1s
-        labels:
-          severity: critical
-        annotations:
-          description: bad ingress config - nginx config test failed
-          summary: uninstall the latest ingress changes to allow config reloads to resume
-      - alert: NGINXCertificateExpiry
-        expr: (avg(nginx_ingress_controller_ssl_expire_time_seconds) by (host) - time()) < 604800
-        for: 1s
-        labels:
-          severity: critical
-        annotations:
-          description: ssl certificate(s) will expire in less then a week
-          summary: renew expiring certificates to avoid downtime
-      - alert: NGINXTooMany500s
-        expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"5.+"} ) / sum(nginx_ingress_controller_requests) ) > 5
-        for: 1m
-        labels:
-          severity: warning
-        annotations:
-          description: Too many 5XXs
-          summary: More than 5% of the all requests did return 5XX, this require your attention
-      - alert: NGINXTooMany400s
-        expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"4.+"} ) / sum(nginx_ingress_controller_requests) ) > 5
-        for: 1m
-        labels:
-          severity: warning
-        annotations:
-          description: Too many 4XXs
-          summary: More than 5% of the all requests did return 4XX, this require your attention
+        - alert: NGINXConfigFailed
+          expr: count(nginx_ingress_controller_config_last_reload_successful == 0) > 0
+          for: 1s
+          labels:
+            severity: critical
+          annotations:
+            description: bad ingress config - nginx config test failed
+            summary: uninstall the latest ingress changes to allow config reloads to resume
+        - alert: NGINXCertificateExpiry
+          expr: (avg(nginx_ingress_controller_ssl_expire_time_seconds) by (host) - time()) < 604800
+          for: 1s
+          labels:
+            severity: critical
+          annotations:
+            description: ssl certificate(s) will expire in less then a week
+            summary: renew expiring certificates to avoid downtime
+        - alert: NGINXTooMany500s
+          expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"5.+"} ) / sum(nginx_ingress_controller_requests) ) > 25
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            description: Too many 5XXs
+            summary: More than 5% of the all requests did return 5XX, this require your attention
+        - alert: NGINXTooMany400s
+          expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"4.+"} ) / sum(nginx_ingress_controller_requests) ) > 25
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            description: Too many 4XXs
+            summary: More than 5% of the all requests did return 4XX, this require your attention
 
   config:
     redirect-to-https: "true"
@@ -102,3 +108,15 @@ controller:
     X-Content-Type-Options: "nosniff"
     X-Frame-Options: SAMEORIGIN
     Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+  containerPort:
+    ircs: 6697
+  controller:
+    service:
+      ports:
+        ircs: 6697
+      targetPorts:
+        ircs: ircs
+tcp:
+  6697: "chat/matterircd:6697"
+  6667: "chat/matterircd:6667"

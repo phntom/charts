@@ -140,7 +140,7 @@ config:
     SMTPPort: "587"
     ConnectionSecurity: STARTTLS
     PushNotificationContents: full
-    EnableEmailBatching: false
+    EnableEmailBatching: true
     UseChannelInEmailNotifications: true
   RateLimitSettings:
     Enable: true

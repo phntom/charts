@@ -11,7 +11,7 @@ controller:
     default-ssl-certificate: "web/kix-co-il-tls"
 
   # listen on the nodes (disable to use node balancers)
-  hostNetwork: false
+  hostNetwork: true
 
   useComponentLabel: true
 
@@ -53,7 +53,7 @@ controller:
       scrapeInterval: 30s
 
     prometheusRule:
-      enabled: false
+      enabled: true
       rules:
         - alert: NGINXConfigFailed
           expr: count(nginx_ingress_controller_config_last_reload_successful == 0) > 0
@@ -108,3 +108,15 @@ controller:
     X-Content-Type-Options: "nosniff"
     X-Frame-Options: SAMEORIGIN
     Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+  containerPort:
+    ircs: 6697
+  controller:
+    service:
+      ports:
+        ircs: 6697
+      targetPorts:
+        ircs: ircs
+tcp:
+  6697: "web/matterircd:6697"
+  6667: "web/matterircd:6667"
