@@ -1,10 +1,11 @@
 # helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 # helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 # helm repo update
-# helm upgrade --install nginx-ingress -n clusterwide nginx-ingress -f nginx-ingress/values.d/limnad.yaml -f nginx-ingress/values.d/limnad.secret.yaml
+# helm upgrade --install nginx-ingress -n clusterwide ingress-nginx/ingress-nginx -f nginx-ingress/values.d/limnad.yaml -f nginx-ingress/values.d/limnad.secret.yaml
 
 dhParam: xxx
 controller:
+
   maxmindLicenseKey: xxx
 
   extraArgs:
@@ -12,6 +13,8 @@ controller:
 
   # listen on the nodes (disable to use node balancers)
   hostNetwork: true
+  service:
+    type: NodePort
 
   useComponentLabel: true
 
@@ -109,14 +112,6 @@ controller:
     X-Frame-Options: SAMEORIGIN
     Strict-Transport-Security: max-age=31536000; includeSubDomains
 
-  containerPort:
-    ircs: 6697
-  controller:
-    service:
-      ports:
-        ircs: 6697
-      targetPorts:
-        ircs: ircs
 tcp:
-  6697: "chat/matterircd:6697"
-  6667: "chat/matterircd:6667"
+  6697: "phantom/matterircd:6697"
+  6667: "phantom/matterircd:6667"

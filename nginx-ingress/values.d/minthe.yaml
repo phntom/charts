@@ -12,6 +12,8 @@ controller:
 
   # listen on the nodes (disable to use node balancers)
   hostNetwork: true
+  service:
+    type: NodePort
 
   useComponentLabel: true
 
