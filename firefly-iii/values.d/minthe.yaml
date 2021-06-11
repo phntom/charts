@@ -12,10 +12,9 @@ ingress:
       paths:
         - /
   tls:
-    - secretName: kix-co-il-tls
+    - secretName: firefly-kix-tls
       hosts:
-        - kix.co.il
-        - "*.kix.co.il"
+        - firefly.kix.co.il
 
 persistence:
   enabled: false
