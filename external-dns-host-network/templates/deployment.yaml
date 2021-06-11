@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "external-dns-host-network.fullname" . }}
+  labels:
+    {{- include "external-dns-host-network.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "external-dns-host-network.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "external-dns-host-network.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "external-dns-host-network.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - find
+                - /tmp
+                - -name
+                - healthy
+                - -mtime
+                - "-0.001"
+          readinessProbe:
+            exec:
+              command:
+                - find
+                - /tmp
+                - -name
+                - healthy
+                - -mtime
+                - "-0.001"
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: LINODE_CLI_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "external-dns-host-network.fullname" . }}
+                  key: LINODE_CLI_TOKEN
+            - name: LINODE_TAG
+              value: {{ .Values.settings.linodeTag | quote }}
+            - name: SPECIAL_DOMAIN
+              value: {{ .Values.settings.specialDomain | quote }}
+            - name: SPECIAL_TARGET
+              value: {{ .Values.settings.specialTarget | quote }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
