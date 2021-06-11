@@ -1,13 +1,13 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "mindav.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
+{{- $fullName := include "mindav.fullname" . }}
+{{- $svcPort := .Values.service.port }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
-  {{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
-  {{- else -}}
+{{- else -}}
 apiVersion: extensions/v1beta1
-  {{- end }}
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}-mobile
@@ -33,16 +33,19 @@ spec:
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
-      {{- end }}
+        {{- end }}
       secretName: {{ .secretName }}
-  {{- end }}
+    {{- end }}
   {{- end }}
   rules:
     - host: {{ .Values.ingress.host.host | quote }}
       http:
         paths:
           - path: "{{ .Values.ingress.host.mobilePath }}/(.*)"
+            pathType: Exact
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
 {{- end }}

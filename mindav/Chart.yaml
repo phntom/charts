@@ -2,7 +2,7 @@ apiVersion: v2
 name: mindav
 description: Basic AWS S3 WebDAV interface implemented in Rust
 type: application
-version: "0.1.5"
+version: "0.1.6"
 appVersion: "0.1.7-kix3"
 dependencies:
   - name: oauth2-proxy
