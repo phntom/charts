@@ -3,10 +3,15 @@
 # Declare variables to be passed into your templates.
 
 settings:
-  linodeToken: xxx
-  linodeTag: minthe
-  specialDomain: 114584
-  specialTarget: minthe
+  linode:
+    token: xxx
+    tag: minthe
+    domain: 114584
+    target: minthe
+  cloudflare:
+    token: xxx
+    zone: 738fb5435788296d99791ddd1e6586df
+    name: minthe.kix.co.il
 
 replicaCount: 1
 

@@ -18,6 +18,8 @@ kubectl describe node | grep -oE 'ExternalIP:.*' | cut -f2 -d':' \
 
 diff -q external-ips.txt external-ips-last.txt && continue
 
+if [ -n "$LINODE_CLI_TOKEN" ]; then
+
 linode-cli domains list --format 'id' --tag "$LINODE_TAG" --json \
   | python -m json.tool | grep '"id"' | cut -f2 -d':' | grep -oE '[^ ]+' \
   > domains.txt
@@ -65,6 +67,36 @@ grep -v '^ *#' < domains.txt | while IFS= read -r domain; do
   done
 
 done
+
+fi
+
+if [ -n "$CLOUDFLARE_TOKEN" ]; then
+
+curl -X GET "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE/dns_records?name=$CLOUDFLARE_NAME" \
+  -H "Content-Type:application/json" \
+  -H "Authorization: Bearer $CLOUDFLARE_TOKEN" \
+  | jq -r '.result[] | "\(.id) \(.content)"' \
+  | tee entries.txt
+fi
+
+grep -v '^ *#' < external-ips.txt | while IFS= read -r ip; do
+  grep "$ip" entries.txt || \
+    curl -X POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE/dns_records" \
+      -H "Content-Type:application/json" \
+      -H "Authorization: Bearer $CLOUDFLARE_TOKEN" \
+      --data "{\"type\":\"A\",\"name\":\"$CLOUDFLARE_NAME\",\"content\":\"$ip\",\"ttl\":120,\"proxied\":false}"
+done
+
+# shellcheck disable=SC2094
+grep -oE '\b[^ ]+$' < entries.txt | while IFS= read -r ip; do
+  # shellcheck disable=SC2094
+  id=$(grep "$ip" entries.txt | grep -oE '^[^ ]+')
+  grep "$ip" external-ips.txt || \
+    curl -X DELETE "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE/dns_records/$id" \
+      -H "Content-Type:application/json" \
+      -H "Authorization: Bearer $CLOUDFLARE_TOKEN"
+done
+
 
 echo Done!
 

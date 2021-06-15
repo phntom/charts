@@ -64,11 +64,20 @@ spec:
                   name: {{ template "external-dns-host-network.fullname" . }}
                   key: LINODE_CLI_TOKEN
             - name: LINODE_TAG
-              value: {{ .Values.settings.linodeTag | quote }}
+              value: {{ .Values.settings.linode.tag | quote }}
             - name: SPECIAL_DOMAIN
-              value: {{ .Values.settings.specialDomain | quote }}
+              value: {{ .Values.settings.linode.domain | quote }}
             - name: SPECIAL_TARGET
-              value: {{ .Values.settings.specialTarget | quote }}
+              value: {{ .Values.settings.linode.target | quote }}
+            - name: CLOUDFLARE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "external-dns-host-network.fullname" . }}
+                  key: CLOUDFLARE_TOKEN
+            - name: CLOUDFLARE_ZONE
+              value: {{ .Values.settings.cloudflare.zone | quote }}
+            - name: CLOUDFLARE_NAME
+              value: {{ .Values.settings.cloudflare.name | quote }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
