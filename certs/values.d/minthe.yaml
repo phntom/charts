@@ -1,0 +1,34 @@
+# helm upgrade --install certs -n web certs/certs -f certs/values.d/minthe.yaml -f certs/values.d/minthe.secret.yaml
+
+service:
+  type: None
+
+image:
+  registry: mathnao
+  repository: certs
+  tag: latest
+
+schedule: "37 3,15 * * *"
+
+backoffLimit: 0
+
+debug: false
+
+activeDeadlineSeconds: 800
+
+ttlSecondsAfterFinished: 120
+
+successfulJobsHistoryLimit: 1
+
+failedJobsHistoryLimit: 1
+
+manageAllNamespaces: true
+
+#env:
+#  - name: CF_Token
+#    value: xxxx
+#  - name: CF_Account_ID
+#    value: xxxx
+#  - name: CF_Zone_ID
+#    value: xxxx
+

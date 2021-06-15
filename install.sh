@@ -35,7 +35,7 @@ helm upgrade --install pwd-mindav -n phantom mindav -f mindav/values.d/limnad.se
 ###
 
 helm upgrade --install postgresql -n db bitnami/postgresql -f postgresql/values.d/minthe.yaml -f postgresql/values.d/limnad.secret.yaml --atomic --debug
-helm upgrade --install -n phantom hackmd stable/hackmd -f hackmd/values.d/limnad.yaml -f hackmd/values.d/limnad.secret.yaml --atomic --debug
+helm upgrade --install -n web hackmd stable/hackmd -f hackmd/values.d/minthe.yaml -f hackmd/values.d/minthe.secret.yaml --atomic --debug
 helm upgrade --install kix -n phantom website-kix-co-il
 helm upgrade --install binaryvision -n web website-binaryvision-static
 helm upgrade --install tlo -n phantom website-bv-tlo

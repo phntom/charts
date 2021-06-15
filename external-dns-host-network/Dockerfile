@@ -1,4 +1,4 @@
-# docker build external-dns-host-network -f external-dns-host-network/Dockerfile --pull -t phntom/external-dns-host-network:0.0.5
+# docker build external-dns-host-network -f external-dns-host-network/Dockerfile --pull -t phntom/external-dns-host-network:0.0.6
 
 FROM python:3.9
 RUN apt-get update && apt-get install jq -y
