@@ -84,6 +84,18 @@ spec:
         {{- end }}
         resources:
           {{- .Values.resources | toYaml | nindent 12 }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - {{ include "mattermost-team-edition.name" . | quote }}
+                topologyKey: "kubernetes.io/hostname"
       volumes:
       {{- if .Values.extraVolumes -}}
       {{ .Values.extraVolumes | toYaml | nindent 6 }}

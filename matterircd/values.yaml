@@ -45,7 +45,7 @@ service:
 
 matterircd:
   debug: "false"
-  server: mattermost-team-edition.web.svc
+  server: kix.co.il
   team: nix
 
 ingress:

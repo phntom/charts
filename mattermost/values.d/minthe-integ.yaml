@@ -1,5 +1,5 @@
 # helm repo add mattermost https://helm.mattermost.com
-# helm upgrade --install mattermost-integ -n chat phntom/mattermost -f mattermost/values.d/limnad-integ.yaml -f mattermost/values.d/limnad-integ.secret.yaml --atomic --debug
+# helm upgrade --install mattermost-integ -n chat phntom/mattermost -f mattermost/values.d/minthe-integ.yaml -f mattermost/values.d/minthe-integ.secret.yaml --atomic --debug
 
 nameOverride: mattermost-integ
 
@@ -23,8 +23,8 @@ ingress:
   annotations:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_cf"
-    nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
-    nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fmmbeta$escaped_request_uri"
+    nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fmmbeta$escaped_request_uri"
     nginx.ingress.kubernetes.io/proxy-body-size: 50m
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
@@ -53,11 +53,11 @@ ingress:
     #### http-snippet: |
     ####     proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=mattermost_cache:10m max_size=3g inactive=120m use_temp_path=off;
   hosts:
-    - mmbeta.limnad.kix.co.il
+    - mmbeta.minthe.kix.co.il
   tls:
     - secretName: mattermost-chat-beta-kix-tls
       hosts:
-        - mmbeta.limnad.kix.co.il
+        - mmbeta.minthe.kix.co.il
 
 #route:
 #  enabled: false
@@ -81,7 +81,7 @@ config:
     AllowBannerDismissal: true
   ServiceSettings:
     EnableSecurityFixAlert: false
-    SiteURL: https://mmbeta.limnad.kix.co.il
+    SiteURL: https://mmbeta.minthe.kix.co.il
     EnableOAuthServiceProvider: true
     EnablePostUsernameOverride: true
     EnablePostIconOverride: true
