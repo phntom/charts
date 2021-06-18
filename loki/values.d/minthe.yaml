@@ -1,0 +1,133 @@
+# helm repo add grafana https://grafana.github.io/helm-charts
+# helm upgrade --install loki grafana/loki-stack -n clusterwide -f loki/values.d/minthe.yaml -f loki/values.d/minthe.secret.yaml --debug
+promtail:
+  enabled: true
+fluent-bit:
+  enabled: false
+grafana:
+  enabled: true
+  ingress:
+    enabled: true
+    annotations:
+      acme.kubernetes.io/enable: "true"
+      acme.kubernetes.io/dns: "dns_cf"
+      nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
+    hosts:
+      - grafana.minthe.kix.co.il
+    path: /
+    tls:
+      - secretName: minthe-kix-co-il-tls
+        hosts:
+          - minthe.kix.co.il
+          - "*.minthe.kix.co.il"
+  grafana.ini:
+    snapshots:
+      public_mode: true
+    security:
+      x_xss_protection: true
+    auth.anonymous:
+      enabled: true
+      org_role: Admin
+    auth.proxy:
+      enabled: false
+      header_name: X-Forwarded-Preferred-Username
+      header_property: username
+      auto_sign_up: true
+      headers: "Name:X-Forwarded-User Email:X-Forwarded-Email Groups:X-Forwarded-Groups"
+    server:
+      root_url: https://grafana.minthe.kix.co.il
+
+prometheus:
+  enabled: false
+  alertmanager:
+    persistentVolume:
+      enabled: false
+    ingress:
+      enabled: true
+      annotations:
+        acme.kubernetes.io/enable: "true"
+        acme.kubernetes.io/dns: "dns_cf"
+        nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+        nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
+      hosts:
+        - alerts.minthe.kix.co.il
+        - alertmanager.minthe.kix.co.il
+      paths:
+        - /
+      tls:
+        - secretName: minthe-kix-co-il-tls
+          hosts:
+            - minthe.kix.co.il
+            - "*.minthe.kix.co.il"
+
+  server:
+    persistentVolume:
+      enabled: false
+    ingress:
+      enabled: true
+      annotations:
+        nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+        nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fprometheus$escaped_request_uri"
+        acme.kubernetes.io/enable: "true"
+        acme.kubernetes.io/dns: "dns_cf"
+      labels: {}
+      hosts:
+        - prometheus.minthe.kix.co.il
+      paths:
+        - /
+      tls:
+        - secretName: minthe-kix-co-il-tls
+          hosts:
+            - minthe.kix.co.il
+            - "*.minthe.kix.co.il"
+  pushgateway:
+    enabled: false
+
+filebeat:
+  enabled: false
+loki:
+  enabled: true
+  env:
+    - name: AWS_REGION
+      value: eu-central-1
+    - name: AWS_SDK_LOAD_CONFIG
+      value: "1"
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0
+      nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Floki"
+    hosts:
+      - host: loki.minthe.kix.co.il
+        paths:
+          - /
+    tls:
+      - secretName: minthe-kix-co-il-tls
+        hosts:
+          - minthe.kix.co.il
+          - "*.minthe.kix.co.il"
+  config:
+    storage_config:
+      aws:
+        s3: https://xxx:xxx@eu-central-1.linodeobjects.com/logs-prod
+        dynamodb:
+          dynamodb_url: dynamodb://eu-central-1
+      boltdb_shipper:
+        active_index_directory: /data/loki/boltdb-shipper-active
+        cache_location: /data/loki/boltdb-shipper-cache
+        cache_ttl: 72h
+        shared_store: s3
+    schema_config:
+      configs:
+        - from: 2021-01-01
+          store: boltdb-shipper
+          object_store: aws
+          schema: v11
+          index:
+            prefix: loki_minthe_
+            period: 24h
+  persistence:
+    enabled: true
+    size: 1Gi
