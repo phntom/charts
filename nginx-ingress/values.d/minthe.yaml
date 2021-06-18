@@ -1,7 +1,7 @@
 # helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 # helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 # helm repo update
-# helm upgrade --install nginx-ingress -n clusterwide nginx-ingress -f nginx-ingress/values.d/limnad.yaml -f nginx-ingress/values.d/limnad.secret.yaml
+# helm upgrade --install nginx-ingress -n clusterwide nginx-ingress -f nginx-ingress/values.d/minthe.yaml -f nginx-ingress/values.d/minthe.secret.yaml
 
 dhParam: xxx
 controller:
