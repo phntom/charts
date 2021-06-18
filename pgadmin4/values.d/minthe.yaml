@@ -5,13 +5,14 @@ ingress:
   enabled: true
   annotations:
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_linode_v4"
+    acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fpg$escaped_request_uri"
   hosts:
     - host: pg.minthe.kix.co.il
       paths:
-        - /
+        - path: /
+          pathType: Prefix
   tls:
     - secretName: minthe-kix-co-il-tls
       hosts:

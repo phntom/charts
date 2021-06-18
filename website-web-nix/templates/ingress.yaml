@@ -23,6 +23,9 @@ metadata:
       if ($host = web.nix.co.il) {
         return 301 https://nix.co.il/;
       }
+      if ($host = webchat.nix.co.il) {
+        return 301 https://nix.co.il/;
+      }
       location = / {
         set $targetx '{{ .Values.ingress.defaultTarget }}';
         if ( $arg_kix != "n" ) {

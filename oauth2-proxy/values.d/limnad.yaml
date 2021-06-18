@@ -24,7 +24,7 @@ ingress:
   path: /
   annotations:
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_linode_v4"
+    acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       location ~ ^/go/([a-z]+)(/.*)? {
           return 301 https://$1.limnad.kix.co.il$2;

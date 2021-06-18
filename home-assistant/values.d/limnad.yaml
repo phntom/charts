@@ -15,7 +15,7 @@ ingress:
           pathType: Prefix
   annotations:
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_linode_v4"
+    acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fha$escaped_request_uri"
   tls:

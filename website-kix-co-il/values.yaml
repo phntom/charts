@@ -42,7 +42,7 @@ ingress:
   enabled: true
   annotations:
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_linode_v4"
+    acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:

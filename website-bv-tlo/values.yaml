@@ -43,19 +43,19 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/app-root: /bv/
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_linode_v4"
+    acme.kubernetes.io/dns: "dns_cf"
   hosts:
     - host: tlo.binaryvision.co.il
-      paths: 
+      paths:
         - /
     - host: tlo.binaryvision.org.il
-      paths: 
+      paths:
         - /
     - host: tlo.limnad.kix.co.il
-      paths: 
+      paths:
         - /
     - host: tlo.nix.co.il
-      paths: 
+      paths:
         - /
   tls:
   - secretName: binaryvision-tlo-tls

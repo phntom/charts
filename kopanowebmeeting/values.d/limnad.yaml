@@ -2,7 +2,7 @@ ingress:
   enabled: true
   annotations:
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_linode_v4"
+    acme.kubernetes.io/dns: "dns_cf"
   hosts:
     - host: kopano.kix.co.il
       paths:

@@ -10,7 +10,7 @@ metadata:
   name: nix-co-il-redirect
   annotations:
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_linode_v4"
+    acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/permanent-redirect: https://kix.co.il/signup_user_complete/?id=hiyeztycyidz9ja4gx6bw18p3h
     nginx.ingress.kubernetes.io/configuration-snippet: |
       location = /robots.txt {

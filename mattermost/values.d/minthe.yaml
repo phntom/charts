@@ -22,7 +22,7 @@ ingress:
   path: /
   annotations:
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_linode_v4"
+    acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/proxy-body-size: 50m
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
@@ -106,7 +106,7 @@ config:
     RestrictPrivateChannelManageMembers: all
     RestrictPrivateChannelDeletion: team_admin
     RestrictPublicChannelDeletion: team_admin
-    RestrictTeamInvite: all
+    RestrictTeamInvite: team_admin
   SqlSettings:
     AtRestEncryptKey: xxx
   LogSettings:
@@ -167,7 +167,7 @@ config:
     TokenEndpoint: https://gitlab.com/oauth/token
     UserApiEndpoint: https://gitlab.com/api/v4/user
   GoogleSettings:
-    Enable: true
+    Enable: false
     Secret: xxx
     Id: xxx
     Scope: profile openid email
@@ -180,14 +180,6 @@ config:
   PluginSettings:
     EnableUploads: true
     Plugins:
-      com.github.moussetc.mattermost.plugin.giphy:
-        provider: tenor
-        apikey: xxx
-        language: en
-        rating: r
-        rendition: downsized
-        renditiongfycat: 100pxGif
-        renditiontenor: mediumgif
       com.github.matterpoll.matterpoll:
         ExperimentalUI: true
       com.mattermost.custom-attributes:
@@ -252,10 +244,6 @@ config:
     PluginStates:
       com.mattermost.plugin-todo:
         Enable: true
-      memes:
-        Enable: false
-      com.github.moussetc.mattermost.plugin.giphy:
-        Enable: false
       com.github.matterpoll.matterpoll:
         Enable: true
       com.mattermost.custom-attributes:

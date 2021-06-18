@@ -22,7 +22,7 @@ ingress:
   defaultTarget: cn6415d3njgjjb63z6jrese7ho
   annotations:
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: dns_linode_v4
+    acme.kubernetes.io/dns: dns_cf
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
 
   hosts:
@@ -30,6 +30,9 @@ ingress:
       paths:
         - /
     - host: web.nix.co.il
+      paths:
+        - /
+    - host: webchat.nix.co.il
       paths:
         - /
   tls:
