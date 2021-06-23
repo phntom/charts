@@ -169,14 +169,14 @@ config:
     TokenEndpoint: https://gitlab.com/oauth/token
     UserApiEndpoint: https://gitlab.com/api/v4/user
   GoogleSettings:
-    Enable: false
+    Enable: true
     Secret: xxx
     Id: xxx
-    Scope: profile openid email
-    AuthEndpoint: ""
-    TokenEndpoint: ""
-    UserApiEndpoint: ""
-    DiscoveryEndpoint: "https://accounts.google.com/.well-known/openid-configuration"
+    Scope: profile email
+    AuthEndpoint: https://accounts.google.com/o/oauth2/v2/auth
+    TokenEndpoint: https://oauth2.googleapis.com/token
+    UserApiEndpoint: https://openidconnect.googleapis.com/v1/userinfo
+    DiscoveryEndpoint: https://accounts.google.com/.well-known/openid-configuration
     ButtonText: ""
     ButtonColor: ""
   PluginSettings:
@@ -252,10 +252,8 @@ config:
         Enable: true
       com.mattermost.agenda:
         Enable: true
-      com.mattermost.plugin-incident-management:
-        Enable: false
   ClusterSettings:
-    AdvertiseAddress: 'mattermost-team-edition.web.svc'
+    AdvertiseAddress: 'mattermost-team-edition.chat.svc'
     BindAddress: ''
     ClusterName: 'chat-prod'
     Enable: false

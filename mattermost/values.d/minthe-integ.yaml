@@ -173,10 +173,13 @@ config:
     Enable: true
     Secret: xxx
     Id: xxx
-    Scope: read_user
-    AuthEndpoint: https://gitlab.com/oauth/authorize
-    TokenEndpoint: https://gitlab.com/oauth/token
-    UserApiEndpoint: https://gitlab.com/api/v4/user
+    Scope: profile email
+    AuthEndpoint: https://accounts.google.com/o/oauth2/v2/auth
+    TokenEndpoint: https://oauth2.googleapis.com/token
+    UserApiEndpoint: https://openidconnect.googleapis.com/v1/userinfo
+    DiscoveryEndpoint: https://accounts.google.com/.well-known/openid-configuration
+    ButtonText: ""
+    ButtonColor: ""
   PluginSettings:
     EnableUploads: true
     Plugins:
@@ -252,22 +255,16 @@ config:
     PluginStates:
       com.mattermost.plugin-todo:
         Enable: true
-      memes:
-        Enable: false
-      com.github.moussetc.mattermost.plugin.giphy:
-        Enable: false
       com.github.matterpoll.matterpoll:
         Enable: true
       com.mattermost.custom-attributes:
         Enable: true
       com.mattermost.agenda:
         Enable: true
-      com.mattermost.plugin-incident-management:
-        Enable: false
   ClusterSettings:
-    AdvertiseAddress: 'mattermost-team-edition.web.svc'
+    AdvertiseAddress: 'mattermost-team-edition.chat.svc'
     BindAddress: ''
-    ClusterName: 'chat-prod'
+    ClusterName: 'chat-integ'
     Enable: false
     EnableExperimentalGossipEncryption: false
     GossipPort: 8074

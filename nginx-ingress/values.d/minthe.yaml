@@ -19,7 +19,7 @@ controller:
 
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 3
     maxReplicas: 6
 
   minAvailable: 1
@@ -113,3 +113,4 @@ controller:
 
 tcp:
   6697: "web/matterircd:6697"
+  9999: "web/matterircd:6697"
