@@ -19,10 +19,10 @@ controller:
 
   autoscaling:
     enabled: true
-    minReplicas: 3
+    minReplicas: 2
     maxReplicas: 6
 
-  minAvailable: 1
+  minAvailable: 2
 
   annotations:
     keel.sh/pollSchedule: "@every 60m"

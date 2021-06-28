@@ -13,8 +13,16 @@ sleep 2
 
 touch /tmp/healthy
 
-kubectl describe node | grep -oE 'ExternalIP:.*' | cut -f2 -d':' \
-  | grep -oE '[0-9.]+' > external-ips.txt
+kubectl get pod -n clusterwide \
+  -l app.kubernetes.io/name=ingress-nginx,app.kubernetes.io/component=controller \
+  -o yaml | grep -oE 'nodeName:.*' | cut -f2 -d' ' | sort > node-names.txt
+
+echo > external-ips.txt
+
+grep -v '^ *#' < node-names.txt | while IFS= read -r nodeName; do
+  kubectl describe node "$nodeName" | grep -oE 'ExternalIP:.*' \
+    | cut -f2 -d':' | grep -oE '[0-9.]+' >> external-ips.txt
+done
 
 diff -q external-ips.txt external-ips-last.txt && continue
 
