@@ -37,6 +37,9 @@ ingress:
       if ( $uri = "/oauth/openid/login" ) {
         return 301 /oauth/facebook/login;
       }
+      if ( $uri = "/oauth/openid/signup?id=hiyeztycyidz9ja4gx6bw18p3h" ) {
+        return 301 /oauth/facebook/signup?id=hiyeztycyidz9ja4gx6bw18p3h;
+      }
       if ( $cookie_MMUSERID = "" ) {
         set $nix b;
       }
