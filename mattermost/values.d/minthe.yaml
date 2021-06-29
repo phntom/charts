@@ -34,6 +34,9 @@ ingress:
       if ( $query_string = "id=xtce3qn9xpycujbptb39dqy3ur" ) {
         return 301 https://join.nix.co.il/;
       }
+      if ( $uri = "/oauth/openid/login" ) {
+        return 301 /oauth/facebook/login;
+      }
       if ( $cookie_MMUSERID = "" ) {
         set $nix b;
       }
@@ -179,6 +182,17 @@ config:
     DiscoveryEndpoint: https://accounts.google.com/.well-known/openid-configuration
     ButtonText: ""
     ButtonColor: ""
+  OpenIdSettings:
+    Enable: true
+    Secret: xxx
+    Id: xxx
+    Scope: public_profile email
+    AuthEndpoint: https://www.facebook.com/v11.0/dialog/oauth
+    TokenEndpoint: https://graph.facebook.com/v11.0/oauth/access_token
+    UserApiEndpoint: "https://graph.facebook.com/v11.0/me?fields=id,name,email,first_name,last_name,picture"
+    DiscoveryEndpoint: ""
+    ButtonText: "Facebook"
+    ButtonColor: "#1877F2"
   PluginSettings:
     EnableUploads: true
     Plugins:
