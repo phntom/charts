@@ -19,7 +19,7 @@ secrets:
     secretKey: xxx
 s3:
   region: eu-central-1
-  regionEndpoint: eu-central-1.linodeobjects.com
+  regionEndpoint: fra1.digitaloceanspaces.com
   bucket: docker-prod
   encrypt: true
   secure: true

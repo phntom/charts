@@ -11,7 +11,7 @@ gateway:
   replicaCount: 1
   auth:
     s3:
-      serviceEndpoint: https://eu-central-1.linodeobjects.com
+      serviceEndpoint: https://fra1.digitaloceanspaces.com
       accessKey: XXXXXXXXXXXXXXXXXXXX
       secretKey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 

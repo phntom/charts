@@ -111,7 +111,7 @@ loki:
   config:
     storage_config:
       aws:
-        s3: https://xxx:xxx@eu-central-1.linodeobjects.com/logs-prod
+        s3: https://xxx:xxx@fra1.digitaloceanspaces.com/logs-prod
         dynamodb:
           dynamodb_url: dynamodb://eu-central-1
       boltdb_shipper:

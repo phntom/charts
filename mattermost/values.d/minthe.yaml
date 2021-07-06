@@ -99,12 +99,12 @@ config:
     ExperimentalChannelSidebarOrganization: default_off
     GoogleDeveloperKey: xxx
   TeamSettings:
-    SiteName: kix chat
+    SiteName: kix.co.il
     MaxUsersPerTeam: 50000
     EnableTeamCreation: false
     EnableCustomBrand: true
-    CustomBrandText: Welcome nix.co.il members!
-    CustomDescriptionText: self hosted, privacy oriented, independent and free
+    CustomBrandText: "nix.co.il members: go to [join.nix.co.il](https://join.nix.co.il) to sign up"
+    CustomDescriptionText: self hosted, privacy oriented, independent and free community platform
     RestrictDirectMessage: team
     EnableTeamListing: false
     EnableXToLeaveChannelsFromLHS: true

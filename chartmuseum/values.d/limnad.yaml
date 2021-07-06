@@ -19,7 +19,7 @@ env:
     STORAGE_AMAZON_BUCKET: chartmuseum-prod
     STORAGE_AMAZON_PREFIX: v1
     STORAGE_AMAZON_REGION: eu-central-1
-    STORAGE_AMAZON_ENDPOINT: https://eu-central-1.linodeobjects.com
+    STORAGE_AMAZON_ENDPOINT: https://fra1.digitaloceanspaces.com
     LOG_JSON: true
     DISABLE_STATEFILES: false
     DISABLE_METRICS: false

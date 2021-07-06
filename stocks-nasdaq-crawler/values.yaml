@@ -4,7 +4,7 @@ replicaCount: 1
 
 image:
   repository: phntom/stocks-nasdaq-crawler
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
