@@ -185,7 +185,7 @@ config:
     DiscoveryEndpoint: https://accounts.google.com/.well-known/openid-configuration
     ButtonText: ""
     ButtonColor: ""
-  OpenIdSettings:
+  FacebookSettings:
     Enable: true
     Secret: xxx
     Id: xxx
@@ -194,8 +194,8 @@ config:
     TokenEndpoint: https://graph.facebook.com/v11.0/oauth/access_token
     UserApiEndpoint: "https://graph.facebook.com/v11.0/me?fields=id,name,email,first_name,last_name,picture"
     DiscoveryEndpoint: ""
-    ButtonText: "Facebook"
-    ButtonColor: "#1877F2"
+    ButtonText: ""
+    ButtonColor: ""
   PluginSettings:
     EnableUploads: true
     Plugins:
