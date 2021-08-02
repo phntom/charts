@@ -180,6 +180,14 @@ config:
     DiscoveryEndpoint: https://accounts.google.com/.well-known/openid-configuration
     ButtonText: ""
     ButtonColor: ""
+  LinkedInSettings:
+    Enable: true
+    Secret: xxx
+    Id: xxx
+    Scope: r_liteprofile r_emailaddress
+    AuthEndpoint: https://www.linkedin.com/oauth/v2/authorization
+    TokenEndpoint: https://www.linkedin.com/oauth/v2/accessToken
+    UserApiEndpoint: "https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))"
   PluginSettings:
     EnableUploads: true
     Plugins:
