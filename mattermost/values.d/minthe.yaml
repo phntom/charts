@@ -98,6 +98,11 @@ config:
     PostEditTimeLimit: 300
     ExperimentalChannelSidebarOrganization: default_off
     GoogleDeveloperKey: xxx
+    AllowedUntrustedInternalConnections: "chadbot.chat.svc"
+    EnableEmailInvitations: false
+    EnableTutorial: false
+    TimeBetweenUserTypingUpdatesMilliseconds: 6000
+    AllowCookiesForSubdomains: false
   TeamSettings:
     SiteName: kix.co.il
     MaxUsersPerTeam: 50000
