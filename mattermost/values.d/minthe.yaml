@@ -25,7 +25,7 @@ ingress:
     acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/default-backend: mattermost-defaultbackend
     nginx.ingress.kubernetes.io/service-upstream: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
@@ -131,6 +131,7 @@ config:
   NotificationLogSettings:
     ConsoleLevel: INFO
   FileSettings:
+    MaxFileSize: 104857600
     PublicLinkSalt: xxx
     DriverName: amazons3
     AmazonS3AccessKeyId: xxx
