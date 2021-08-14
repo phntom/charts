@@ -24,6 +24,7 @@ oauth2-proxy:
     clientSecret: xxx
     cookieSecret: xxx
   extraArgs:
+    cookie-domain: firefly.kix.co.il
     provider: facebook
     provider-display-name: kix.co.il chat
     redirect-url: https://firefly.kix.co.il/oauth2/callback

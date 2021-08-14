@@ -2,9 +2,9 @@ apiVersion: v1
 appVersion: 5.5.12
 description: "Firefly III: a personal finances manager"
 name: firefly-iii
-version: 0.2.6
+version: 0.2.7
 home: https://www.firefly-iii.org/
-icon: https://raw.githubusercontent.com/firefly-iii/firefly-iii/master/public/android-chrome-512x512.png
+icon: https://my.kix.co.il/pub/fireflyiii.png
 sources:
   - https://github.com/phntom/charts/
   - https://github.com/firefly-iii/firefly-iii

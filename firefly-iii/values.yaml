@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: jc5x/firefly-iii
+  repository: fireflyiii/core
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

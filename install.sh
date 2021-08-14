@@ -43,5 +43,5 @@ helm upgrade --install nix-mattermost -n phantom website-web-nix -f website-web-
 helm upgrade --install pgadmin4 -n db runix/pgadmin4 -f pgadmin4/values.d/limnad.yaml -f pgadmin4/values.d/limnad.secret.yaml
 helm upgrade --install hass -n hass k8s-at-home/home-assistant -f home-assistant/values.d/limnad.yaml --atomic --debug
 
-helm upgrade --install firefly-iii -n stocks phntom/firefly-iii -f firefly-iii/values.d/limnad.yaml -f  firefly-iii/values.d/limnad.secret.yaml --atomic --debug
+helm upgrade --install firefly-iii -n web phntom/firefly-iii -f firefly-iii/values.d/limnad.yaml -f  firefly-iii/values.d/limnad.secret.yaml --atomic --debug
 
