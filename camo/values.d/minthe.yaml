@@ -1,0 +1,21 @@
+camo:
+  key: xxx
+  debug: false
+  port: 8081
+  limits:
+    maxContentLength: "5242880"
+    maxRedirects: 4
+    socketTimeoutSeconds: 10
+  headers:
+    userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0
+    timingAllowOrigin: null
+    keepAlive: true
+    hostname: kix.co.il
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: $1
+  hosts:
+    - host: kix.co.il
+      paths:
+        - /proxy(.*)
