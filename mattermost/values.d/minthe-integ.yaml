@@ -25,7 +25,9 @@ ingress:
     acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fmmbeta$escaped_request_uri"
-    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+    nginx.ingress.kubernetes.io/default-backend: mattermost-defaultbackend
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
@@ -91,15 +93,26 @@ config:
     PostEditTimeLimit: 300
     ExperimentalChannelSidebarOrganization: default_off
     GoogleDeveloperKey: xxx
+    AllowedUntrustedInternalConnections: "chadbot.chat.svc"
+    EnableEmailInvitations: false
+    EnableTutorial: false
+    TimeBetweenUserTypingUpdatesMilliseconds: 6000
+    AllowCookiesForSubdomains: false
+    ManagedResourcePaths: "proxy,blog"
+  ImageProxySettings:
+    Enable: true
+    ImageProxyType: "atmos/camo"
+    RemoteImageProxyOptions: xxx
+    RemoteImageProxyURL: https://kix.co.il/proxy
     EnableLocalMode: true
     EnableDeveloper: true
   TeamSettings:
-    SiteName: kix chat
+    SiteName: kix.co.il
     MaxUsersPerTeam: 50000
     EnableTeamCreation: false
     EnableCustomBrand: true
-    CustomBrandText: Welcome nix.co.il members!
-    CustomDescriptionText: self hosted, privacy oriented, independent and free
+    CustomBrandText: "nix.co.il members: go to [join.nix.co.il](https://join.nix.co.il) to sign up"
+    CustomDescriptionText: self hosted, privacy oriented, independent and free community platform
     RestrictDirectMessage: team
     EnableTeamListing: false
     EnableXToLeaveChannelsFromLHS: true
@@ -109,7 +122,7 @@ config:
     RestrictPrivateChannelManageMembers: all
     RestrictPrivateChannelDeletion: team_admin
     RestrictPublicChannelDeletion: team_admin
-    RestrictTeamInvite: all
+    RestrictTeamInvite: team_admin
   SqlSettings:
     AtRestEncryptKey: xxx
   LogSettings:
@@ -119,6 +132,7 @@ config:
   NotificationLogSettings:
     ConsoleLevel: INFO
   FileSettings:
+    MaxFileSize: 104857600
     PublicLinkSalt: xxx
     DriverName: amazons3
     AmazonS3AccessKeyId: xxx
@@ -162,7 +176,7 @@ config:
     ReportAProblemLink: https://kix.co.il/nix/channels/help
     SupportEmail: support@kix.co.il
   GitLabSettings:
-    Enable: false
+    Enable: true
     Secret: xxx
     Id: xxx
     Scope: read_user
@@ -180,6 +194,17 @@ config:
     DiscoveryEndpoint: https://accounts.google.com/.well-known/openid-configuration
     ButtonText: ""
     ButtonColor: ""
+  FacebookSettings:
+    Enable: true
+    Secret: xxx
+    Id: xxx
+    Scope: public_profile email
+    AuthEndpoint: https://www.facebook.com/v11.0/dialog/oauth
+    TokenEndpoint: https://graph.facebook.com/v11.0/oauth/access_token
+    UserApiEndpoint: "https://graph.facebook.com/v11.0/me?fields=id,name,email,first_name,last_name,picture"
+    DiscoveryEndpoint: ""
+    ButtonText: ""
+    ButtonColor: ""
   LinkedInSettings:
     Enable: true
     Secret: xxx
@@ -188,17 +213,19 @@ config:
     AuthEndpoint: https://www.linkedin.com/oauth/v2/authorization
     TokenEndpoint: https://www.linkedin.com/oauth/v2/accessToken
     UserApiEndpoint: "https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))"
+  GitHubSettings:
+    Enable: true
+    Secret: xxx
+    Id: xxx
+    Scope: read:user user:email
+    AuthEndpoint: https://github.com/login/oauth/authorize
+    TokenEndpoint: https://github.com/login/oauth/access_token
+    UserApiEndpoint: https://api.github.com/user
+  TwitterSettings:
+    Enable: false
   PluginSettings:
     EnableUploads: true
     Plugins:
-      com.github.moussetc.mattermost.plugin.giphy:
-        provider: tenor
-        apikey: xxx
-        language: en
-        rating: r
-        rendition: downsized
-        renditiongfycat: 100pxGif
-        renditiontenor: mediumgif
       com.github.matterpoll.matterpoll:
         ExperimentalUI: true
       com.mattermost.custom-attributes:
