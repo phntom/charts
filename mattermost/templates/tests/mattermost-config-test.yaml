@@ -3,10 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include  "mattermost-team-edition.fullname" . }}-tests
   labels:
-    app.kubernetes.io/name: {{ include "mattermost-team-edition.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "mattermost-team-edition.chart" . }}
+    {{- include "mattermost-team-edition.labels" . | nindent 4 }}
 data:
   run.sh: |-
     #!/usr/bin/env bats

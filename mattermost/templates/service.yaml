@@ -7,15 +7,10 @@ metadata:
 {{- end }}
   name: {{ include "mattermost-team-edition.name" . }}
   labels:
-    app.kubernetes.io/name: {{ include "mattermost-team-edition.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "mattermost-team-edition.chart" . }}
+    {{- include "mattermost-team-edition.labels" . | nindent 4 }}
 spec:
   selector:
-    app.kubernetes.io/name: {{ include "mattermost-team-edition.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "mattermost-team-edition.selectorLabels" . | nindent 4 }}
   type: {{ .Values.service.type }}
   ports:
   - port: {{ .Values.service.externalPort }}

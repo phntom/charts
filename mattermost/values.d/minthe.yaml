@@ -33,9 +33,6 @@ ingress:
     nginx.ingress.kubernetes.io/server-snippet: |
       real_ip_header CF-Connecting-IP;
       if ($http_cf_connecting_ip != $remote_addr) { return 403; }
-      if ( $query_string = "id=xtce3qn9xpycujbptb39dqy3ur" ) {
-        return 301 https://join.nix.co.il/;
-      }
       if ( $cookie_MMUSERID = "" ) {
         set $nix b;
       }
@@ -110,7 +107,7 @@ config:
     MaxUsersPerTeam: 50000
     EnableTeamCreation: false
     EnableCustomBrand: true
-    CustomBrandText: "nix.co.il members: go to [join.nix.co.il](https://join.nix.co.il) to sign up"
+    CustomBrandText: "registration is currently closed, please ask an existing member to invite you to his team"
     CustomDescriptionText: self hosted, privacy oriented, independent and free community platform
     RestrictDirectMessage: team
     EnableTeamListing: false
@@ -121,7 +118,7 @@ config:
     RestrictPrivateChannelManageMembers: all
     RestrictPrivateChannelDeletion: team_admin
     RestrictPublicChannelDeletion: team_admin
-    RestrictTeamInvite: team_admin
+    RestrictTeamInvite: all
   SqlSettings:
     AtRestEncryptKey: xxx
   LogSettings:
@@ -156,6 +153,7 @@ config:
     SMTPPort: "587"
     ConnectionSecurity: STARTTLS
     PushNotificationContents: full
+    PushNotificationServer: http://mattermost-push-proxy.chat.svc:8065
     EnableEmailBatching: true
     UseChannelInEmailNotifications: true
   RateLimitSettings:
@@ -227,59 +225,59 @@ config:
         ExperimentalUI: true
       com.mattermost.custom-attributes:
         CustomAttributes:
-          - Name: "_Member since 2003_ :trophy:"
+          - Name: "_Member since 2003_ :trident: :zero::three:"
             UserIDs:
               - 5cmngiuzpbdhfe6h1pywjc7pyy
             TeamIDs: []
             GroupIDs: []
-          - Name: "_Member since 2005_ :trophy:"
+          - Name: "_Member since 2005_ :trophy: :zero::five:"
             UserIDs:
               - 7bcqiyod47g1unzwykt9nubz1e
               - 3hbw3ejowjy8ujdjacuqqs4d5w
+              - d3gjai9dbpyr5cmfpeaihmyw5r
+              - ze5azasij78atp9myqb37dppwc
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2007_ :trophy:"
+          - Name: "_Member since 2007_ :trophy: :zero::seven:"
             UserIDs:
-              - ze5azasij78atp9myqb37dppwc
               - bj394hna6bgdb88cfth35d6r9h
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2008_ :trophy:"
+          - Name: "_Member since 2008_ :trophy: :zero::eight:"
             UserIDs:
               - im19knk5afd9u8izzaztm13d6e
-              - d3gjai9dbpyr5cmfpeaihmyw5r
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2009_ :trophy:"
+          - Name: "_Member since 2009_ :1st_place_medal: :zero::nine:"
             UserIDs:
               - 4ynuqw6sgbdgpn44qxbk3s83ca
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2010_ :1st_place_medal:"
+          - Name: "_Member since 2010_ :1st_place_medal: :one::zero:"
             UserIDs:
               - zapdkaxf5fdubdu5qd19ymbjge
               - sdrrerer83fidg99j785fipc6w
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2011_ :1st_place_medal:"
+          - Name: "_Member since 2011_ :1st_place_medal: :one::one:"
             UserIDs:
               - 47bdmcsyy7dsprg9b9xb4kz3dy
               - 9kyhw1h6wi8tbqp1i6skek851a
               - hrmk8oahriyfmg9jke85pt8c4a
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2013_ :1st_place_medal:"
+          - Name: "_Member since 2013_ :2nd_place_medal: :one::three:"
             UserIDs:
               - h7eq6mdkq3bupro7rwhx8r7hoo
               - 75bggjn1rirdikomkz66spjiqe
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2014_ :1st_place_medal:"
+          - Name: "_Member since 2014_ :2nd_place_medal: :one::four:"
             UserIDs:
               - j7nxq9zcyi8h98irf3166or11e
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2015_ :2nd_place_medal:"
+          - Name: "_Member since 2015_ :2nd_place_medal: :one::five:"
             UserIDs:
               - ak8bua4n1j8mjg6pt6gfg844ur
             TeamIDs: [ ]

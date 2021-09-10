@@ -43,3 +43,23 @@ Return the appropriate apiVersion for ingress. Based on
 "networking.k8s.io/v1beta1"
 {{- end -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "mattermost-team-edition.labels" -}}
+helm.sh/chart: {{ include "mattermost-team-edition.chart" . }}
+{{ include "mattermost-team-edition.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "mattermost-team-edition.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "mattermost-team-edition.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
