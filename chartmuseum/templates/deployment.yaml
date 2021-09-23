@@ -204,7 +204,7 @@ spec:
           args:
             - bash
             - -c
-            - 'set -e; while true; do sleep {{ .Values.s3sync.delay }}; aws s3 sync {{ .Values.persistence.path | quote }} {{ .Values.s3sync.path | quote }}; done'
+            - 'set -e; while true; do sleep {{ .Values.s3sync.delay }}; aws s3 sync {{ .Values.persistence.path | quote }} {{ .Values.s3sync.path | quote }}; aws s3 sync {{ .Values.s3sync.path | quote }} {{ .Values.persistence.path | quote }}; done'
 
           volumeMounts:
             - mountPath: {{ .Values.persistence.path }}

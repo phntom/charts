@@ -320,4 +320,4 @@ s3sync:
     tag: 2.2.38
     pullPolicy: IfNotPresent
   path: s3://bucket/path/
-  delay: 300
+  delay: 30
