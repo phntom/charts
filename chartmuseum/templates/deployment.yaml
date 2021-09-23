@@ -2,44 +2,29 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "chartmuseum.fullname" . }}
-  annotations:
-{{ toYaml .Values.deployment.annotations | indent 4 }}
+  {{- with .Values.deployment.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
-{{ include "chartmuseum.labels.standard" . | indent 4 }}
-{{- if .Values.deployment.labels }}
-{{ toYaml .Values.deployment.labels | indent 4 }}
-{{- end }}
+    {{- include "chartmuseum.labels" . | nindent 4 }}
+    {{- with .Values.deployment.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
-    matchLabels:
-      app: {{ template "chartmuseum.name" . }}
-      release: {{ .Release.Name | quote }}
-{{- if .Values.deployment.labels }}
-{{ toYaml .Values.deployment.labels | indent 6 }}
-{{- end }}
+    matchLabels: {{- include "chartmuseum.selectorLabels" . | nindent 6 }}
   replicas: {{ .Values.replicaCount }}
-  strategy:
-{{ toYaml .Values.strategy | indent 4 }}
+  strategy: {{ toYaml .Values.strategy | nindent 4 }}
   revisionHistoryLimit: 10
-{{- if .Values.deployment.matchlabes }}
-  selector:
-    matchLabels:
-{{ toYaml .Values.deployment.matchlabels | indent 6 }}
-{{- end }}
   template:
     metadata:
-      name: {{ include "chartmuseum.fullname" . }}
-      annotations:
-{{ toYaml .Values.replica.annotations | indent 8 }}
-      labels:
-        app: {{ template "chartmuseum.name" . }}
-        release: {{ .Release.Name | quote }}
-{{- if .Values.deployment.labels }}
-{{ toYaml .Values.deployment.labels | indent 8 }}
-{{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels: {{- include "chartmuseum.selectorLabels" . | nindent 8 }}
     spec:
-      {{- if .Values.priorityClassName }}
-      priorityClassName: "{{ .Values.priorityClassName }}"
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . | quote }}
       {{- end }}
       {{- if .Values.securityContext.enabled }}
       securityContext:
@@ -50,171 +35,249 @@ spec:
         {{- if .Values.securityContext.supplementalGroups }}
         supplementalGroups: {{ .Values.securityContext.supplementalGroups }}
         {{- end }}
-      {{- else if .Values.persistence.enabled }}
-      initContainers:
-      - name: volume-permissions
-        image: {{ template "chartmuseum.volumePermissions.image" . }}
-        imagePullPolicy: "{{ .Values.volumePermissions.image.pullPolicy }}"
-        securityContext:
-          {{- toYaml .Values.containerSecurityContext | nindent 10 }}
-        command: ['sh', '-c', 'chown -R {{ .Values.securityContext.fsGroup }}:{{ .Values.securityContext.fsGroup }} {{ .Values.persistence.path }}']
-        volumeMounts:
-        - mountPath: {{ .Values.persistence.path }}
-          name: storage-volume
       {{- end }}
-{{- include "chartmuseum.imagePullSecrets" . | indent 6 }}
-      containers:
-      - name: {{ .Chart.Name }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        securityContext:
-          {{- toYaml .Values.containerSecurityContext | nindent 10 }}
-        env:
-{{- range $name, $value := .Values.env.open }}
-{{- if not (empty $value) }}
-        - name: {{ $name | quote }}
-          value: {{ $value | quote }}
-{{- end }}
-{{- end }}
-{{- range $name, $value := .Values.env.field }}
-{{- if not ( empty $value) }}
-        - name: {{ $name | quote }}
-          valueFrom:
-            fieldRef:
-              fieldPath: {{ $value | quote }}
-{{- end }}
-{{- end }}
-{{- if .Values.gcp.secret.enabled }}
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: "/etc/secrets/google/credentials.json"
-{{- end }}
-{{- if .Values.env.existingSecret }}
-{{- $secret_name := .Values.env.existingSecret }}
-{{- range $name, $key := .Values.env.existingSecretMappings }}
-{{- if not ( empty $key) }}
-        - name: {{ $name | quote }}
-          valueFrom:
-            secretKeyRef:
-              name: {{ $secret_name | quote }}
-              key: {{ $key | quote }}
-{{- end }}
-{{- end }}
-{{- else }}
-{{- $secret_name := include "chartmuseum.fullname" . }}
-{{- range $name, $value := .Values.env.secret }}
-{{- if not ( empty $value) }}
-        - name: {{ $name | quote }}
-          valueFrom:
-            secretKeyRef:
-              name: {{ $secret_name }}
-              key: {{ $name | quote }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- if .Values.bearerAuth.secret.enabled }}
-        -  name: AUTH_CERT_PATH
-           value: /var/keys/public-key.pem
-{{ end }}
-        args:
-        - --port=8080
-{{- if eq .Values.env.open.STORAGE "local" }}
-        - --storage-local-rootdir={{ .Values.persistence.path }}
-{{- end }}
-{{- if .Values.extraArgs }}
-{{ toYaml .Values.extraArgs | indent 8 }}
-{{- end }}
-        ports:
-        - name: http
-          containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: {{ .Values.env.open.CONTEXT_PATH }}/health
-            port: http
-{{ toYaml .Values.probes.liveness | indent 10 }}
-        readinessProbe:
-          httpGet:
-            path: {{ .Values.env.open.CONTEXT_PATH }}/health
-            port: http
-{{ toYaml .Values.probes.readiness | indent 10 }}
-        volumeMounts:
-{{- if eq .Values.env.open.STORAGE "local" }}
-        - mountPath: {{ .Values.persistence.path }}
-          name: storage-volume
-{{- end }}
-{{- if  .Values.gcp.secret.enabled }}
-        - mountPath: /etc/secrets/google
-          name: {{ include "chartmuseum.fullname" . }}-gcp
-{{- end }}
-{{- if  .Values.oracle.secret.enabled }}
-        - mountPath: /home/chartmuseum/.oci
-          name: {{ include "chartmuseum.fullname" . }}-oracle
-{{- end }}
-{{- if .Values.bearerAuth.secret.enabled }}
-        - name: public-key
-          mountPath: /var/keys
-          readOnly: true
-{{- end }}
-      {{- with .Values.resources }}
-        resources:
-{{ toYaml . | indent 10 }}
-      {{- end }}
-    {{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- if .Values.deployment.schedulerName }}
-      schedulerName: {{ .Values.deployment.schedulerName }}
-    {{- end -}}
-    {{- if and .Values.serviceAccount.create .Values.serviceAccount.name }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}
-    {{- else if .Values.serviceAccount.create }}
-      serviceAccountName: {{ include "chartmuseum.fullname" . }}
-    {{- else if .Values.serviceAccount.name }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}
-    {{- end }}
-      volumes:
-      - name: storage-volume
       {{- if .Values.persistence.enabled }}
-        persistentVolumeClaim:
-          claimName: {{ .Values.persistence.existingClaim | default (include "chartmuseum.fullname" .) }}
-      {{- else }}
-        emptyDir: {}
-      {{- end -}}
-      {{ if .Values.gcp.secret.enabled }}
-      - name: {{ include "chartmuseum.fullname" . }}-gcp
-        secret:
-      {{ if .Values.env.secret.GOOGLE_CREDENTIALS_JSON }}
-          secretName: {{ include "chartmuseum.fullname" . }}
-          items:
-          - key: GOOGLE_CREDENTIALS_JSON
-            path: credentials.json
-      {{ else }}
-          secretName: {{ .Values.gcp.secret.name }}
-          items:
-          - key: {{ .Values.gcp.secret.key }}
-            path: credentials.json
-      {{ end }}
-      {{ end }}
-      {{ if .Values.oracle.secret.enabled }}
-      - name: {{ include "chartmuseum.fullname" . }}-oracle
-        secret:
-          secretName: {{ .Values.oracle.secret.name }}
-          items:
-          - key: {{ .Values.oracle.secret.config }}
-            path: config
-          - key: {{ .Values.oracle.secret.key_file }}
-            path: oci.key
-      {{ end }}
-{{- if .Values.bearerAuth.secret.enabled }}
-      - name: public-key
-        secret:
-          secretName: {{ .Values.bearerAuth.secret.publicKeySecret }}
-{{- end }}
+      initContainers:
+        {{- if .Values.s3sync.enabled }}
+        - name: s3-sync-ingress
+          image: {{ .Values.s3sync.image.name }}:{{ .Values.s3sync.image.tag }}
+          imagePullPolicy: {{ .Values.s3sync.image.pullPolicy | quote }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command:
+            - /usr/bin/env
+          args:
+            - aws
+            - s3
+            - sync
+            - {{ .Values.s3sync.path | quote }}
+            - {{ .Values.persistence.path | quote }}
+          volumeMounts:
+            - mountPath: {{ .Values.persistence.path | quote }}
+              name: storage-volume
+            {{- with .Values.deployment.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          env:
+            {{- range $name, $value := .Values.env.open }}
+            {{- if not (empty $value) }}
+            - name: {{ $name | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+        {{- end }}
+        - name: volume-permissions
+          image: {{ .Values.volumePermissions.image.repository }}:{{ .Values.volumePermissions.image.tag }}
+          imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command: ['sh', '-c', 'chown -R {{ .Values.securityContext.fsGroup }}:{{ .Values.securityContext.fsGroup }} {{ .Values.persistence.path }}']
+          volumeMounts:
+            - mountPath: {{ .Values.persistence.path }}
+              name: storage-volume
+      {{- end }}
+      {{- include "chartmuseum.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            {{- range $name, $value := .Values.env.open }}
+            {{- if not (empty $value) }}
+            - name: {{ $name | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+
+            {{- range $name, $value := .Values.env.field }}
+            {{- if not ( empty $value) }}
+            - name: {{ $name | quote }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+
+            {{- if .Values.gcp.secret.enabled }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/etc/secrets/google/credentials.json"
+            {{- end }}
+
+            {{- if .Values.env.existingSecret }}
+            {{- $secret_name := .Values.env.existingSecret }}
+            {{- range $name, $key := .Values.env.existingSecretMappings }}
+            {{- if not ( empty $key) }}
+            - name: {{ $name | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret_name | quote }}
+                  key: {{ $key | quote }}
+            {{- end }}
+            {{- end }}
+            {{- else }}
+            {{- $secret_name := include "chartmuseum.fullname" . }}
+            {{- range $name, $value := .Values.env.secret }}
+            {{- if not ( empty $value) }}
+            - name: {{ $name | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret_name }}
+                  key: {{ $name | quote }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+
+            {{- if .Values.bearerAuth.secret.enabled }}
+            -  name: AUTH_CERT_PATH
+               value: /var/keys/public-key.pem
+            {{ end }}
+          args:
+            - "--port=8080"
+            {{- if eq .Values.env.open.STORAGE "local" }}
+            - "--storage-local-rootdir={{ .Values.persistence.path }}"
+            {{- end }}
+            {{- with .Values.extraArgs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+          ports:
+            - name: http
+              containerPort: 8080
+
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.env.open.CONTEXT_PATH }}/health
+              port: http
+            {{- toYaml .Values.probes.liveness | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.env.open.CONTEXT_PATH }}/health
+              port: http
+            {{- toYaml .Values.probes.readiness | nindent 12 }}
+
+          volumeMounts:
+            {{- if eq .Values.env.open.STORAGE "local" }}
+            - mountPath: {{ .Values.persistence.path }}
+              name: storage-volume
+            {{- end }}
+
+            {{- if .Values.gcp.secret.enabled }}
+            - mountPath: /etc/secrets/google
+              name: {{ include "chartmuseum.fullname" . }}-gcp
+            {{- end }}
+
+            {{- if  .Values.oracle.secret.enabled }}
+            - mountPath: /home/chartmuseum/.oci
+              name: {{ include "chartmuseum.fullname" . }}-oracle
+            {{- end }}
+
+            {{- if .Values.bearerAuth.secret.enabled }}
+            - name: public-key
+              mountPath: /var/keys
+              readOnly: true
+            {{- end }}
+
+            {{- with .Values.deployment.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+          {{- with .Values.resources }}
+          resources:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+
+        {{- if .Values.s3sync.enabled }}
+        - name: s3-sync-egress
+          image: {{ .Values.s3sync.image.name }}:{{- .Values.s3sync.image.tag }}
+          imagePullPolicy: {{ .Values.s3sync.image.pullPolicy | quote }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command: ["/usr/bin/env"]
+          args:
+            - bash
+            - -c
+            - 'set -e; while true; do sleep {{ .Values.s3sync.delay }}; aws s3 sync {{ .Values.persistence.path | quote }} {{ .Values.s3sync.path | quote }}; done'
+
+          volumeMounts:
+            - mountPath: {{ .Values.persistence.path }}
+              name: storage-volume
+
+            {{- with .Values.deployment.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+          env:
+            {{- range $name, $value := .Values.env.open }}
+            {{- if not (empty $value) }}
+            - name: {{ $name | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.schedulerName }}
+      schedulerName: {{ . | quote }}
+      {{- end }}
+      serviceAccountName: {{ include "chartmuseum.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
+      volumes:
+        - name: storage-volume
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "chartmuseum.fullname" .) }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+
+        {{ if .Values.gcp.secret.enabled }}
+        - name: {{ include "chartmuseum.fullname" . }}-gcp
+          secret:
+        {{- if .Values.env.secret.GOOGLE_CREDENTIALS_JSON }}
+            secretName: {{ include "chartmuseum.fullname" . }}
+            items:
+            - key: GOOGLE_CREDENTIALS_JSON
+              path: credentials.json
+        {{- else }}
+            secretName: {{ .Values.gcp.secret.name }}
+            items:
+            - key: {{ .Values.gcp.secret.key }}
+              path: credentials.json
+        {{- end }}
+        {{- end }}
+
+        {{- if .Values.oracle.secret.enabled }}
+        - name: {{ include "chartmuseum.fullname" . }}-oracle
+          secret:
+            secretName: {{ .Values.oracle.secret.name }}
+            items:
+            - key: {{ .Values.oracle.secret.config }}
+              path: config
+            - key: {{ .Values.oracle.secret.key_file }}
+              path: oci.key
+        {{- end }}
+
+        {{- if .Values.bearerAuth.secret.enabled }}
+        - name: public-key
+          secret:
+            secretName: {{ .Values.bearerAuth.secret.publicKeySecret }}
+        {{- end }}
+
+        {{- with .Values.deployment.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
