@@ -153,7 +153,8 @@ config:
     SMTPPort: "587"
     ConnectionSecurity: STARTTLS
     PushNotificationContents: full
-    PushNotificationServer: http://mattermost-push-proxy.chat.svc:8065
+    PushNotificationServer: https://push-test.mattermost.com
+    PushNotificationServerCustom: http://mattermost-push-proxy.chat.svc:8065
     EnableEmailBatching: true
     UseChannelInEmailNotifications: true
   RateLimitSettings:
