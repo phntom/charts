@@ -1,0 +1,55 @@
+defaultAirflowRepository: apache/airflow
+defaultAirflowTag: "2.1.4"
+airflowVersion: "2.1.4"
+
+ingress:
+  enabled: true
+  web:
+    annotations:
+      acme.kubernetes.io/enable: "true"
+      acme.kubernetes.io/dns: "dns_cf"
+      nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fairflow$escaped_request_uri"
+    hosts:
+      - airflow.minthe.kix.co.il
+    tls:
+      enabled: true
+      secretName: airflow-web-tls
+  flower:
+    annotations:
+      acme.kubernetes.io/enable: "true"
+      acme.kubernetes.io/dns: "dns_cf"
+      nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fflower$escaped_request_uri"
+    hosts:
+      - flower.minthe.kix.co.il
+    tls:
+      enabled: true
+      secretName: flower-web-tls
+
+postgresql:
+  enabled: false
+
+executor: "KubernetesExecutor"
+
+#extraSecrets:
+#  airflow-airflow-connections:
+#    stringData:
+#      AWS_ACCESS_KEY_ID: xxx
+#      AWS_SECRET_ACCESS_KEY: xxx
+
+extraEnvFrom: |
+  - secretRef:
+     name: airflow-airflow-connections
+
+data:
+  metadataConnection:
+    host: postgresql-ha-pgpool.db.svc
+    port: 5432
+    db: airflow
+    user: airflow
+    pass: xxx
+
+config:
+  webserver:
+    authenticate: False

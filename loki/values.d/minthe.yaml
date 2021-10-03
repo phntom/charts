@@ -5,7 +5,7 @@ promtail:
 fluent-bit:
   enabled: false
 grafana:
-  enabled: true
+  enabled: false
   ingress:
     enabled: true
     annotations:
@@ -94,7 +94,7 @@ loki:
     - name: AWS_SDK_LOAD_CONFIG
       value: "1"
   ingress:
-    enabled: true
+    enabled: false
     annotations:
       nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
@@ -131,3 +131,5 @@ loki:
   persistence:
     enabled: true
     size: 1Gi
+  service:
+    port: 3100

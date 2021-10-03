@@ -1,4 +1,4 @@
-# helm upgrade --install prometheus -n prometheus prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/limnad.yaml  --atomic --debug
+# helm upgrade --install kube-prometheus-stack -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/limnad.yaml -f kube-prometheus-stack/values.d/limnad.secret.yaml --atomic --debug
 
 defaultRules:
   rules:
@@ -12,7 +12,11 @@ defaultRules:
 kubeControllerManager:
   enabled: false
 
-namespaceOverride: prometheus
+kubeScheduler:
+  enabled: false
+
+kubeApiServer:
+  enabled: false
 
 alertmanager:
   enabled: true
@@ -80,18 +84,18 @@ alertmanager:
       acme.kubernetes.io/enable: "true"
       acme.kubernetes.io/dns: "dns_cf"
       # acme.kubernetes.io/staging: "true"
-      nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
+      nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
     hosts:
-      - alerts.limnad.kix.co.il
-      - alertmanager.limnad.kix.co.il
+      - alerts.minthe.kix.co.il
+      - alertmanager.minthe.kix.co.il
     paths:
       - /
     tls:
       - secretName: alertmanager-tls
         hosts:
-          - alerts.limnad.kix.co.il
-          - alertmanager.limnad.kix.co.il
+          - alerts.minthe.kix.co.il
+          - alertmanager.minthe.kix.co.il
 
   ## Settings affecting alertmanagerSpec
   ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#alertmanagerspec
@@ -106,9 +110,9 @@ alertmanager:
 #          resources:
 #            requests:
 #              storage: 100Mi
-    externalUrl: https://alerts.limnad.kix.co.il/
+    externalUrl: https://alerts.minthe.kix.co.il/
     containers:
-      - image: phntom/s3-sync:linode
+      - image: phntom/s3-sync:do-fra1
         imagePullPolicy: Always
         name: s3-sync
         env:
@@ -130,14 +134,14 @@ alertmanager:
                 key: AWS_SECRET_ACCESS_KEY
         volumeMounts:
           - mountPath: /alertmanager
-            name: alertmanager-prometheus-kube-prometheus-alertmanager-db
+            name: alertmanager-kube-prometheus-stack-alertmanager-db
         resources:
           limits:
             cpu: "50m"
     initContainers:
       - name: s3-sync-startup
         command: [ "startup" ]
-        image: phntom/s3-sync:linode
+        image: phntom/s3-sync:do-fra1
         imagePullPolicy: Always
         env:
           - name: S3_URL
@@ -156,7 +160,7 @@ alertmanager:
                 key: AWS_SECRET_ACCESS_KEY
         volumeMounts:
           - mountPath: /alertmanager
-            name: alertmanager-prometheus-kube-prometheus-alertmanager-db
+            name: alertmanager-kube-prometheus-stack-alertmanager-db
 
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
@@ -174,45 +178,74 @@ grafana:
   resources: {}
 
   grafana.ini:
+    server:
+      domain: grafana.minthe.kix.co.il
+      root_url: https://grafana.minthe.kix.co.il
+      enforce_domain: true
+    users:
+      viewers_can_edit: true
+      editors_can_admin: true
+      hidden_users: admin
+      auto_assign_org_role: Admin
+      login_hint: request PHANTOm for access at kix.co.il
+      home_page: /d/efa86fd1d0c121a26444b636a3f509a8/kubernetes-compute-resources-cluster?orgId=1&refresh=10s
+    auth:
+      disable_login_form: true
+      disable_signout_menu: true
     snapshots:
       public_mode: true
     security:
       x_xss_protection: true
+      admin_user: phantom@kix.co.il
     auth.anonymous:
-      enabled: true
+      enabled: false
       org_role: Admin
     auth.proxy:
-      enabled: false
-      header_name: X-Forwarded-Preferred-Username
-      header_property: username
+      enabled: true
+      header_name: X-Auth-Request-Email
+      header_property: email
+      headers: Name:X-Auth-Request-Username
       auto_sign_up: true
-      headers: "Name:X-Forwarded-User Email:X-Forwarded-Email Groups:X-Forwarded-Groups"
-    server:
-      root_url: https://grafana.limnad.kix.co.il
+      sync_ttl: 60
+      enable_login_token: false
+    analytics:
+      check_for_updates: false
+      reporting_enabled: false
+    alerting:
+      enabled: false
+    date_formats:
+      use_browser_locale: true
+      default_timezone: browser
+    dataproxy:
+      send_user_header: true
+      timeout: 498
 
-  # image:
+    # image:
     # tag: 7.1.5
 
   ingress:
     enabled: true
     annotations:
-      nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
-      nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Auth-Request-Email, X-Auth-Request-User, X-Forwarded-Access-Token"
-      nginx.ingress.kubernetes.io/auth-snippet: |
-        auth_request_set $token $upstream_http_authorization;
-        proxy_set_header Authorization $token;
+      nginx.ingress.kubernetes.io/auth-cache-duration: 200 202 401 30s
+      nginx.ingress.kubernetes.io/auth-cache-key: $cookie__oauth2_proxy
+      nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
+      nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email,X-Auth-Request-Username
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        auth_request_set $remote_email $upstream_http_x_auth_request_email;
+        add_header X-Auth-Request-Email $remote_email;
       acme.kubernetes.io/enable: "true"
       acme.kubernetes.io/dns: "dns_cf"
       # acme.kubernetes.io/staging: "true"
     labels: {}
     hosts:
-      - grafana.limnad.kix.co.il
+      - grafana.minthe.kix.co.il
     path: /
     tls:
       - secretName: prometheus-grafana-tls
         hosts:
-          - grafana.limnad.kix.co.il
+          - grafana.minthe.kix.co.il
 
   sidecar:
     # image:
@@ -247,7 +280,10 @@ grafana:
 
   ## Configure additional grafana datasources (passed through tpl)
   ## ref: http://docs.grafana.org/administration/provisioning/#datasources
-  additionalDataSources: []
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      url: http://loki.clusterwide.svc:3100
   # - name: prometheus-sample
   #   access: proxy
   #   basicAuth: true
@@ -1826,8 +1862,8 @@ prometheus:
   ingress:
     enabled: true
     annotations:
-      nginx.ingress.kubernetes.io/auth-url: "https://auth.limnad.kix.co.il/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.limnad.kix.co.il/oauth2/start?rd=%2Fgo%2Fprometheus$escaped_request_uri"
+      nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fprometheus$escaped_request_uri"
       acme.kubernetes.io/enable: "true"
       acme.kubernetes.io/dns: "dns_cf"
       # acme.kubernetes.io/staging: "true"
@@ -1839,7 +1875,7 @@ prometheus:
     # hosts:
     #   - prometheus.domain.com
     hosts:
-      - prometheus.limnad.kix.co.il
+      - prometheus.minthe.kix.co.il
 
     ## Paths to use for ingress rules - one path should match the prometheusSpec.routePrefix
     ##
@@ -1852,20 +1888,20 @@ prometheus:
     tls:
       - secretName: prometheus-tls
         hosts:
-          - prometheus.limnad.kix.co.il
+          - prometheus.minthe.kix.co.il
 
   prometheusSpec:
-    image:
-      tag: v2.25.2
-      sha: "c24ab4ef6187"
-    externalUrl: ""
+    disableCompaction: false
+    replicas: 1
     ruleSelector:
       matchLabels: {}
     serviceMonitorSelector:
       matchLabels: {}
     podMonitorSelector:
       matchLabels: {}
-    retention: 90d
+    retention: 7d
+    podAntiAffinity: soft
+    remoteWriteDashboards: true
     containers:
       - name: prometheus
         livenessProbe:
@@ -1886,7 +1922,7 @@ prometheus:
           periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 3
-      - image: phntom/s3-sync:linode
+      - image: "phntom/s3-sync:do-fra1"
         imagePullPolicy: Always
         name: s3-sync
         env:
@@ -1908,14 +1944,14 @@ prometheus:
                 key: AWS_SECRET_ACCESS_KEY
         volumeMounts:
           - mountPath: /prometheus
-            name: prometheus-prometheus-kube-prometheus-prometheus-db
+            name: prometheus-kube-prometheus-stack-prometheus-db
         resources:
           limits:
             cpu: "100m"
     initContainers:
       - name: s3-sync-startup
         command: [ "startup" ]
-        image: phntom/s3-sync:linode
+        image: phntom/s3-sync:do-fra1
         imagePullPolicy: Always
         env:
           - name: S3_URL
@@ -1934,4 +1970,4 @@ prometheus:
                 key: AWS_SECRET_ACCESS_KEY
         volumeMounts:
           - mountPath: /prometheus
-            name: prometheus-prometheus-kube-prometheus-prometheus-db
+            name: prometheus-kube-prometheus-stack-prometheus-db
