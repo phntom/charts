@@ -2,6 +2,42 @@ defaultAirflowRepository: apache/airflow
 defaultAirflowTag: "2.1.4"
 airflowVersion: "2.1.4"
 
+nodeSelector:
+  doks.digitalocean.com/node-pool: pool-ds
+workers:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+scheduler:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+createUserJob:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+migrateDatabaseJob:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+webserver:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+triggerer:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+flower:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+statsd:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+pgbouncer:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+redis:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+cleanup:
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-ds
+
 ingress:
   enabled: true
   web:
