@@ -10,11 +10,14 @@ postgresql:
   password: xxx
   repmgrUsername: repmgr
   repmgrPassword: xxx
+  maxConnections: 200
+
 pgpool:
   customUsers:
     usernames: xxx,xxx
     passwords: xxx,xxx
-
+  maxPool: 3
+  childMaxConnections: 200
 
 metrics:
   enabled: true

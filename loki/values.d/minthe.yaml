@@ -139,9 +139,12 @@ loki:
         provisioned_read_throughput: 50
         inactive_write_throughput: 1
         inactive_read_throughput: 1
+      retention_deletes_enabled: true
+      retention_period: 4392h
     compactor:
       working_directory: /data/loki/boltdb-shipper-compactor
       shared_store: s3
+      compaction_interval: 10m
   persistence:
     enabled: false
     size: 1Gi
