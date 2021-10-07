@@ -1,0 +1,4 @@
+nodeSelector:
+  doks.digitalocean.com/node-pool: pool-ds
+hub:
+  cookieSecret: xxx

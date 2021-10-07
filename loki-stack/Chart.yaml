@@ -1,0 +1,42 @@
+apiVersion: "v2"
+name: loki-stack
+version: 2.4.2
+appVersion: v2.1.0
+kubeVersion: "^1.10.0-0"
+description: "Loki: like Prometheus, but for logs."
+home: https://grafana.com/loki
+icon: https://raw.githubusercontent.com/grafana/loki/master/docs/sources/logo.png
+sources:
+- https://github.com/grafana/loki
+maintainers:
+- name: Loki Maintainers
+  email: lokiproject@googlegroups.com
+dependencies:
+  - name: "loki"
+    condition: loki.enabled
+    repository: "https://grafana.github.io/helm-charts"
+    version: "^2.6.0"
+  - name: "promtail"
+    condition: promtail.enabled
+    repository: "https://grafana.github.io/helm-charts"
+    version: "^3.8.1"
+  - name: "fluent-bit"
+    condition: fluent-bit.enabled
+    repository: "https://grafana.github.io/helm-charts"
+    version: "^2.2.0"
+  - name: "grafana"
+    condition: grafana.enabled
+    version: "^6.16.12"
+    repository:  "https://grafana.github.io/helm-charts"
+  - name: "prometheus"
+    condition: prometheus.enabled
+    version: "^14.9.0"
+    repository:  "https://prometheus-community.github.io/helm-charts"
+  - name: "filebeat"
+    condition: filebeat.enabled
+    version: "^7.15.0"
+    repository:  "https://helm.elastic.co"
+  - name: "logstash"
+    condition: logstash.enabled
+    version: "^7.15.0"
+    repository:  "https://helm.elastic.co"
