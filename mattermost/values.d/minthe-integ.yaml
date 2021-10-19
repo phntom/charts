@@ -157,6 +157,8 @@ config:
     SMTPPort: "587"
     ConnectionSecurity: STARTTLS
     PushNotificationContents: full
+    PushNotificationServer: https://push-test.mattermost.com
+    PushNotificationServerCustom: http://mattermost-push-proxy.chat.svc:8065
     EnableEmailBatching: true
     UseChannelInEmailNotifications: true
   RateLimitSettings:
@@ -226,6 +228,13 @@ config:
   PluginSettings:
     EnableUploads: true
     Plugins:
+      zoom:
+        EnableOAuth: true
+        AccountLevelApp: false
+        OAuthClientID: xxx
+        OAuthClientSecret: xxx
+        EncryptionKey: xxx
+        WebhookSecret: xxx
       com.github.matterpoll.matterpoll:
         ExperimentalUI: true
       com.mattermost.custom-attributes:
@@ -295,6 +304,8 @@ config:
       com.mattermost.custom-attributes:
         Enable: true
       com.mattermost.agenda:
+        Enable: true
+      zoom:
         Enable: true
   ClusterSettings:
     AdvertiseAddress: 'mattermost-team-edition.chat.svc'

@@ -167,9 +167,9 @@ config:
     ShowEmailAddress: false
     ShowFullName: false
   SupportSettings:
-    TermsOfServiceLink: https://nix.co.il/nix/pl/4x6i3g7i87dgmpbwjpwk537zxo
-    PrivacyPolicyLink: https://nix.co.il/nix/pl/mw54memp97f788jdztp4p8y6yc
-    AboutLink: https://nix.co.il/nix/pl/cn6415d3njgjjb63z6jrese7ho
+    TermsOfServiceLink: https://kix.co.il/help/terms
+    PrivacyPolicyLink: https://kix.co.il/help/privacy
+    AboutLink: https://kix.co.il/help/contact
     HelpLink: https://kix.co.il/nix/channels/help
     ReportAProblemLink: https://kix.co.il/nix/channels/help
     SupportEmail: support@kix.co.il
@@ -222,6 +222,13 @@ config:
   PluginSettings:
     EnableUploads: true
     Plugins:
+      zoom:
+        EnableOAuth: true
+        AccountLevelApp: false
+        OAuthClientID: xxx
+        OAuthClientSecret: xxx
+        EncryptionKey: xxx
+        WebhookSecret: xxx
       com.github.matterpoll.matterpoll:
         ExperimentalUI: true
       com.mattermost.custom-attributes:
@@ -291,6 +298,8 @@ config:
       com.mattermost.custom-attributes:
         Enable: true
       com.mattermost.agenda:
+        Enable: true
+      zoom:
         Enable: true
   ClusterSettings:
     AdvertiseAddress: 'mattermost-team-edition.chat.svc'
