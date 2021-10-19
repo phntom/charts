@@ -18,6 +18,8 @@ pgpool:
     passwords: xxx,xxx
   maxPool: 3
   childMaxConnections: 200
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-production
 
 metrics:
   enabled: true
@@ -36,5 +38,3 @@ resources:
   requests:
     memory: 36Mi
     cpu: 100m
-
-

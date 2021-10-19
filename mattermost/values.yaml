@@ -73,6 +73,8 @@ ingress:
     #   hosts:
     #     - mattermost.example.com
 
+nodeSelector: {}
+
 route:
   enabled: false
 

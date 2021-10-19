@@ -88,6 +88,9 @@ spec:
                       values:
                         - {{ include "mattermost-team-edition.name" . | quote }}
                 topologyKey: "kubernetes.io/hostname"
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- . | toYaml | nindent 8 }}
+      {{- end }}
       volumes:
       {{- if .Values.extraVolumes -}}
       {{ .Values.extraVolumes | toYaml | nindent 6 }}
