@@ -33,9 +33,6 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     nginx.ingress.kubernetes.io/server-snippet: |
-      if ( $query_string = "id=xtce3qn9xpycujbptb39dqy3ur" ) {
-        return 301 https://join.nix.co.il/;
-      }
       if ( $cookie_MMUSERID = "" ) {
         set $nix b;
       }
@@ -85,7 +82,7 @@ config:
     BannerTextColor: '#333333'
     AllowBannerDismissal: true
   ServiceSettings:
-    EnableSecurityFixAlert: false
+    EnableSecurityFixAlert: true
     SiteURL: https://mmbeta.minthe.kix.co.il
     EnableOAuthServiceProvider: true
     EnablePostUsernameOverride: true
@@ -98,10 +95,11 @@ config:
     GoogleDeveloperKey: xxx
     AllowedUntrustedInternalConnections: "chadbot.chat.svc"
     EnableEmailInvitations: false
-    EnableTutorial: false
+    EnableTutorial: true
     TimeBetweenUserTypingUpdatesMilliseconds: 6000
     AllowCookiesForSubdomains: false
     ManagedResourcePaths: "proxy,blog"
+    CollapsedThreads: default_on
   ImageProxySettings:
     Enable: true
     ImageProxyType: "atmos/camo"
@@ -126,12 +124,14 @@ config:
     RestrictPrivateChannelDeletion: team_admin
     RestrictPublicChannelDeletion: team_admin
     RestrictTeamInvite: all
+    EnableUserDeactivation: true
+    ExperimentalPrimaryTeam: 'nix'
   SqlSettings:
     AtRestEncryptKey: xxx
   LogSettings:
     ConsoleLevel: DEBUG
     EnableWebhookDebugging: true
-    EnableDiagnostics: true
+    EnableDiagnostics: false
   NotificationLogSettings:
     ConsoleLevel: INFO
   FileSettings:
@@ -172,13 +172,13 @@ config:
     VaryByUser: true
   PrivacySettings:
     ShowEmailAddress: false
-    ShowFullName: false
+    ShowFullName: true
   SupportSettings:
-    TermsOfServiceLink: https://nix.co.il/nix/pl/4x6i3g7i87dgmpbwjpwk537zxo
-    PrivacyPolicyLink: https://nix.co.il/nix/pl/mw54memp97f788jdztp4p8y6yc
-    AboutLink: https://nix.co.il/nix/pl/cn6415d3njgjjb63z6jrese7ho
-    HelpLink: https://kix.co.il/nix/channels/help
-    ReportAProblemLink: https://kix.co.il/nix/channels/help
+    TermsOfServiceLink: https://mmbeta.minthe.kix.co.il/help/terms
+    PrivacyPolicyLink: https://mmbeta.minthe.kix.co.il/help/privacy
+    AboutLink: https://mmbeta.minthe.kix.co.il/help/about
+    HelpLink: https://mmbeta.minthe.kix.co.il/nix/channels/help
+    ReportAProblemLink: https://mmbeta.minthe.kix.co.il/nix/channels/help
     SupportEmail: support@kix.co.il
   GitLabSettings:
     Enable: true
@@ -228,6 +228,12 @@ config:
     UserApiEndpoint: https://api.github.com/user
   TwitterSettings:
     Enable: false
+  BleveSettings:
+    BulkIndexingTimeWindowSeconds: 3600
+    EnableIndexing: true
+    EnableAutocomplete: false
+    EnableSearching: false
+    IndexDir: '/mattermost/data/'
   PluginSettings:
     EnableUploads: true
     Plugins:
@@ -296,11 +302,17 @@ config:
       com.mattermost.plugin-todo:
         Enable: true
       com.github.matterpoll.matterpoll:
-        Enable: true
+        Enable: false
       com.mattermost.custom-attributes:
+        Enable: false
+      focalboard:
+        Enable: true
+      playbooks:
         Enable: true
       com.mattermost.agenda:
-        Enable: true
+        Enable: false
+      zoom:
+        Enable: false
   ClusterSettings:
     AdvertiseAddress: 'mattermost-team-edition.chat.svc'
     BindAddress: ''

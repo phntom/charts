@@ -47,6 +47,9 @@ spec:
         - name: http
           containerPort: {{ .Values.service.internalPort }}
           protocol: TCP
+        - name: metrics
+          containerPort: {{ .Values.service.metricsPort }}
+          protocol: TCP
         livenessProbe:
           initialDelaySeconds: 10
           timeoutSeconds: 5

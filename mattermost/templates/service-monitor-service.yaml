@@ -13,7 +13,7 @@ spec:
     {{- include "mattermost-team-edition.selectorLabels" . | nindent 4 }}
   type: ClusterIP
   ports:
-    - port: 8067
+    - port: {{ .Values.service.metricsPort }}
       targetPort: metrics
       protocol: TCP
       name: "{{ include "mattermost-team-edition.name" . }}"

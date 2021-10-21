@@ -96,7 +96,7 @@ config:
     GoogleDeveloperKey: xxx
     AllowedUntrustedInternalConnections: "chadbot.chat.svc"
     EnableEmailInvitations: false
-    EnableTutorial: false
+    EnableTutorial: true
     TimeBetweenUserTypingUpdatesMilliseconds: 6000
     AllowCookiesForSubdomains: false
     ManagedResourcePaths: "proxy,blog"
@@ -122,6 +122,7 @@ config:
     RestrictPrivateChannelDeletion: team_admin
     RestrictPublicChannelDeletion: team_admin
     RestrictTeamInvite: all
+    EnableUserDeactivation: true
   SqlSettings:
     AtRestEncryptKey: xxx
   LogSettings:
@@ -172,7 +173,7 @@ config:
   SupportSettings:
     TermsOfServiceLink: https://kix.co.il/help/terms
     PrivacyPolicyLink: https://kix.co.il/help/privacy
-    AboutLink: https://kix.co.il/help/contact
+    AboutLink: https://kix.co.il/help/about
     HelpLink: https://kix.co.il/nix/channels/help
     ReportAProblemLink: https://kix.co.il/nix/channels/help
     SupportEmail: support@kix.co.il
@@ -290,11 +291,17 @@ config:
       com.mattermost.plugin-todo:
         Enable: true
       com.github.matterpoll.matterpoll:
-        Enable: true
+        Enable: false
       com.mattermost.custom-attributes:
+        Enable: false
+      focalboard:
+        Enable: true
+      playbooks:
         Enable: true
       com.mattermost.agenda:
-        Enable: true
+        Enable: false
+      zoom:
+        Enable: false
   ClusterSettings:
     AdvertiseAddress: 'mattermost-team-edition.chat.svc'
     BindAddress: ''
