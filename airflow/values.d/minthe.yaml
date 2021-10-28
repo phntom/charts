@@ -1,44 +1,44 @@
 # helm upgrade -n airflow airflow apache-airflow/airflow -f airflow/values.d/minthe.yaml -f airflow/values.d/minthe.secret.yaml --install --debug --atomic
 
 defaultAirflowRepository: phntom/ds-airflow
-defaultAirflowTag: "0.0.4"
+defaultAirflowTag: "0.0.5"
 airflowVersion: "2.1.4"
 
 nodeSelector:
-  doks.digitalocean.com/node-pool: pool-ds
+  doks.digitalocean.com/node-pool: pool-labs
 workers:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 scheduler:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 createUserJob:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 migrateDatabaseJob:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 webserver:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 triggerer:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 flower:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 statsd:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 pgbouncer:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 redis:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 cleanup:
   nodeSelector:
-    doks.digitalocean.com/node-pool: pool-ds
+    doks.digitalocean.com/node-pool: pool-labs
 
 ingress:
   enabled: true
