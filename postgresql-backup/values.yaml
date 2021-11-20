@@ -24,6 +24,8 @@ cronjob:
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: OnFailure
+cleanup:
+  schedule: '5 5 * * *'
 
 image:
   repository: phntom/postgresql-backup-s3

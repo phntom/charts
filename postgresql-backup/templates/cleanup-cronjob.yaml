@@ -1,0 +1,75 @@
+{{- if not .Values.restore }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "{{ include "postgresql-backup.fullname" . }}-cleanup"
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{ include "postgresql-backup.labels" . | nindent 4 }}
+spec:
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels: {{ include "postgresql-backup.selectorLabels" . | nindent 12 }}
+          {{- with .Values.podAnnotations }}
+          annotations: {{ toYaml . | nindent 12 }}
+          {{- end }}
+        spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ include "postgresql-backup.serviceAccountName" . }}
+          securityContext: {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
+          containers:
+            - name: {{ include "postgresql-backup.name" . }}
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+              command:
+                - cleanup.sh
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "postgresql-backup.fullname" . }}
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "postgresql-backup.fullname" . }}
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: S3_BUCKET
+                  value: {{ .Values.s3.bucket | quote }}
+                - name: S3_PREFIX
+                  value: {{ trimSuffix "/" .Values.s3.prefix | quote }}
+                - name: AWS_DEFAULT_REGION
+                  value: {{ .Values.s3.region | quote }}
+                {{- if .Values.s3.endpoint }}
+                - name: S3_ENDPOINT
+                  value: {{ printf "https://%s" (trimPrefix "https://" .Values.s3.endpoint) | quote }}
+                {{- end }}
+                - name: S3_S3V4
+                  value: {{ ternary "yes" "no" .Values.s3.v4signature | quote }}
+                {{- if .Values.encryption.enabled }}
+                - name: ENCRYPTION_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "postgresql-backup.fullname" . }}
+                      key: ENCRYPTION_PASSWORD
+                {{- end }}
+              resources: {{- toYaml .Values.resources | nindent 16 }}
+              securityContext: {{- toYaml .Values.securityContext | nindent 16 }}
+  schedule: {{ .Values.cleanup.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit | default 1 }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit | default 1 }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy | default "Forbid" | quote }}
+{{- end }}
