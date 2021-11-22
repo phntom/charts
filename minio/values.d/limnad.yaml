@@ -1,9 +1,8 @@
 # helm repo add bitnami https://charts.bitnami.com/bitnami
 
-accessKey:
-  password: XXXXXXXXXX
-secretKey:
-  password: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+auth:
+  rootUser: XXXXXXXXXX
+  rootPassword: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 gateway:
   enabled: true

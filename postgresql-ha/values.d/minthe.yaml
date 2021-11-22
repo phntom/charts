@@ -11,6 +11,8 @@ postgresql:
   repmgrUsername: repmgr
   repmgrPassword: xxx
   maxConnections: 200
+  replicaCount: 2
+#  upgradeRepmgrExtension: true
 
 pgpool:
   customUsers:
