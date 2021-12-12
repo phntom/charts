@@ -1,4 +1,4 @@
-# helm upgrade --install kube-prometheus-stack -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/limnad.yaml -f kube-prometheus-stack/values.d/limnad.secret.yaml --atomic --debug
+# helm upgrade --install kube-prometheus-stack -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/minthe.yaml -f kube-prometheus-stack/values.d/minthe.secret.yaml --atomic --debug
 
 defaultRules:
   rules:
@@ -257,7 +257,7 @@ grafana:
       annotations: {}
     datasources:
       enabled: true
-      defaultDatasourceEnabled: true
+      defaultDatasourceEnabled: false
 
       ## Annotations for Grafana datasource configmaps
       ##
@@ -279,6 +279,9 @@ grafana:
   ## Configure additional grafana datasources (passed through tpl)
   ## ref: http://docs.grafana.org/administration/provisioning/#datasources
   additionalDataSources:
+    - name: Prometheus
+      type: prometheus
+      url: http://kube-prometheus-stack-prometheus:9090
     - name: Loki
       type: loki
       url: http://loki.clusterwide.svc:3100
@@ -1911,7 +1914,7 @@ prometheus:
           failureThreshold: 120
           httpGet:
             path: /-/ready
-            port: web
+            port: http-web
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
@@ -1920,7 +1923,7 @@ prometheus:
           failureThreshold: 1000
           httpGet:
             path: /-/ready
-            port: web
+            port: http-web
             scheme: HTTP
           periodSeconds: 5
           successThreshold: 1
