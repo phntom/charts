@@ -81,22 +81,22 @@ alertmanager:
   ingress:
     enabled: true
     annotations:
-      acme.kubernetes.io/enable: "true"
-      acme.kubernetes.io/dns: "dns_cf"
-      # acme.kubernetes.io/staging: "true"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
       nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
+      nginx.ingress.kubernetes.io/auth-cache-duration: 200 202 401 30s
+      nginx.ingress.kubernetes.io/auth-cache-key: $cookie__minthe_kix_auth
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
+      nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email,X-Auth-Request-Username
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        auth_request_set $remote_email $upstream_http_x_auth_request_email;
+        add_header X-Auth-Request-Email $remote_email;
     hosts:
       - alerts.minthe.kix.co.il
       - alertmanager.minthe.kix.co.il
     paths:
       - /
-    tls:
-      - secretName: alertmanager-tls
-        hosts:
-          - alerts.minthe.kix.co.il
-          - alertmanager.minthe.kix.co.il
-
+    tls: []
   ## Settings affecting alertmanagerSpec
   ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#alertmanagerspec
   ##
@@ -161,10 +161,13 @@ alertmanager:
         volumeMounts:
           - mountPath: /alertmanager
             name: alertmanager-kube-prometheus-stack-alertmanager-db
-
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-production
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
 grafana:
+  image:
+    tag: 8.3.2
   enabled: true
   namespaceOverride: ""
 
@@ -226,8 +229,9 @@ grafana:
   ingress:
     enabled: true
     annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
       nginx.ingress.kubernetes.io/auth-cache-duration: 200 202 401 30s
-      nginx.ingress.kubernetes.io/auth-cache-key: $cookie__oauth2_proxy
+      nginx.ingress.kubernetes.io/auth-cache-key: $cookie__minthe_kix_auth
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
       nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
@@ -235,17 +239,11 @@ grafana:
       nginx.ingress.kubernetes.io/configuration-snippet: |
         auth_request_set $remote_email $upstream_http_x_auth_request_email;
         add_header X-Auth-Request-Email $remote_email;
-      acme.kubernetes.io/enable: "true"
-      acme.kubernetes.io/dns: "dns_cf"
-      # acme.kubernetes.io/staging: "true"
     labels: {}
     hosts:
       - grafana.minthe.kix.co.il
     path: /
-    tls:
-      - secretName: prometheus-grafana-tls
-        hosts:
-          - grafana.minthe.kix.co.il
+    tls: []
 
   sidecar:
     # image:
@@ -1824,6 +1822,9 @@ grafana:
   persistence:
     enabled: false
 
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-labs
+
   ## Passed to grafana subchart and used by servicemonitor below
   ##
   service:
@@ -1862,11 +1863,16 @@ prometheus:
   ingress:
     enabled: true
     annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/auth-cache-duration: 200 202 401 30s
+      nginx.ingress.kubernetes.io/auth-cache-key: $cookie__minthe_kix_auth
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
       nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fprometheus$escaped_request_uri"
-      acme.kubernetes.io/enable: "true"
-      acme.kubernetes.io/dns: "dns_cf"
-      # acme.kubernetes.io/staging: "true"
+      nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        auth_request_set $remote_email $upstream_http_x_auth_request_email;
+        add_header X-Auth-Request-Email $remote_email;
     labels: {}
 
     ## Hostnames.
@@ -1885,10 +1891,7 @@ prometheus:
     ## TLS configuration for Prometheus Ingress
     ## Secret must be manually created in the namespace
     ##
-    tls:
-      - secretName: prometheus-tls
-        hosts:
-          - prometheus.minthe.kix.co.il
+    tls: []
 
   prometheusSpec:
     disableCompaction: false
@@ -1971,3 +1974,5 @@ prometheus:
         volumeMounts:
           - mountPath: /prometheus
             name: prometheus-kube-prometheus-stack-prometheus-db
+  nodeSelector:
+    doks.digitalocean.com/node-pool: pool-labs

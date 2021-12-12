@@ -8,7 +8,7 @@ controller:
   maxmindLicenseKey: xxx
 
   extraArgs:
-    default-ssl-certificate: "chat/kix-co-il-tls"
+    default-ssl-certificate: "chat/default-kix-co-il-tls"
 
   # listen on the nodes (disable to use node balancers)
   hostNetwork: true
