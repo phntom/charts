@@ -1,3 +1,5 @@
+# helm upgrade oauth2-proxy oauth2-proxy -n web --reset-values --debug --atomic -f oauth2-proxy/values.d/minthe.yaml -f oauth2-proxy/values.d/minthe.secret.yaml
+
 domain: minthe.kix.co.il
 
 config:
@@ -27,16 +29,10 @@ ingress:
   enabled: true
   path: /
   annotations:
-    acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       location ~ ^/go/([a-z]+)(/.*)? {
           return 301 https://$1.minthe.kix.co.il$2;
       }
   hosts:
     - auth.minthe.kix.co.il
-  tls:
-    - secretName: minthe-kix-co-il-tls
-      hosts:
-        - minthe.kix.co.il
-        - "*.minthe.kix.co.il"
+  tls: []
