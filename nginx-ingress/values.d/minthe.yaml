@@ -1,19 +1,22 @@
 # helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-# helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-# helm repo update
-# helm upgrade --install nginx-ingress -n clusterwide nginx-ingress -f nginx-ingress/values.d/minthe.yaml -f nginx-ingress/values.d/minthe.secret.yaml
+# helm upgrade nginx-ingress -n clusterwide ingress-nginx/ingress-nginx --version 4.0.13 -f nginx-ingress/values.d/minthe.yaml -f nginx-ingress/values.d/minthe.secret.yaml --dry-run --atomic --debug
 
 dhParam: xxx
 controller:
   maxmindLicenseKey: xxx
 
   extraArgs:
-    default-ssl-certificate: "chat/default-kix-co-il-tls"
+    default-ssl-certificate: "clusterwide/default-kix-co-il-tls"
 
   # listen on the nodes (disable to use node balancers)
   hostNetwork: true
   service:
     type: NodePort
+    ipFamilyPolicy: "PreferDualStack"
+
+  watchIngressWithoutClass: true
+  ingressClassResource:
+    default: true
 
   useComponentLabel: true
 
@@ -42,6 +45,7 @@ controller:
                   values:
                     - nginx-ingress
             topologyKey: kubernetes.io/hostname
+
   resources:
     limits:
       memory: 400Mi
