@@ -52,8 +52,7 @@ ingress:
   enabled: true
   namespace: clusterwide
   annotations:
-    acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_cf"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/permanent-redirect: https://kix.co.il
   hosts:
     - host: irc.kix.co.il
