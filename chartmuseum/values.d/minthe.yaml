@@ -1,15 +1,15 @@
+# helm upgrade chartmuseum -n web chartmuseum/chartmuseum --atomic --debug -f chartmuseum/values.d/minthe.yaml -f chartmuseum/values.d/minthe.secret.yaml
+
 fullnameOverride: chartmuseum
 
 ingress:
   enabled: true
   annotations:
-    acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_cf"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
     - name: phntom.kix.co.il
       path: /charts/
-      tls: true
-      tlsSecret: phntom-kix-tls
+      tls: false
 
 env:
   open:
