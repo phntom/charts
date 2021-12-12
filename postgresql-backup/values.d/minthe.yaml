@@ -16,3 +16,5 @@ postgresql:
 encryption:
   enabled: true
   password: xxx
+nodeSelector:
+  doks.digitalocean.com/node-pool: pool-labs
