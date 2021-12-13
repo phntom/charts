@@ -1,5 +1,5 @@
 dependencies:
   - name: oauth2-proxy
-    version: 3.2.6
+    version: 3.2.7
     repository: https://phntom.kix.co.il/charts/
     condition: fireflyiii.login.oauth2.enabled
