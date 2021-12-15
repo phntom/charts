@@ -99,7 +99,7 @@ config:
     TimeBetweenUserTypingUpdatesMilliseconds: 6000
     AllowCookiesForSubdomains: false
     ManagedResourcePaths: "proxy,blog"
-    CollapsedThreads: default_on
+    CollapsedThreads: default_off
   ImageProxySettings:
     Enable: true
     ImageProxyType: "atmos/camo"
@@ -237,6 +237,8 @@ config:
   PluginSettings:
     EnableUploads: true
     Plugins:
+      focalboard:
+        EnablePublicSharedBoards: true
       com.github.matterpoll.matterpoll:
         ExperimentalUI: true
       com.mattermost.custom-attributes:
@@ -302,13 +304,13 @@ config:
       com.mattermost.plugin-todo:
         Enable: true
       com.github.matterpoll.matterpoll:
-        Enable: false
-      com.mattermost.custom-attributes:
-        Enable: false
+        Enable: true
       focalboard:
         Enable: true
+      com.mattermost.custom-attributes:
+        Enable: false
       playbooks:
-        Enable: true
+        Enable: false
       com.mattermost.agenda:
         Enable: false
       zoom:
