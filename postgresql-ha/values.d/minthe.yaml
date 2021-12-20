@@ -15,6 +15,9 @@ postgresql:
 #  upgradeRepmgrExtension: true
 
 pgpool:
+  livenessProbe:
+    enabled: false
+    timeoutSeconds: 600
   customUsers:
     usernames: xxx,xxx
     passwords: xxx,xxx
