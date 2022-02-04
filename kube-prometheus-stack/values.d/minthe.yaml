@@ -84,8 +84,6 @@ alertmanager:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
       nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
-      nginx.ingress.kubernetes.io/auth-cache-duration: 200 202 401 30s
-      nginx.ingress.kubernetes.io/auth-cache-key: $cookie__minthe_kix_auth
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
       nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email,X-Auth-Request-Username
       nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -167,7 +165,7 @@ alertmanager:
 ##
 grafana:
   image:
-    tag: 8.3.2
+    tag: 8.3.4
   enabled: true
   namespaceOverride: ""
 
@@ -230,8 +228,6 @@ grafana:
     enabled: true
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
-      nginx.ingress.kubernetes.io/auth-cache-duration: 200 202 401 30s
-      nginx.ingress.kubernetes.io/auth-cache-key: $cookie__minthe_kix_auth
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
       nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
@@ -1867,8 +1863,6 @@ prometheus:
     enabled: true
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
-      nginx.ingress.kubernetes.io/auth-cache-duration: 200 202 401 30s
-      nginx.ingress.kubernetes.io/auth-cache-key: $cookie__minthe_kix_auth
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
       nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fprometheus$escaped_request_uri"
