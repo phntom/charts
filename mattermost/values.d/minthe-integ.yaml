@@ -1,5 +1,5 @@
 # helm repo add mattermost https://helm.mattermost.com
-# helm upgrade --install mattermost-integ -n chat phntom/mattermost -f mattermost/values.d/minthe-integ.yaml -f mattermost/values.d/minthe-integ.secret.yaml --atomic --debug
+# helm upgrade --install mattermost-integ -n chat mattermost -f mattermost/values.d/minthe-integ.yaml -f mattermost/values.d/minthe-integ.secret.yaml --atomic --debug
 
 nameOverride: mattermost-integ
 
