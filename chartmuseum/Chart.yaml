@@ -1,8 +1,8 @@
 apiVersion: v2
-description: Host your own Helm Chart Repository
+description: chartmuseum fork with local storage + s3 sync
 name: chartmuseum
-version: 4.0.11
-appVersion: 0.13.1
+version: 4.0.12
+appVersion: 0.14.0
 home: https://github.com/helm/chartmuseum
 icon: https://raw.githubusercontent.com/chartmuseum/charts/main/logo.jpg
 keywords:
@@ -12,7 +12,7 @@ keywords:
 sources:
   - https://github.com/chartmuseum/charts/tree/main/src/chartmuseum
   - https://github.com/chartmuseum
-  - https://github.com/helm/chartmuseum
+  - https://github.com/phntom/charts
 maintainers:
   - name: chartmuseum
     url: https://github.com/chartmuseum
