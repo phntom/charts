@@ -1,0 +1,76 @@
+#helm upgrade -n clusterwide loki loki-stack --debug --atomic --reset-values -f loki-stack/values.d/minthe.yaml -f loki-stack/values.d/minthe.secret.yaml
+
+filebeat:
+  enabled: false
+fluent-bit:
+  enabled: false
+grafana:
+  enabled: false
+prometheus:
+  enabled: false
+loki:
+  enabled: true
+  config:
+    compactor:
+      compaction_interval: 10m
+      shared_store: s3
+      working_directory: /data/loki/boltdb-shipper-compactor
+    schema_config:
+      configs:
+        - from: "2021-01-01"
+          index:
+            period: 24h
+            prefix: loki_minthe_
+            tags:
+              project: loki
+          object_store: s3
+          schema: v11
+          store: boltdb-shipper
+    storage_config:
+      aws:
+        dynamodb:
+          dynamodb_url: dynamodb://eu-central-1
+        s3: xxx
+      boltdb_shipper:
+        active_index_directory: /data/loki/boltdb-shipper-active
+        cache_location: /data/loki/boltdb-shipper-cache
+        cache_ttl: 24h
+        shared_store: s3
+    table_manager:
+      index_tables_provisioning:
+        inactive_read_throughput: 1
+        inactive_write_throughput: 1
+        provisioned_read_throughput: 50
+        provisioned_write_throughput: 300
+      retention_deletes_enabled: true
+      retention_period: 4392h
+  env:
+    - name: AWS_REGION
+      value: eu-central-1
+    - name: AWS_SDK_LOAD_CONFIG
+      value: "1"
+  ingress:
+    annotations:
+      nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email
+      nginx.ingress.kubernetes.io/auth-signin: https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Floki
+      nginx.ingress.kubernetes.io/auth-url: https://auth.minthe.kix.co.il/oauth2/auth
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        auth_request_set $remote_email $upstream_http_x_auth_request_email;
+        add_header X-Auth-Request-Email $remote_email;
+    enabled: false
+    hosts:
+      - host: loki.minthe.kix.co.il
+        paths:
+          - /
+    tls:
+      - hosts:
+          - minthe.kix.co.il
+          - '*.minthe.kix.co.il'
+        secretName: minthe-kix-co-il-tls
+  persistence:
+    enabled: false
+    size: 1Gi
+  service:
+    port: 3100
+promtail:
+  enabled: true

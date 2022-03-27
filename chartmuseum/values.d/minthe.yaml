@@ -1,4 +1,4 @@
-# helm upgrade chartmuseum -n web chartmuseum/chartmuseum --atomic --debug -f chartmuseum/values.d/minthe.yaml -f chartmuseum/values.d/minthe.secret.yaml
+# helm upgrade chartmuseum -n web chartmuseum --atomic --debug -f chartmuseum/values.d/minthe.yaml -f chartmuseum/values.d/minthe.secret.yaml
 
 fullnameOverride: chartmuseum
 

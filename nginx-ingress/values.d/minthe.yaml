@@ -1,5 +1,5 @@
 # helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-# helm upgrade nginx-ingress -n clusterwide ingress-nginx/ingress-nginx --version 4.0.13 -f nginx-ingress/values.d/minthe.yaml -f nginx-ingress/values.d/minthe.secret.yaml --dry-run --atomic --debug
+# helm upgrade nginx-ingress -n clusterwide ingress-nginx/ingress-nginx --version 4.0.18 -f nginx-ingress/values.d/minthe.yaml -f nginx-ingress/values.d/minthe.secret.yaml --dry-run --atomic --debug
 
 dhParam: xxx
 controller:
@@ -25,7 +25,7 @@ controller:
     minReplicas: 2
     maxReplicas: 6
 
-  minAvailable: 2
+  minAvailable: 1
 
   annotations:
     keel.sh/pollSchedule: "@every 60m"
