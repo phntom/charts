@@ -31,8 +31,6 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     nginx.ingress.kubernetes.io/server-snippet: |
-      real_ip_header CF-Connecting-IP;
-      if ($http_cf_connecting_ip != $remote_addr) { return 403; }
       if ( $cookie_MMUSERID = "" ) {
         set $nix b;
       }
@@ -42,6 +40,8 @@ ingress:
       if ( $nix = ab ) {
         return 302 https://nix.co.il/?kix=n&redirect_to=$arg_redirect_to;
       }
+    # real_ip_header CF-Connecting-IP;
+    # if ($http_cf_connecting_ip != $remote_addr) { return 403; }
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
     #      proxy_cache mattermost_cache;
     #      proxy_cache_revalidate on;
@@ -151,6 +151,7 @@ config:
     RequireEmailVerification: true
     FeedbackName: Kix Chat
     FeedbackEmail: support@kix.co.il
+    ReplyToAddress: support@kix.co.il
     FeedbackOrganization: kix
     SMTPUsername: xxx
     SMTPPassword: xxx
@@ -176,7 +177,7 @@ config:
     PrivacyPolicyLink: https://kix.co.il/help/privacy
     AboutLink: https://kix.co.il/help/about
     HelpLink: https://kix.co.il/nix/channels/help
-    ReportAProblemLink: https://kix.co.il/nix/channels/help
+    ReportAProblemLink: xxx
     SupportEmail: support@kix.co.il
   GitLabSettings:
     Enable: true

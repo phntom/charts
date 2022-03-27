@@ -1,3 +1,11 @@
+# emergency db full recovery run book:
+# helm uninstall postgresql-ha -n db
+# helm uninstall postgresql-backup -n db
+# kubectl delete pvc -n db --all
+# helm upgrade --install postgresql-ha -n db bitnami/postgresql-ha --debug --atomic -f postgresql-ha/values.d/minthe.yaml -f postgresql-ha/values.d/minthe.secret.yaml
+# helm upgrade --set restore=true --install postgresql-backup -n db postgresql-backup -f postgresql-backup/values.d/minthe.yaml -f postgresql-backup/values.d/minthe.secret.yaml
+# helm upgrade --set restore=false --install postgresql-backup -n db postgresql-backup -f postgresql-backup/values.d/minthe.yaml -f postgresql-backup/values.d/minthe.secret.yaml
+
 restore: false
 
 s3:
