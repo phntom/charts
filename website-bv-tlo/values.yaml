@@ -1,4 +1,4 @@
-# helm upgrade --install tlo -n phantom website-bv-tlo
+# helm upgrade -n web bv-tlo website-bv-tlo --atomic --debug --reset-values
 
 replicaCount: 1
 
