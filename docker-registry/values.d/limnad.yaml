@@ -3,13 +3,14 @@ ingress:
   hosts:
     - docker.kix.co.il
   annotations:
+    kubernetes.io/tls-acme: "true"
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_cf"
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: docker-basic-auth
     nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required for Docker'
   tls:
-    - secretName: docker-kix-tls
+    - secretName: docker-kix-co-il-tls
       hosts:
         - docker.kix.co.il
 storage: s3

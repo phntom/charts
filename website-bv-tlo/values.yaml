@@ -44,6 +44,7 @@ ingress:
     nginx.ingress.kubernetes.io/app-root: /bv/
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_cf"
+    kubernetes.io/tls-acme: "true"
   hosts:
     - host: tlo.binaryvision.co.il
       paths:
@@ -51,7 +52,7 @@ ingress:
     - host: tlo.binaryvision.org.il
       paths:
         - /
-    - host: tlo.limnad.kix.co.il
+    - host: tlo.minthe.kix.co.il
       paths:
         - /
     - host: tlo.nix.co.il
@@ -62,7 +63,7 @@ ingress:
     hosts:
       - tlo.binaryvision.co.il
       - tlo.binaryvision.org.il
-      - tlo.limnad.kix.co.il
+      - tlo.minthe.kix.co.il
       - tlo.nix.co.il
 
 resources: {}
@@ -80,7 +81,8 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-nodeSelector: {}
+nodeSelector:
+  doks.digitalocean.com/node-pool: pool-production
 
 tolerations: []
 

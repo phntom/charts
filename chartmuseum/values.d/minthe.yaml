@@ -5,11 +5,12 @@ fullnameOverride: chartmuseum
 ingress:
   enabled: true
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/tls-acme: "true"
   hosts:
     - name: phntom.kix.co.il
       path: /charts/
-      tls: false
+      tls: true
+      tlsSecret: phntom-kix-co-il-tls
 
 env:
   open:

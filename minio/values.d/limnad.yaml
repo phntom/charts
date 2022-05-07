@@ -24,7 +24,8 @@ ingress:
   annotations:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: dns_linode_v4
-  hostname: s3.limnad.kix.co.il
+    kubernetes.io/tls-acme: "true"
+  hostname: s3.minthe.kix.co.il
   tls: true
 
 persistence:

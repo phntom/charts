@@ -4,7 +4,7 @@
 ingress:
   enabled: true
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fpg$escaped_request_uri"
   hosts:
@@ -12,7 +12,10 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-  tls: []
+  tls:
+    - hosts:
+        - pg.minthe.kix.co.il
+      secretName: pg-minthe-kix-co-il-tls
 
 env:
   email: xxx
@@ -20,3 +23,6 @@ env:
 
 persistentVolume:
   enabled: false
+
+nodeSelector:
+  doks.digitalocean.com/node-pool: pool-labs

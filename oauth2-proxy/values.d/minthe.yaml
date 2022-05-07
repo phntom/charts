@@ -29,10 +29,15 @@ ingress:
   enabled: true
   path: /
   annotations:
+    kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       location ~ ^/go/([a-z]+)(/.*)? {
           return 301 https://$1.minthe.kix.co.il$2;
       }
   hosts:
     - auth.minthe.kix.co.il
-  tls: []
+  tls:
+    - hosts:
+        - auth.minthe.kix.co.il
+      secretName: auth-minthe-kix-co-il-tls
+

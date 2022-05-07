@@ -3,12 +3,15 @@ fireflyiii:
 ingress:
   enabled: true
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/tls-acme: "true"
   hosts:
     - host: firefly.kix.co.il
       paths:
         - /
-  tls: []
+  tls:
+    - hosts:
+      - firefly.kix.co.il
+      secretName: firefly-kix-co-il-tls
 
 persistence:
   enabled: false
@@ -30,6 +33,12 @@ oauth2-proxy:
   ingress:
     hosts:
       - firefly.kix.co.il
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    tls:
+      - hosts:
+          - firefly.kix.co.il
+        secretName: firefly-kix-co-il-tls
 
 nodeSelector:
   doks.digitalocean.com/node-pool: pool-labs

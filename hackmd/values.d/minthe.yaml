@@ -1,4 +1,4 @@
-# helm upgrade --install -n web hackmd stable/hackmd -f hackmd/values.d/minthe.yaml -f hackmd/values.d/minthe.secret.yaml --atomic --debug
+# helm upgrade --install -n web hackmd codimd/codimd -f hackmd/values.d/minthe.yaml -f hackmd/values.d/minthe.secret.yaml --atomic --debug
 
 image:
   tag: "2.4.1"
@@ -6,21 +6,26 @@ image:
 ingress:
   enabled: true
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       set $uri_userid "x$cookie_userid$uri";
       if ($uri_userid ~ 'x/new') {
         return 302 https://pad.kix.co.il/auth/oauth2;
       }
-  path: /
   hosts:
     - host: pad.kix.co.il
       paths:
         - /
-  tls: []
+  tls:
+    - hosts:
+        - pad.kix.co.il
+      secretName: pad-kix-co-il-tls
 
 postgresql:
   enabled: false
+
+service:
+  type: ClusterIP
 
 codimd:
   nodeSelector:
@@ -35,7 +40,7 @@ codimd:
   imageUpload:
     storageType: s3
     s3:
-      endpoint: eu-central-1.linodeobjects.com
+      endpoint: xxx
       region: eu-central-1
       accessKeyId: xxx
       secretKey: xxx

@@ -94,7 +94,7 @@ config:
     PostEditTimeLimit: 300
     ExperimentalChannelSidebarOrganization: default_off
     GoogleDeveloperKey: xxx
-    AllowedUntrustedInternalConnections: "chadbot.chat.svc"
+    AllowedUntrustedInternalConnections: "chadbot.chat.svc email-manager.web.svc"
     EnableEmailInvitations: false
     EnableTutorial: true
     TimeBetweenUserTypingUpdatesMilliseconds: 6000
@@ -111,7 +111,7 @@ config:
     MaxUsersPerTeam: 50000
     EnableTeamCreation: false
     EnableCustomBrand: true
-    CustomBrandText: "registration is currently closed, please ask an existing member to invite you to his team"
+    CustomBrandText: "Thank you for your interest. However, registration is now closed."
     CustomDescriptionText: self hosted, privacy oriented, independent and free community platform
     RestrictDirectMessage: team
     EnableTeamListing: false

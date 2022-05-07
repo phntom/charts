@@ -43,6 +43,7 @@ ingress:
   annotations:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_cf"
+    kubernetes.io/tls-acme: "true"
   hosts:
     - host: binaryvision.co.il
       paths:
@@ -56,13 +57,13 @@ ingress:
     - host: www.binaryvision.org.il
       paths:
         - /
-    - host: binaryvision.limnad.kix.co.il
+    - host: binaryvision.minthe.kix.co.il
       paths:
         - /
   tls:
    - secretName: binaryvision-static-tls
      hosts:
-       - binaryvision.limnad.kix.co.il
+       - binaryvision.minthe.kix.co.il
        - www.binaryvision.co.il
        - binaryvision.co.il
        - www.binaryvision.org.il
@@ -87,7 +88,8 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-nodeSelector: {}
+nodeSelector:
+  doks.digitalocean.com/node-pool: pool-production
 
 tolerations: []
 

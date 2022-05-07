@@ -52,18 +52,19 @@ ingress:
   enabled: true
   namespace: clusterwide
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/permanent-redirect: https://kix.co.il
   hosts:
     - host: irc.kix.co.il
       paths:
         - /
   tls:
-    secretName: irc-nix-co-il-tls
+    secretName: irc-kix-co-il-tls
     hosts:
       - irc.kix.co.il
       - irc.nix.co.il
       - irc.binaryvision.co.il
+      - irc.binaryvision.org.il
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -84,7 +85,8 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-nodeSelector: {}
+nodeSelector:
+  doks.digitalocean.com/node-pool: pool-production
 
 tolerations: []
 

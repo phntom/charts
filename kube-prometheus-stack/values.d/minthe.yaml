@@ -81,7 +81,7 @@ alertmanager:
   ingress:
     enabled: true
     annotations:
-      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      kubernetes.io/tls-acme: "true"
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
       nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
@@ -94,7 +94,11 @@ alertmanager:
       - alertmanager.minthe.kix.co.il
     paths:
       - /
-    tls: []
+    tls:
+      - hosts:
+          - alerts.minthe.kix.co.il
+          - alertmanager.minthe.kix.co.il
+        secretName: alertmanager-tls
   ## Settings affecting alertmanagerSpec
   ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#alertmanagerspec
   ##
@@ -227,7 +231,7 @@ grafana:
   ingress:
     enabled: true
     annotations:
-      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      kubernetes.io/tls-acme: "true"
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
       nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
@@ -239,7 +243,10 @@ grafana:
     hosts:
       - grafana.minthe.kix.co.il
     path: /
-    tls: []
+    tls:
+      - hosts:
+          - grafana.minthe.kix.co.il
+        secretName: grafana-tls
 
   sidecar:
     # image:
@@ -253,7 +260,7 @@ grafana:
       annotations: {}
     datasources:
       enabled: true
-      defaultDatasourceEnabled: false
+      defaultDatasourceEnabled: true
 
       ## Annotations for Grafana datasource configmaps
       ##
@@ -1862,7 +1869,7 @@ prometheus:
   ingress:
     enabled: true
     annotations:
-      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      kubernetes.io/tls-acme: "true"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
       nginx.ingress.kubernetes.io/auth-url: "https://auth.minthe.kix.co.il/oauth2/auth"
       nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fprometheus$escaped_request_uri"
@@ -1888,7 +1895,10 @@ prometheus:
     ## TLS configuration for Prometheus Ingress
     ## Secret must be manually created in the namespace
     ##
-    tls: []
+    tls:
+      - hosts:
+          - prometheus.minthe.kix.co.il
+        secretName: prometheus-tls
 
   prometheusSpec:
     disableCompaction: false

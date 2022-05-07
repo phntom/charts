@@ -27,6 +27,20 @@ spec:
       serviceAccountName: {{ include "matterircd.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: import-certificate
+          image: alpine/openssl
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - cat /etc/matterircd-tls/tls.crt > /etc/ssl/private/cert.pem && cat /etc/matterircd-tls/tls.key > /etc/ssl/private/key.pem
+          volumeMounts:
+            - mountPath: /etc/ssl/private
+              name: ssl-private
+            - mountPath: /etc/matterircd-tls
+              name: tls-certificate-volume
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -41,18 +55,20 @@ spec:
               containerPort: 6697
               protocol: TCP
           command:
-            - /bin/sh
-            - -c
+            - /bin/matterircd
           args:
-            - cat /etc/matterircd-tls/tls.key > /etc/ssl/private/key.pem && cat /etc/matterircd-tls/tls.crt /etc/matterircd-tls/ca.crt > /etc/ssl/private/cert.pem && /bin/matterircd --conf /etc/matterircd/matterircd.toml
+            - --conf
+            - /etc/matterircd/matterircd.toml
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /etc/matterircd
               name: config-volume
-            - mountPath: /etc/matterircd-tls
-              name: tls-certificate-volume
+            - mountPath: /etc/ssl/private
+              name: ssl-private
       volumes:
+        - name: ssl-private
+          emptyDir: {}
         - name: config-volume
           configMap:
             name: {{ include "matterircd.fullname" . }}.toml
