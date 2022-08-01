@@ -111,8 +111,8 @@ config:
     MaxUsersPerTeam: 50000
     EnableTeamCreation: false
     EnableCustomBrand: true
-    CustomBrandText: "Thank you for your interest. However, registration is now closed."
-    CustomDescriptionText: self hosted, privacy oriented, independent and free community platform
+    CustomBrandText: "Registration is closed. kix.co.il is a self-hosted, private and free platform including chat and other collaboration tools."
+    CustomDescriptionText: to continue please sign-in
     RestrictDirectMessage: team
     EnableTeamListing: false
     EnableXToLeaveChannelsFromLHS: true
