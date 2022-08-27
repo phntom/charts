@@ -1,33 +1,39 @@
-# helm upgrade --install postgresql-ha -n db bitnami/postgresql-ha --debug --atomic -f postgresql-ha/values.d/minthe.yaml -f postgresql-ha/values.d/minthe.secret.yaml
+# helm upgrade --install postgresql-ha -n db bitnami/postgresql-ha --debug --atomic --reset-values -f postgresql-ha/values.d/minthe.yaml -f postgresql-ha/values.d/minthe.secret.yaml
 
 postgresql:
-  podAntiAffinityPreset: hard
+  podAntiAffinityPreset: soft
   initContainers: []
   # add auto repair here
   pdb:
     create: true
+    minAvailable: 1
   username: postgres
   password: xxx
   repmgrUsername: repmgr
   repmgrPassword: xxx
   maxConnections: 200
-  replicaCount: 2
-#  upgradeRepmgrExtension: true
+  replicaCount: 1
+  upgradeRepmgrExtension: true
 
 pgpool:
+  replicaCount: 1
   livenessProbe:
-    enabled: false
+    enabled: true
     timeoutSeconds: 600
   customUsers:
     usernames: xxx,xxx
     passwords: xxx,xxx
+  pdb:
+    create: true
+    minAvailable: 1
   maxPool: 3
   childMaxConnections: 200
-  nodeSelector:
-    doks.digitalocean.com/node-pool: pool-production
+  authenticationMethod: md5
+#  nodeSelector:
+#    doks.digitalocean.com/node-pool: pool-production
 
 metrics:
-  enabled: true
+  enabled: false
   serviceMonitor:
     enabled: true
   prometheusRule:
@@ -39,7 +45,7 @@ persistence:
   storageClass: do-block-storage
   size: 2Gi
 
-resources:
-  requests:
-    memory: 36Mi
-    cpu: 100m
+#resources:
+#  requests:
+#    memory: 36Mi
+#    cpu: 100m

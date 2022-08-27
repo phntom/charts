@@ -114,6 +114,12 @@ controller:
     use-forwarded-headers: "true"
     use-proxy-protocol: "false"
     enable-real-ip: "true"
+    use-gzip: "true"
+    gzip-level: "9"
+    enable-brotli: "true"
+    brotli-level: "9"
+    generate-request-id: "true"
+    use-geoip2: "true"
   addHeaders:
     X-Content-Type-Options: "nosniff"
     X-Frame-Options: SAMEORIGIN
