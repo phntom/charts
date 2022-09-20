@@ -32,19 +32,6 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
-Return the appropriate apiVersion for ingress. Based on
-1) Helm Version (.Capabilities has been changed in v3)
-2) Kubernetes Version
-*/}}
-{{- define "mattermost-team-edition.ingress.apiVersion" -}}
-{{- if semverCompare ">=1.4-0, <1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-"extensions/v1beta1"
-{{- else if semverCompare "^1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-"networking.k8s.io/v1beta1"
-{{- end -}}
-{{- end -}}
-
-{{/*
 Common labels
 */}}
 {{- define "mattermost-team-edition.labels" -}}

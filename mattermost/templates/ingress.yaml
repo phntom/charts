@@ -2,7 +2,13 @@
 {{ if $ingress.enabled }}
 {{ $serviceName := include "mattermost-team-edition.name" . }}
 {{ $servicePort := .Values.service.externalPort }}
-apiVersion: {{ include "mattermost-team-edition.ingress.apiVersion" . }}
+{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion }}
+apiVersion: extensions/v1beta1
+{{- else if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion }}
+apiVersion: networking.k8s.io/v1beta1
+{{- else }}
+apiVersion: networking.k8s.io/v1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "mattermost-team-edition.fullname" . }}
@@ -29,8 +35,16 @@ spec:
       paths:
       - path: {{ $ingress.path }}
         backend:
+        {{- if semverCompare "<1.19-0" $.Capabilities.KubeVersion.GitVersion }}
           serviceName: {{ $serviceName }}
           servicePort: {{ $servicePort }}
+        {{- else }}
+          service:
+            name: {{ $serviceName }}
+            port:
+              number: {{ $servicePort }}
+        pathType: ImplementationSpecific
+        {{- end }}
   {{ end }}
   {{ if $ingress.tls }}
   tls:
