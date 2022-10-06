@@ -81,6 +81,8 @@ serviceAccount:
 
 ingress:
   enabled: false
+  ingressClassName: nginx
+  pathType: ImplementationSpecific
   path: /
   # Used to create an Ingress record.
   # hosts:

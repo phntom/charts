@@ -1,6 +1,6 @@
-# helm upgrade oauth2-proxy phntom/oauth2-proxy -n web --reset-values --debug --atomic -f oauth2-proxy/values.d/minthe.yaml -f oauth2-proxy/values.d/minthe.secret.yaml
+# helm upgrade oauth2-proxy phntom/oauth2-proxy -n web --reset-values --debug --atomic -f oauth2-proxy/values.d/ornea.yaml -f oauth2-proxy/values.d/ornea.secret.yaml
 
-domain: minthe.kix.co.il
+domain: ornea.kix.co.il
 
 config:
   clientID: xxx
@@ -8,14 +8,14 @@ config:
   cookieSecret: xxx
 
 extraArgs:
-  cookie-domain: .minthe.kix.co.il
-  cookie-name: minthe-kix-auth
+  cookie-domain: .ornea.kix.co.il
+  cookie-name: ornea-kix-auth
   login-url: https://kix.co.il/oauth/authorize
   profile-url: https://kix.co.il/api/v4/users/me
   provider: facebook
   provider-display-name: kix.co.il chat
   redeem-url: https://kix.co.il/oauth/access_token
-  redirect-url: https://auth.minthe.kix.co.il/oauth2/callback
+  redirect-url: https://auth.ornea.kix.co.il/oauth2/callback
   set-xauthrequest: false
   set-authorization-header: false
 
@@ -30,14 +30,15 @@ ingress:
   path: /
   annotations:
     kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       location ~ ^/go/([a-z]+)(/.*)? {
-          return 301 https://$1.minthe.kix.co.il$2;
+          return 301 https://$1.ornea.kix.co.il$2;
       }
   hosts:
-    - auth.minthe.kix.co.il
+    - auth.ornea.kix.co.il
   tls:
     - hosts:
-        - auth.minthe.kix.co.il
-      secretName: auth-minthe-kix-co-il-tls
+        - auth.ornea.kix.co.il
+      secretName: auth-ornea-kix-co-il-tls
 
