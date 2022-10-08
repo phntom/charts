@@ -29,7 +29,7 @@ config:
   # existingConfig: config
 
 image:
-  repository: "bitnami/oauth2-proxy"
+  repository: "phntom/oauth2-proxy"
   tag: ""
   pullPolicy: "IfNotPresent"
 
