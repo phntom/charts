@@ -12,6 +12,7 @@ extraArgs:
   cookie-name: ornea-kix-auth
   login-url: https://kix.co.il/oauth/authorize
   profile-url: https://kix.co.il/api/v4/users/me
+  validate-url: https://kix.co.il/api/v4/users/me
   provider: facebook
   provider-display-name: kix.co.il chat
   redeem-url: https://kix.co.il/oauth/access_token
