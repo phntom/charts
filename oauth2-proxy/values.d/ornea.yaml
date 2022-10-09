@@ -1,4 +1,4 @@
-# helm upgrade oauth2-proxy phntom/oauth2-proxy -n web --reset-values --debug --atomic -f oauth2-proxy/values.d/ornea.yaml -f oauth2-proxy/values.d/ornea.secret.yaml
+# helm upgrade oauth2-proxy phntom/oauth2-proxy -n web --reset-values --debug --atomic -f oauth2-proxy/values.d/ornea.yaml -f oauth2-proxy/values.d/ornea.secret.yaml --kube-context gke_evident-gecko-364317_europe-west8_ornea
 
 domain: ornea.kix.co.il
 

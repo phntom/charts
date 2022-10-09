@@ -1,4 +1,4 @@
-# helm upgrade chartmuseum -n web chartmuseum --atomic --debug -f chartmuseum/values.d/minthe.yaml -f chartmuseum/values.d/minthe.secret.yaml
+# helm upgrade chartmuseum -n web chartmuseum --atomic --debug -f chartmuseum/values.d/minthe.yaml -f chartmuseum/values.d/minthe.secret.yaml --kube-context=do-fra1-k8s-1-20-7-do-0-fra1-1623333476379
 
 fullnameOverride: chartmuseum
 
