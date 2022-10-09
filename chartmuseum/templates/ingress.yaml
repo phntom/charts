@@ -47,7 +47,7 @@ spec:
             {{- end }}
             port:
               number: {{ default $servicePort .port }}
-        pathType: ImplementationSpecific
+        pathType: Prefix
         {{- end }}
       {{- end }}
       - path: {{ default "/" .path | quote }}
@@ -68,7 +68,7 @@ spec:
             {{- end }}
             port:
               number: {{ default $servicePort .port }}
-        pathType: ImplementationSpecific
+        pathType: Prefix
         {{- end }}
   {{- end }}
   tls:

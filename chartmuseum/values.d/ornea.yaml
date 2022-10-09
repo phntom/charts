@@ -1,0 +1,89 @@
+# helm upgrade chartmuseum -n web chartmuseum --atomic --debug -f chartmuseum/values.d/ornea.yaml -f chartmuseum/values.d/ornea.secret.yaml --kube-context=gke_evident-gecko-364317_europe-west8_ornea
+
+fullnameOverride: chartmuseum
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/tls-acme: "true"
+  hosts:
+    - name: phntom.kix.co.il
+      path: /charts/
+      tls: true
+      tlsSecret: phntom-kix-co-il-tls
+    - name: charts.l6.ee
+      path: /
+      tls: true
+      tlsSecret: charts-l6-ee-tls
+
+env:
+  open:
+    CONTEXT_PATH: /charts
+    STORAGE: amazon
+    STORAGE_TIMESTAMP_TOLERANCE: 1s
+    STORAGE_AMAZON_BUCKET: chartmuseum-prod
+    STORAGE_AMAZON_PREFIX: v1
+    STORAGE_AMAZON_REGION: eu-central-1
+    STORAGE_AMAZON_ENDPOINT: https://fra1.digitaloceanspaces.com
+    LOG_JSON: true
+    DISABLE_STATEFILES: false
+    DISABLE_METRICS: false
+    DISABLE_API: false
+    ALLOW_OVERWRITE: false
+    DISABLE_FORCE_OVERWRITE: true
+    CHART_URL: https://phntom.kix.co.il
+    AUTH_ANONYMOUS_GET: true
+    BEARER_AUTH: false
+    AUTH_REALM:
+    AUTH_SERVICE:
+  secret:
+    BASIC_AUTH_USER: xxx
+    BASIC_AUTH_PASS: xxx
+
+serviceMonitor:
+  enabled: true
+  labels: {}
+  metricsPath: "/metrics"
+  timeout: 30s
+  interval: 30s
+
+resources: {}
+#  limits:
+#    cpu: 100m
+#    memory: 128Mi
+#  requests:
+#    cpu: 80m
+#    memory: 64Mi
+
+probes:
+  liveness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+serviceAccount:
+  create: true
+  annotations: {}
+
+securityContext:
+  enabled: true
+  fsGroup: 1000
+  runAsNonRoot: true
+
+containerSecurityContext: {}
+
+priorityClassName: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
