@@ -19,6 +19,7 @@ extraArgs:
   redirect-url: https://auth.minthe.kix.co.il/oauth2/callback
   set-xauthrequest: false
   set-authorization-header: false
+  custom-sign-in-logo: https://kix.co.il/api/v4/brand/image
 
 
 authenticatedEmailsFile:

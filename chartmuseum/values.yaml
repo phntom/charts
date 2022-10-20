@@ -7,7 +7,7 @@ strategy:
     maxUnavailable: 0
 image:
   repository: phntom/chartmuseum
-  tag: v0.15.2
+  tag: v0.15.3
   pullPolicy: IfNotPresent
 secret:
   labels: {}
