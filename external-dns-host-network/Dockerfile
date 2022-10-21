@@ -1,11 +1,11 @@
-# DOCKER_BUILDKIT=1 docker build . -f Dockerfile --pull -t phntom/external-dns-host-network:0.0.10
+# DOCKER_BUILDKIT=1 docker build . -f Dockerfile --pull -t phntom/external-dns-host-network:0.0.12
 
 FROM python:3.9
 RUN apt-get update && apt-get install jq -y
-RUN pip3 install linode-cli --upgrade
+RUN pip3 install linode-cli --upgrade --no-cache
 
 ENV LINODE_CLI_TOKEN=""
-ENV LINODE_TAG="minthe"
+ENV LINODE_TAG="test"
 
 ENV CLOUDFLARE_TOKEN=""
 ENV CLOUDFLARE_ZONE=""
@@ -16,8 +16,8 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
   install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
   kubectl version --client
 
-ENV SPECIAL_DOMAIN="114584"
-ENV SPECIAL_TARGET="minthe"
+ENV SPECIAL_DOMAIN="1337"
+ENV SPECIAL_TARGET="test"
 WORKDIR /app
 COPY --chmod=755 external-dns-host-network.sh /app/
 CMD /app/external-dns-host-network.sh

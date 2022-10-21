@@ -5,21 +5,21 @@
 settings:
   linode:
     token: xxx
-    tag: minthe
-    domain: 114584
-    target: minthe
+    tag: test_linode_tag
+    domain: 1337
+    target: test_linode_target
   cloudflare:
     token: xxx
-    zone: 738fb5435788296d99791ddd1e6586df
-    name: minthe.kix.co.il
+    zone: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+    name: test-cf.example.com
 
 replicaCount: 1
 
 image:
   repository: phntom/external-dns-host-network
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "0.0.11"
+  digest: sha256:fb578aae358b052aa8581e5d13ab82a5d9e63d009ab6bf96ce561a1f5ea21b17
 
 imagePullSecrets: []
 nameOverride: ""
@@ -46,10 +46,6 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 80
 
 ingress:
   enabled: false
@@ -86,9 +82,6 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
-nodeSelector:
-  doks.digitalocean.com/node-pool: pool-production
 
 tolerations: []
 
