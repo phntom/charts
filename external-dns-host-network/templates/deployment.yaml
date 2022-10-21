@@ -78,6 +78,8 @@ spec:
               value: {{ .Values.settings.cloudflare.zone | quote }}
             - name: CLOUDFLARE_NAME
               value: {{ .Values.settings.cloudflare.name | quote }}
+            - name: CLOUDFLARE_TTL
+              value: {{ .Values.settings.cloudflare.ttl | default 60 | quote }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

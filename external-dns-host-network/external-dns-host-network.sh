@@ -89,19 +89,19 @@ if [ -n "$CLOUDFLARE_TOKEN" ]; then
 
   echo cloudflare token detected
 
-  curl -X GET "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE/dns_records?name=$CLOUDFLARE_NAME" \
+  curl -X GET "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE}/dns_records?name=${CLOUDFLARE_NAME}" \
     -H "Content-Type:application/json" \
-    -H "Authorization: Bearer $CLOUDFLARE_TOKEN" \
+    -H "Authorization: Bearer ${CLOUDFLARE_TOKEN}" \
     | jq -r '.result[] | "\(.id) \(.content)"' \
     | tee entries.txt
 
   grep -v '^ *#' < external-ips.txt | while IFS= read -r ip; do
     echo "checking if $ip needs to be added"
     grep "$ip" entries.txt || \
-      curl -s -D - -X POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE/dns_records" \
+      curl -s -D - -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE}/dns_records" \
         -H "Content-Type:application/json" \
-        -H "Authorization: Bearer $CLOUDFLARE_TOKEN" \
-        --data "{\"type\":\"A\",\"name\":\"$CLOUDFLARE_NAME\",\"content\":\"$ip\",\"ttl\":120,\"proxied\":false}"
+        -H "Authorization: Bearer ${CLOUDFLARE_TOKEN}" \
+        --data "{\"type\":\"A\",\"name\":\"${CLOUDFLARE_NAME}\",\"content\":\"$ip\",\"ttl\":${CLOUDFLARE_TTL},\"proxied\":false}"
   done
 
   # shellcheck disable=SC2094
@@ -110,9 +110,9 @@ if [ -n "$CLOUDFLARE_TOKEN" ]; then
     id=$(grep "$ip" entries.txt | grep -oE '^[^ ]+')
     echo "checking if $ip needs to be removed"
     grep "$ip" external-ips.txt || \
-      curl -s -D - -X DELETE "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE/dns_records/$id" \
+      curl -s -D - -X DELETE "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE}/dns_records/${id}" \
         -H "Content-Type:application/json" \
-        -H "Authorization: Bearer $CLOUDFLARE_TOKEN"
+        -H "Authorization: Bearer ${CLOUDFLARE_TOKEN}"
   done
 
 fi  # [ -n "$CLOUDFLARE_TOKEN" ]

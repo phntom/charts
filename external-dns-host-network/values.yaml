@@ -12,14 +12,15 @@ settings:
     token: xxx
     zone: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
     name: test-cf.example.com
+    ttl: 60
 
 replicaCount: 1
 
 image:
   repository: phntom/external-dns-host-network
   pullPolicy: IfNotPresent
-  tag: "0.0.11"
-  digest: sha256:fb578aae358b052aa8581e5d13ab82a5d9e63d009ab6bf96ce561a1f5ea21b17
+  tag: "0.0.12"
+  digest: sha256:3adadbac84432f603e3457ca4e663fbd448a439afba4eef8a2c55cc3d03739e2
 
 imagePullSecrets: []
 nameOverride: ""
