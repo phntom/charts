@@ -1,5 +1,5 @@
 # helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-# helm upgrade nginx-ingress -n clusterwide ingress-nginx/ingress-nginx --version 4.3.0 -f nginx-ingress/values.d/ornea.yaml -f nginx-ingress/values.d/ornea.secret.yaml --atomic --debug
+# helm upgrade nginx-ingress -n clusterwide ingress-nginx/ingress-nginx --version 4.3.0 -f nginx-ingress/values.d/ornea.yaml -f nginx-ingress/values.d/ornea.secret.yaml --atomic --debug --kube-context gke_evident-gecko-364317_europe-west8-b_ornea
 
 dhParam: xxx
 controller:
@@ -10,9 +10,12 @@ controller:
 
   # listen on the nodes (disable to use node balancers)
   hostNetwork: true
+  kind: DaemonSet
   service:
     type: NodePort
-    ipFamilyPolicy: "PreferDualStack"
+    ipFamilyPolicy: "RequireDualStack"
+  hostPort:
+    enabled: true
 
   watchIngressWithoutClass: true
   ingressClassResource:
@@ -21,11 +24,11 @@ controller:
   useComponentLabel: true
 
   autoscaling:
-    enabled: true
-    minReplicas: 3
+    enabled: false
+    minReplicas: 2
     maxReplicas: 6
 
-  replicaCount: 3
+  replicaCount: 1
   minAvailable: 1
 
   annotations:

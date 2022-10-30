@@ -1,0 +1,17 @@
+apiVersion: v1
+appVersion: 2.4.2
+description: A CodiMD Helm chart for Kubernetes
+icon: https://hackmd.io/favicon.png
+keywords:
+- codimd
+- markdown
+- collaboration
+kubeVersion: '>=1.14.0-0'
+maintainers:
+- email: support@hackmd.io
+  name: HackMD Inc. Dev Team
+name: codimd
+sources:
+- https://github.com/hackmdio/codimd
+- https://github.com/hackmdio/codimd-helm
+version: 0.1.11

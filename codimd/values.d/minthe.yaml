@@ -1,7 +1,4 @@
-# helm upgrade --install -n web hackmd codimd/codimd -f hackmd/values.d/minthe.yaml -f hackmd/values.d/minthe.secret.yaml --atomic --debug
-
-image:
-  tag: "2.4.1"
+# helm upgrade -n web hackmd codimd/codimd -f codimd/values.d/minthe.yaml -f codimd/values.d/minthe.secret.yaml --atomic --debug --kube-context do-fra1-k8s-1-20-7-do-0-fra1-1623333476379
 
 ingress:
   enabled: true
@@ -10,7 +7,7 @@ ingress:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       set $uri_userid "x$cookie_userid$uri";
       if ($uri_userid ~ 'x/new') {
-        return 302 https://pad.kix.co.il/auth/oauth2;
+        return 302 https://pad.kix.co.il/auth/mattermost;
       }
   hosts:
     - host: pad.kix.co.il
@@ -22,6 +19,8 @@ ingress:
       secretName: pad-kix-co-il-tls
 
 postgresql:
+  enabled: false
+mariadb:
   enabled: false
 
 service:

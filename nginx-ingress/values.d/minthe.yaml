@@ -1,5 +1,5 @@
 # helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-# helm upgrade nginx-ingress -n clusterwide ingress-nginx/ingress-nginx --version 4.1.0 -f nginx-ingress/values.d/minthe.yaml -f nginx-ingress/values.d/minthe.secret.yaml --dry-run --atomic --debug
+# helm upgrade nginx-ingress -n clusterwide ingress-nginx/ingress-nginx --version 4.3.0 -f nginx-ingress/values.d/minthe.yaml -f nginx-ingress/values.d/minthe.secret.yaml --atomic --debug --kube-context do-fra1-k8s-1-20-7-do-0-fra1-1623333476379
 
 dhParam: xxx
 controller:
@@ -10,9 +10,12 @@ controller:
 
   # listen on the nodes (disable to use node balancers)
   hostNetwork: true
+  kind: DaemonSet
   service:
     type: NodePort
     ipFamilyPolicy: "PreferDualStack"
+  hostPort:
+    enabled: true
 
   watchIngressWithoutClass: true
   ingressClassResource:
@@ -25,7 +28,7 @@ controller:
     minReplicas: 2
     maxReplicas: 6
 
-  replicaCount: 2
+  replicaCount: 1
   minAvailable: 1
 
   annotations:
