@@ -1,20 +1,27 @@
+#  helm upgrade -n web docker docker-registry --reset-values -f docker-registry/values.d/limnad.yaml -f docker-registry/values.d/limnad.secret.yaml --atomic --debug --kube-context do-fra1-k8s-1-20-7-do-0-fra1-1623333476379
+
 ingress:
   enabled: true
   hosts:
+    - docker.l6.ee
     - docker.kix.co.il
   annotations:
     kubernetes.io/tls-acme: "true"
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_cf"
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: docker-basic-auth
-    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required for Docker'
+    nginx.ingress.kubernetes.io/proxy-body-size: 250m
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
   tls:
     - secretName: docker-kix-co-il-tls
       hosts:
+        - docker.l6.ee
         - docker.kix.co.il
 storage: s3
 secrets:
+  haSharedSecret: ""
+  htpasswd: "xxx:yyy"
   s3:
     accessKey: xxx
     secretKey: xxx

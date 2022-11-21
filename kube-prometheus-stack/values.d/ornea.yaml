@@ -1,25 +1,22 @@
-# helm upgrade kube-prometheus-stack -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/minthe.yaml -f kube-prometheus-stack/values.d/minthe.secret.yaml --atomic --debug --kube-context do-fra1-k8s-1-20-7-do-0-fra1-1623333476379
+# helm upgrade kube-prometheus-stack -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/ornea.yaml -f kube-prometheus-stack/values.d/ornea.secret.yaml --debug --kube-context gke_evident-gecko-364317_europe-west8-b_ornea
 
-# http://kube-prometheus-stack-prometheus.clusterwide.svc.cluster.local:9090
-# http://loki-headless.clusterwide.svc.cluster.local:3100
+#defaultRules:
+#  rules:
+#    etcd: false
+#    kubeApiserver: false
+#    kubeApiserverAvailability: false
+#    kubeApiserverError: false
+#    kubeApiserverSlos: false
+#    kubeScheduler: false
 
-defaultRules:
-  rules:
-    etcd: false
-    kubeApiserver: false
-    kubeApiserverAvailability: false
-    kubeApiserverError: false
-    kubeApiserverSlos: false
-    kubeScheduler: false
-
-kubeControllerManager:
-  enabled: false
-
-kubeScheduler:
-  enabled: false
-
-kubeApiServer:
-  enabled: false
+#kubeControllerManager:
+#  enabled: false
+#
+#kubeScheduler:
+#  enabled: false
+#
+#kubeApiServer:
+#  enabled: false
 
 alertmanager:
   enabled: true
@@ -41,66 +38,66 @@ alertmanager:
           group_wait: 0s
           group_interval: 1m
           repeat_interval: 1m
-#    receivers:
-#      - name: 'null'
-#      - name: 'deadmans'
-#        webhook_configs:
-#          - url: x
-#            send_resolved: false
-#      - name: 'nix-alerts'
-#        slack_configs:
-#          - channel: "alerts"
-#            api_url: x
-#            send_resolved: true
-#            username: prometheus
-#            icon_emoji: prometheus
-#            title: |-
-#              [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }} for {{ .CommonLabels.job }}
-#              {{- if gt (len .CommonLabels) (len .GroupLabels) -}}
-#                {{" "}}(
-#                {{- with .CommonLabels.Remove .GroupLabels.Names }}
-#                  {{- range $index, $label := .SortedPairs -}}
-#                    {{ if $index }}, {{ end }}
-#                    {{- $label.Name }}="{{ $label.Value -}}"
-#                  {{- end }}
-#                {{- end -}}
-#                )
-#              {{- end }}
-#            text: >-
-#              {{ with index .Alerts 0 -}}
-#                :chart_with_upwards_trend: *<{{ .GeneratorURL }}|Graph>*
-#                {{- if .Annotations.runbook }}   :notebook: *<{{ .Annotations.runbook }}|Runbook>*{{ end }}
-#              {{ end }}
-#
-#              *Alert details*:
-#
-#              {{ range .Alerts -}}
-#                *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
-#              *Description:* {{ .Annotations.description }}
-#              *Details:*
-#                {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
-#                {{ end }}
-#              {{ end }}
+  #    receivers:
+  #      - name: 'null'
+  #      - name: 'deadmans'
+  #        webhook_configs:
+  #          - url: x
+  #            send_resolved: false
+  #      - name: 'nix-alerts'
+  #        slack_configs:
+  #          - channel: "alerts"
+  #            api_url: x
+  #            send_resolved: true
+  #            username: prometheus
+  #            icon_emoji: prometheus
+  #            title: |-
+  #              [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }} for {{ .CommonLabels.job }}
+  #              {{- if gt (len .CommonLabels) (len .GroupLabels) -}}
+  #                {{" "}}(
+  #                {{- with .CommonLabels.Remove .GroupLabels.Names }}
+  #                  {{- range $index, $label := .SortedPairs -}}
+  #                    {{ if $index }}, {{ end }}
+  #                    {{- $label.Name }}="{{ $label.Value -}}"
+  #                  {{- end }}
+  #                {{- end -}}
+  #                )
+  #              {{- end }}
+  #            text: >-
+  #              {{ with index .Alerts 0 -}}
+  #                :chart_with_upwards_trend: *<{{ .GeneratorURL }}|Graph>*
+  #                {{- if .Annotations.runbook }}   :notebook: *<{{ .Annotations.runbook }}|Runbook>*{{ end }}
+  #              {{ end }}
+  #
+  #              *Alert details*:
+  #
+  #              {{ range .Alerts -}}
+  #                *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+  #              *Description:* {{ .Annotations.description }}
+  #              *Details:*
+  #                {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+  #                {{ end }}
+  #              {{ end }}
   ingress:
     enabled: true
     annotations:
       kubernetes.io/tls-acme: "true"
       nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.web.svc.cluster.local/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.ornea.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
       nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email,X-Auth-Request-Username
       nginx.ingress.kubernetes.io/configuration-snippet: |
         auth_request_set $remote_email $upstream_http_x_auth_request_email;
         add_header X-Auth-Request-Email $remote_email;
     hosts:
-      - alerts.minthe.kix.co.il
-      - alertmanager.minthe.kix.co.il
+      - alerts.ornea.kix.co.il
+      - alertmanager.ornea.kix.co.il
     paths:
       - /
     tls:
       - hosts:
-          - alerts.minthe.kix.co.il
-          - alertmanager.minthe.kix.co.il
+          - alerts.ornea.kix.co.il
+          - alertmanager.ornea.kix.co.il
         secretName: alertmanager-tls
   ## Settings affecting alertmanagerSpec
   ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#alertmanagerspec
@@ -108,21 +105,21 @@ alertmanager:
   alertmanagerSpec:
     retention: 120h
     storage: {}
-#      volumeClaimTemplate:
-#        spec:
-#          storageClassName: nfs
-#          accessModes: ["ReadWriteOnce"]
-#          resources:
-#            requests:
-#              storage: 100Mi
-    externalUrl: https://alerts.minthe.kix.co.il/
+    #      volumeClaimTemplate:
+    #        spec:
+    #          storageClassName: nfs
+    #          accessModes: ["ReadWriteOnce"]
+    #          resources:
+    #            requests:
+    #              storage: 100Mi
+    externalUrl: https://alerts.ornea.kix.co.il/
     containers:
       - image: phntom/s3-sync:do-fra1
         imagePullPolicy: Always
         name: s3-sync
         env:
           - name: S3_URL
-            value: s3://prometheus-prod/alertmanager/
+            value: s3://prometheus-gcp/alertmanager/
           - name: S3_DIRECTORY
             value: /alertmanager/
           - name: SLEEP_AFTER_PUSH
@@ -150,7 +147,7 @@ alertmanager:
         imagePullPolicy: Always
         env:
           - name: S3_URL
-            value: s3://prometheus-prod/alertmanager/
+            value: s3://prometheus-gcp/alertmanager/
           - name: S3_DIRECTORY
             value: /alertmanager/
           - name: AWS_ACCESS_KEY_ID
@@ -166,8 +163,8 @@ alertmanager:
         volumeMounts:
           - mountPath: /alertmanager
             name: alertmanager-kube-prometheus-stack-alertmanager-db
-  nodeSelector:
-    doks.digitalocean.com/node-pool: pool-production
+#  nodeSelector:
+#    doks.digitalocean.com/node-pool: pool-production
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
 grafana:
@@ -185,8 +182,8 @@ grafana:
 
   grafana.ini:
     server:
-      domain: grafana.minthe.kix.co.il
-      root_url: https://grafana.minthe.kix.co.il
+      domain: grafana.ornea.kix.co.il
+      root_url: https://grafana.ornea.kix.co.il
       enforce_domain: true
     users:
       viewers_can_edit: true
@@ -234,7 +231,7 @@ grafana:
     annotations:
       kubernetes.io/tls-acme: "true"
       nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.web.svc.cluster.local/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.ornea.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
       nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email,X-Auth-Request-Username
       nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -242,11 +239,11 @@ grafana:
         add_header X-Auth-Request-Email $remote_email;
     labels: {}
     hosts:
-      - grafana.minthe.kix.co.il
+      - grafana.ornea.kix.co.il
     path: /
     tls:
       - hosts:
-          - grafana.minthe.kix.co.il
+          - grafana.ornea.kix.co.il
         secretName: grafana-tls
 
   sidecar:
@@ -1788,36 +1785,36 @@ grafana:
             },
             "version": 1
           }
+  
 
-
-#  notifiers:
-#    notifiers.yaml:
-#      notifiers:
-#        - name: alertsmanager
-#          type: prometheus-alertmanager
-#          uid: alertsmanager
-#          org_id: 1
-#          is_default: true
-#          send_reminder: false
-#          frequency: 12h
-#          disable_resolve_message: false
-#          settings:
-#            url: http://alertmanager-operated.clusterwide.svc.cluster.local:9093
-#        - name: mattermost-limnad-alerts
-#          type: slack
-#          uid: mattermost
-#          org_id: 1
-#          is_default: true
-#          send_reminder: false
-#          frequency: 3h
-#          disable_resolve_message: true
-#          settings:
-#            uploadImage: true
-#            recipient: alerts
-#            icon_emoji: grafana
-#            username: grafana
-#          secure_settings:
-#            url: x
+  #  notifiers:
+  #    notifiers.yaml:
+  #      notifiers:
+  #        - name: alertsmanager
+  #          type: prometheus-alertmanager
+  #          uid: alertsmanager
+  #          org_id: 1
+  #          is_default: true
+  #          send_reminder: false
+  #          frequency: 12h
+  #          disable_resolve_message: false
+  #          settings:
+  #            url: http://alertmanager-operated.clusterwide.svc.cluster.local:9093
+  #        - name: mattermost-limnad-alerts
+  #          type: slack
+  #          uid: mattermost
+  #          org_id: 1
+  #          is_default: true
+  #          send_reminder: false
+  #          frequency: 3h
+  #          disable_resolve_message: true
+  #          settings:
+  #            uploadImage: true
+  #            recipient: alerts
+  #            icon_emoji: grafana
+  #            username: grafana
+  #          secure_settings:
+  #            url: x
 
   annotations:
     keel.sh/pollSchedule: "@every 60m"
@@ -1829,8 +1826,8 @@ grafana:
   persistence:
     enabled: false
 
-  nodeSelector:
-    doks.digitalocean.com/node-pool: pool-labs
+#  nodeSelector:
+#    doks.digitalocean.com/node-pool: pool-labs
 
   ## Passed to grafana subchart and used by servicemonitor below
   ##
@@ -1873,7 +1870,7 @@ prometheus:
       kubernetes.io/tls-acme: "true"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
       nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.web.svc.cluster.local/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.minthe.kix.co.il/oauth2/start?rd=%2Fgo%2Fprometheus$escaped_request_uri"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.ornea.kix.co.il/oauth2/start?rd=%2Fgo%2Fprometheus$escaped_request_uri"
       nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email
       nginx.ingress.kubernetes.io/configuration-snippet: |
         auth_request_set $remote_email $upstream_http_x_auth_request_email;
@@ -1886,7 +1883,7 @@ prometheus:
     # hosts:
     #   - prometheus.domain.com
     hosts:
-      - prometheus.minthe.kix.co.il
+      - prometheus.ornea.kix.co.il
 
     ## Paths to use for ingress rules - one path should match the prometheusSpec.routePrefix
     ##
@@ -1898,7 +1895,7 @@ prometheus:
     ##
     tls:
       - hosts:
-          - prometheus.minthe.kix.co.il
+          - prometheus.ornea.kix.co.il
         secretName: prometheus-tls
 
   prometheusSpec:
@@ -1938,7 +1935,7 @@ prometheus:
         name: s3-sync
         env:
           - name: S3_URL
-            value: s3://prometheus-prod/prometheus/
+            value: s3://prometheus-gcp/prometheus/
           - name: S3_DIRECTORY
             value: /prometheus/
           - name: SLEEP_AFTER_PUSH
@@ -1966,7 +1963,7 @@ prometheus:
         imagePullPolicy: Always
         env:
           - name: S3_URL
-            value: s3://prometheus-prod/prometheus/
+            value: s3://prometheus-gcp/prometheus/
           - name: S3_DIRECTORY
             value: /prometheus/
           - name: AWS_ACCESS_KEY_ID
@@ -1982,5 +1979,5 @@ prometheus:
         volumeMounts:
           - mountPath: /prometheus
             name: prometheus-kube-prometheus-stack-prometheus-db
-  nodeSelector:
-    doks.digitalocean.com/node-pool: pool-labs
+#  nodeSelector:
+#    doks.digitalocean.com/node-pool: pool-labs

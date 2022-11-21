@@ -15,7 +15,7 @@ podLabels: {}
 image:
   repository: registry
   tag: 2.8.1
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 # imagePullSecrets:
     # - name: docker
 service:
