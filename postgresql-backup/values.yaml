@@ -19,7 +19,7 @@ encryption:
   enabled: true
   password: xxx
 cronjob:
-  schedule: '*/10 * * * *'
+  schedule: '7,27,47 * * * *'
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
@@ -29,7 +29,7 @@ cleanup:
 
 image:
   repository: phntom/postgresql-backup-s3
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
