@@ -17,8 +17,8 @@ replicaCount: 1
 image:
   repository: phntom/camo
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "2.3.1"
+  hash: sha256:a9b1304d6c71b8d5194ced992ebe77ef2f329f01b90d224c41b05fa874f87f05
 
 imagePullSecrets: []
 nameOverride: ""

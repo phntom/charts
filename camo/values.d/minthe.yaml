@@ -1,3 +1,5 @@
+# helm upgrade -n web camo camo --reset-values -f camo/values.d/minthe.yaml -f camo/values.d/minthe.secret.yaml --debug
+
 camo:
   key: xxx
   debug: false
@@ -7,7 +9,7 @@ camo:
     maxRedirects: 4
     socketTimeoutSeconds: 10
   headers:
-    userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0
+    userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
     timingAllowOrigin: null
     keepAlive: true
     hostname: kix.co.il
@@ -15,13 +17,18 @@ ingress:
   enabled: true
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: $1
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     kubernetes.io/tls-acme: "true"
   tls:
     - hosts:
       - kix.co.il
       - www.kix.co.il
+      - cdn.kix.co.il
       secretName: kix-co-il-tls
   hosts:
     - host: kix.co.il
+      paths:
+        - /proxy(.*)
+    - host: cdn.kix.co.il
       paths:
         - /proxy(.*)
