@@ -8,8 +8,8 @@
 
 image:
   repository: "phntom/codimd"
-  tag: "2.4.2"
-  digest: sha256:f2a9d2716ec1473853ae876930f13d401cf21b0fb0912321b2d66ad9bd0bdee7
+  tag: "2.4.3"
+  digest: sha256:1b9aafbb62e6713e6a39b5a54d2d93253ab6f0f39bb3b63d44295460a092cca0
   pullPolicy: IfNotPresent
   pullSecrets: []
 

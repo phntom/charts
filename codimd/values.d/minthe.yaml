@@ -1,7 +1,8 @@
-# helm upgrade -n web hackmd codimd/codimd -f codimd/values.d/minthe.yaml -f codimd/values.d/minthe.secret.yaml --atomic --debug --kube-context do-fra1-k8s-1-20-7-do-0-fra1-1623333476379
+# helm upgrade -n web hackmd phntom/codimd -f codimd/values.d/minthe.yaml -f codimd/values.d/minthe.secret.yaml --atomic --debug
 
 ingress:
   enabled: true
+  hostname: pad.kix.co.il
   annotations:
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -27,8 +28,8 @@ service:
   type: ClusterIP
 
 codimd:
-  nodeSelector:
-    doks.digitalocean.com/node-pool: pool-production
+#  nodeSelector:
+#    doks.digitalocean.com/node-pool: pool-production
   database:
     type: postgres
     host: postgresql-ha-pgpool.db.svc.cluster.local
