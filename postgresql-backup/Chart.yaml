@@ -4,6 +4,6 @@ description: periodically backup postgresql databases to s3 + restore manually
 
 type: application
 
-version: 0.1.8
+version: 0.1.9
 
 appVersion: "1.0.22"

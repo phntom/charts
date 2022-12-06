@@ -32,7 +32,7 @@ spec:
           restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
           containers:
             - name: {{ include "postgresql-backup.name" . }}
-              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}@{{ .Values.image.hash }}"
               imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
               command:
                 - cleanup.sh
