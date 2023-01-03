@@ -5,8 +5,8 @@ replicaCount: 1
 image:
   repository: phntom/binaryvision-tlo-static
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "0.0.4"
+  hash: "sha256:e8b9ac93a3ddecac0a94ca362d0bbad2669b90c5b7a8401d6767d524341e570f"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -81,8 +81,8 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-nodeSelector:
-  doks.digitalocean.com/node-pool: pool-production
+#nodeSelector:
+#  doks.digitalocean.com/node-pool: pool-production
 
 tolerations: []
 

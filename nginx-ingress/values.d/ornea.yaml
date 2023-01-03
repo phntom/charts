@@ -1,5 +1,5 @@
 # helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-# helm upgrade nginx-ingress -n clusterwide ingress-nginx/ingress-nginx -f nginx-ingress/values.d/ornea.yaml -f nginx-ingress/values.d/ornea.secret.yaml --atomic --debug --kube-context gke_evident-gecko-364317_europe-west8-b_ornea
+# helm upgrade ingress-nginx -n clusterwide ingress-nginx/ingress-nginx -f nginx-ingress/values.d/ornea.yaml -f nginx-ingress/values.d/ornea.secret.yaml --atomic --debug --kube-context gke_evident-gecko-364317_europe-west8-b_ornea
 
 dhParam: xxx
 controller:
@@ -13,7 +13,7 @@ controller:
   kind: DaemonSet
   service:
     type: NodePort
-    ipFamilyPolicy: "PreferDualStack"
+    # ipFamilyPolicy: "PreferDualStack"
   hostPort:
     enabled: true
   dnsPolicy: ClusterFirstWithHostNet
@@ -53,17 +53,17 @@ controller:
 
   resources:
     limits:
-      cpu: 0
-      memory: 400Mi
+      # cpu: 500m
+      memory: 325Mi
     requests:
-      cpu: 0
-      memory: 0
+      cpu: 10m
+      memory: 75Mi
 
   metrics:
     enabled: true
     serviceMonitor:
-      enabled: true
-      scrapeInterval: 30s
+      enabled: false
+      scrapeInterval: 60s
 
     prometheusRule:
       enabled: true
@@ -131,6 +131,6 @@ controller:
     X-Frame-Options: SAMEORIGIN
     Strict-Transport-Security: max-age=31536000; includeSubDomains
 
-#tcp:
-#  6697: "web/matterircd:6697"
-#  9999: "web/matterircd:6697"
+tcp:
+  6697: "web/matterircd:6697"
+  9999: "web/matterircd:6697"

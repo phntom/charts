@@ -31,6 +31,7 @@ spec:
         image: "{{ .Values.initContainerImage.repository }}:{{ .Values.initContainerImage.tag }}"
         imagePullPolicy: {{ .Values.initContainerImage.imagePullPolicy }}
         command: ["sh", "-c", "until curl --max-time 10 http://{{ .Release.Name }}-mysql:3306; do echo waiting for {{ .Release.Name }}-mysql; sleep 5; done;"]
+        resources: {}
       {{- end }}
       {{- if .Values.extraInitContainers }}
       {{- .Values.extraInitContainers | toYaml | nindent 6 }}
@@ -64,6 +65,13 @@ spec:
           httpGet:
             path: /api/v4/system/ping
             port: http
+        startupProbe:
+          initialDelaySeconds: 10
+          timeoutSeconds: 500
+          periodSeconds: 2
+          httpGet:
+            path: /api/v4/system/ping
+            port: http
         volumeMounts:
         - mountPath: /mattermost/config-ro/config.json
           name: config-json
@@ -78,7 +86,7 @@ spec:
         {{ .Values.extraVolumeMounts | toYaml | nindent 8 }}
         {{- end }}
         resources:
-          {{- .Values.resources | toYaml | nindent 12 }}
+          {{- .Values.resources | toYaml | nindent 10 }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

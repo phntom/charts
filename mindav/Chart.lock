@@ -1,6 +1,6 @@
 dependencies:
 - name: oauth2-proxy
   repository: https://phntom.kix.co.il/charts/
-  version: 3.2.6
-digest: sha256:0154dd9b312f4f5f553c2425344a8f502d47b6662c17377cd51d09bf83c3cf69
-generated: "2021-03-25T20:12:04.872652+02:00"
+  version: 3.2.15
+digest: sha256:9a6bb40fa37f030195ebf9a771499821614d6b8538e8ea0180561e7650edeb2d
+generated: "2022-12-03T22:40:22.403498195+02:00"

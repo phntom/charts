@@ -1,7 +1,7 @@
 # helm repo add mattermost https://helm.mattermost.com
-# helm upgrade --install mattermost-integ -n chat mattermost -f mattermost/values.d/minthe-integ.yaml -f mattermost/values.d/minthe-integ.secret.yaml --atomic --debug
+# helm upgrade mattermost-team-edition -n chat phntom/mattermost -f mattermost/values.d/ornea.yaml -f mattermost/values.d/ornea.secret.yaml --atomic --debug
 
-nameOverride: mattermost-integ
+nameOverride: mattermost-team-edition
 
 persistence:
   data:
@@ -23,11 +23,9 @@ ingress:
   annotations:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: "dns_cf"
-    nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.web.svc.cluster.local/oauth2/auth"
-    nginx.ingress.kubernetes.io/auth-signin: "https://auth.ornea.kix.co.il/oauth2/start?rd=%2Fgo%2Fmmbeta$escaped_request_uri"
-    nginx.ingress.kubernetes.io/default-backend: mattermost-defaultbackend
+    # nginx.ingress.kubernetes.io/default-backend: mattermost-defaultbackend
     nginx.ingress.kubernetes.io/service-upstream: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    nginx.ingress.kubernetes.io/proxy-body-size: 350m
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
@@ -42,6 +40,8 @@ ingress:
       if ( $nix = ab ) {
         return 302 https://nix.co.il/?kix=n&redirect_to=$arg_redirect_to;
       }
+    # real_ip_header CF-Connecting-IP;
+    # if ($http_cf_connecting_ip != $remote_addr) { return 403; }
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
     #      proxy_cache mattermost_cache;
     #      proxy_cache_revalidate on;
@@ -52,19 +52,19 @@ ingress:
     #### http-snippet: |
     ####     proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=mattermost_cache:10m max_size=3g inactive=120m use_temp_path=off;
   hosts:
-    - mmbeta.ornea.kix.co.il
+    - kix.co.il
   tls:
-    - secretName: mattermost-chat-beta-kix-tls
+    - secretName: www-kix-co-il-tls
       hosts:
-        - mmbeta.ornea.kix.co.il
+        - kix.co.il
+        - www.kix.co.il
+
+#nodeSelector:
+#  doks.digitalocean.com/node-pool: pool-production
 
 resources:
   requests:
     cpu: 10m
-
-#nodeSelector:
-#  doks.digitalocean.com/node-pool: pool-labs
-
 #route:
 #  enabled: false
 
@@ -86,21 +86,21 @@ config:
     BannerTextColor: '#333333'
     AllowBannerDismissal: true
   ServiceSettings:
-    EnableSecurityFixAlert: true
-    SiteURL: https://mmbeta.ornea.kix.co.il
+    EnableSecurityFixAlert: false
+    SiteURL: https://kix.co.il
     EnableOAuthServiceProvider: true
     EnablePostUsernameOverride: true
     EnablePostIconOverride: true
     EnableBotAccountCreation: true
     EnableUserAccessTokens: true
     EnableMultifactorAuthentication: true
-    PostEditTimeLimit: 300
+    PostEditTimeLimit: 500
     ExperimentalChannelSidebarOrganization: default_off
     GoogleDeveloperKey: xxx
-    AllowedUntrustedInternalConnections: "chadbot.chat.svc"
+    AllowedUntrustedInternalConnections: "chadbot.chat.svc email-manager.web.svc"
     EnableEmailInvitations: false
     EnableTutorial: true
-    TimeBetweenUserTypingUpdatesMilliseconds: 6000
+    TimeBetweenUserTypingUpdatesMilliseconds: 8000
     AllowCookiesForSubdomains: false
     ManagedResourcePaths: "proxy,blog"
     CollapsedThreads: default_off
@@ -108,15 +108,17 @@ config:
     Enable: true
     ImageProxyType: "atmos/camo"
     RemoteImageProxyOptions: xxx
-    RemoteImageProxyURL: https://kix.co.il/proxy
-    EnableLocalMode: true
-    EnableDeveloper: true
+    RemoteImageProxyURL: https://cdn.kix.co.il/proxy
   TeamSettings:
     SiteName: kix.co.il
     MaxUsersPerTeam: 50000
     EnableTeamCreation: false
     EnableCustomBrand: true
-    CustomBrandText: "Registration is closed. kix.co.il is a self-hosted, private and free platform including chat and other collaboration tools."
+    CustomBrandText: >
+      Registration is closed, email invites to @nix.co.il addresses are still valid.
+      
+      
+      kix.co.il is a self-hosted, private and free platform including chat and other collaboration tools.
     CustomDescriptionText: to continue please sign-in
     RestrictDirectMessage: team
     EnableTeamListing: false
@@ -129,17 +131,16 @@ config:
     RestrictPublicChannelDeletion: team_admin
     RestrictTeamInvite: all
     EnableUserDeactivation: true
-    ExperimentalPrimaryTeam: 'nix'
   SqlSettings:
     AtRestEncryptKey: xxx
   LogSettings:
-    ConsoleLevel: DEBUG
-    EnableWebhookDebugging: true
+    ConsoleLevel: INFO
+    EnableWebhookDebugging: false
     EnableDiagnostics: false
   NotificationLogSettings:
     ConsoleLevel: INFO
   FileSettings:
-    MaxFileSize: 104857600
+    MaxFileSize: 367001600
     PublicLinkSalt: xxx
     DriverName: amazons3
     AmazonS3AccessKeyId: xxx
@@ -157,6 +158,7 @@ config:
     RequireEmailVerification: true
     FeedbackName: Kix Chat
     FeedbackEmail: support@kix.co.il
+    ReplyToAddress: support@kix.co.il
     FeedbackOrganization: kix
     SMTPUsername: xxx
     SMTPPassword: xxx
@@ -178,11 +180,11 @@ config:
     ShowEmailAddress: false
     ShowFullName: true
   SupportSettings:
-    TermsOfServiceLink: https://mmbeta.ornea.kix.co.il/help/terms
-    PrivacyPolicyLink: https://mmbeta.ornea.kix.co.il/help/privacy
-    AboutLink: https://mmbeta.ornea.kix.co.il/help/about
-    HelpLink: https://mmbeta.ornea.kix.co.il/nix/channels/help
-    ReportAProblemLink: https://mmbeta.ornea.kix.co.il/nix/channels/help
+    TermsOfServiceLink: https://kix.co.il/help/terms
+    PrivacyPolicyLink: https://kix.co.il/help/privacy
+    AboutLink: https://kix.co.il/help/about
+    HelpLink: https://kix.co.il/nix/channels/help
+    ReportAProblemLink: xxx
     SupportEmail: support@kix.co.il
   GitLabSettings:
     Enable: true
@@ -230,14 +232,6 @@ config:
     AuthEndpoint: https://github.com/login/oauth/authorize
     TokenEndpoint: https://github.com/login/oauth/access_token
     UserApiEndpoint: https://api.github.com/user
-  TwitterSettings:
-    Enable: false
-  BleveSettings:
-    BulkIndexingTimeWindowSeconds: 3600
-    EnableIndexing: true
-    EnableAutocomplete: false
-    EnableSearching: false
-    IndexDir: '/mattermost/data/'
   PluginSettings:
     EnableUploads: true
     Plugins:
@@ -247,12 +241,12 @@ config:
         ExperimentalUI: true
       com.mattermost.custom-attributes:
         CustomAttributes:
-          - Name: "_Member since 2003_ :trident::zero::three:"
+          - Name: "_Member since 2003_ :trident: :zero::three:"
             UserIDs:
               - 5cmngiuzpbdhfe6h1pywjc7pyy
             TeamIDs: []
             GroupIDs: []
-          - Name: "_Member since 2005_ :trophy::zero::five:"
+          - Name: "_Member since 2005_ :trophy: :zero::five:"
             UserIDs:
               - 7bcqiyod47g1unzwykt9nubz1e
               - 3hbw3ejowjy8ujdjacuqqs4d5w
@@ -260,46 +254,46 @@ config:
               - ze5azasij78atp9myqb37dppwc
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2007_ :trophy::zero::seven:"
+          - Name: "_Member since 2007_ :trophy: :zero::seven:"
             UserIDs:
               - bj394hna6bgdb88cfth35d6r9h
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2008_ :trophy::zero::eight:"
+          - Name: "_Member since 2008_ :trophy: :zero::eight:"
             UserIDs:
               - im19knk5afd9u8izzaztm13d6e
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2009_ :1st_place_medal::zero::nine:"
+          - Name: "_Member since 2009_ :1st_place_medal: :zero::nine:"
             UserIDs:
               - 4ynuqw6sgbdgpn44qxbk3s83ca
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2010_ :1st_place_medal::one::zero:"
+          - Name: "_Member since 2010_ :1st_place_medal: :one::zero:"
             UserIDs:
               - zapdkaxf5fdubdu5qd19ymbjge
               - sdrrerer83fidg99j785fipc6w
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2011_ :1st_place_medal::one::one:"
+          - Name: "_Member since 2011_ :1st_place_medal: :one::one:"
             UserIDs:
               - 47bdmcsyy7dsprg9b9xb4kz3dy
               - 9kyhw1h6wi8tbqp1i6skek851a
               - hrmk8oahriyfmg9jke85pt8c4a
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2013_ :2nd_place_medal::one::three:"
+          - Name: "_Member since 2013_ :2nd_place_medal: :one::three:"
             UserIDs:
               - h7eq6mdkq3bupro7rwhx8r7hoo
               - 75bggjn1rirdikomkz66spjiqe
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2014_ :2nd_place_medal::one::four:"
+          - Name: "_Member since 2014_ :2nd_place_medal: :one::four:"
             UserIDs:
               - j7nxq9zcyi8h98irf3166or11e
             TeamIDs: [ ]
             GroupIDs: [ ]
-          - Name: "_Member since 2015_ :2nd_place_medal::one::five:"
+          - Name: "_Member since 2015_ :2nd_place_medal: :one::five:"
             UserIDs:
               - ak8bua4n1j8mjg6pt6gfg844ur
             TeamIDs: [ ]
@@ -322,7 +316,7 @@ config:
   ClusterSettings:
     AdvertiseAddress: 'mattermost-team-edition.chat.svc'
     BindAddress: ''
-    ClusterName: 'chat-integ'
+    ClusterName: 'chat-prod'
     Enable: false
     EnableExperimentalGossipEncryption: false
     GossipPort: 8074

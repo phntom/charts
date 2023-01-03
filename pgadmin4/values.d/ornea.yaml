@@ -1,5 +1,5 @@
 # helm repo add runix https://helm.runix.net/
-# helm upgrade --install pgadmin4 -n web runix/pgadmin4 -f pgadmin4/values.d/ornea.yaml -f pgadmin4/values.d/ornea.secret.yaml
+# helm upgrade --install pgadmin4 -n web runix/pgadmin4 -f pgadmin4/values.d/ornea.yaml -f pgadmin4/values.d/ornea.secret.yaml --kube-context gke_evident-gecko-364317_europe-west8-b_ornea
 
 ingress:
   enabled: true
@@ -25,5 +25,9 @@ env:
 persistentVolume:
   enabled: false
 
-nodeSelector:
-  cloud.google.com/gke-nodepool: pool-dev
+resources:
+  requests:
+    cpu: 10m
+
+#nodeSelector:
+#  cloud.google.com/gke-nodepool: pool-dev

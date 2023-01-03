@@ -1,4 +1,4 @@
-# helm upgrade chartmuseum -n web chartmuseum --atomic --debug -f chartmuseum/values.d/ornea.yaml -f chartmuseum/values.d/ornea.secret.yaml --kube-context=gke_evident-gecko-364317_europe-west8_ornea
+# helm upgrade chartmuseum -n web --reset-values chartmuseum --atomic --debug -f chartmuseum/values.d/ornea.yaml -f chartmuseum/values.d/ornea.secret.yaml --kube-context gke_evident-gecko-364317_europe-west8-b_ornea
 
 fullnameOverride: chartmuseum
 
@@ -27,7 +27,7 @@ env:
     STORAGE_AMAZON_ENDPOINT: https://fra1.digitaloceanspaces.com
     LOG_JSON: true
     DISABLE_STATEFILES: false
-    DISABLE_METRICS: false
+    ENABLE_METRICS: true
     DISABLE_API: false
     ALLOW_OVERWRITE: false
     DISABLE_FORCE_OVERWRITE: true
@@ -44,8 +44,8 @@ serviceMonitor:
   enabled: true
   labels: {}
   metricsPath: "/metrics"
-  timeout: 30s
-  interval: 30s
+  timeout: 60s
+  interval: 60s
 
 resources: {}
 #  limits:

@@ -24,7 +24,7 @@ ingress:
     acme.kubernetes.io/enable: "true"
     acme.kubernetes.io/dns: dns_cf
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-
+    kubernetes.io/tls-acme: "true"
   hosts:
     - host: nix.co.il
       paths:
@@ -36,7 +36,9 @@ ingress:
       paths:
         - /
   tls:
-    - secretName: nix-co-il-tls
+    - secretName: web-nix-co-il-tls
       hosts:
         - nix.co.il
-        - "*.nix.co.il"
+        - www.nix.co.il
+        - webchat.nix.co.il
+        - web.nix.co.il

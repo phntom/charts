@@ -1,4 +1,5 @@
 # helm repo add bitnami https://charts.bitnami.com/bitnami
+# helm upgrade minio bitnami/minio -n db --version 9.3.0 --reset-values -f minio/values.d/limnad.yaml -f minio/values.d/limnad.secret.yaml --debug
 
 auth:
   rootUser: XXXXXXXXXX
@@ -22,19 +23,23 @@ disableWebUI: true
 ingress:
   enabled: false
   annotations:
-    acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: dns_linode_v4
     kubernetes.io/tls-acme: "true"
-  hostname: s3.minthe.kix.co.il
+    acme.kubernetes.io/enable: "true"
+    acme.kubernetes.io/dns: "dns_cf"
+  hostname: s3.ornea.kix.co.il
   tls: true
 
 persistence:
   enabled: false
 
-#resources:
-#  requests:
-#    memory: 50Mi
+resources:
+  requests:
+    cpu: 10m
+  limits:
+    cpu: 50m
 
 metrics:
   serviceMonitor:
+    scrapeTimeout: 60s
+    interval: 60s
     enabled: true

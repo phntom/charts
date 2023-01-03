@@ -1,1869 +1,147 @@
-# helm upgrade kube-prometheus-stack -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/ornea.yaml -f kube-prometheus-stack/values.d/ornea.secret.yaml --debug --kube-context gke_evident-gecko-364317_europe-west8-b_ornea
+# helm upgrade kube-prometheus-stack -n clusterwide prometheus-community/kube-prometheus-stack -f kube-prometheus-stack/values.d/ornea.yaml --debug --kube-context gke_evident-gecko-364317_europe-west8-b_ornea
 
-#defaultRules:
+defaultRules:
+  create: true
 #  rules:
+#    alertmanager: false
 #    etcd: false
-#    kubeApiserver: false
+#    configReloaders: false
+#    general: false
+#    k8s: false
 #    kubeApiserverAvailability: false
-#    kubeApiserverError: false
+#    kubeApiserverBurnrate: false
+#    kubeApiserverHistogram: false
 #    kubeApiserverSlos: false
-#    kubeScheduler: false
-
-#kubeControllerManager:
-#  enabled: false
-#
-#kubeScheduler:
-#  enabled: false
-#
-#kubeApiServer:
-#  enabled: false
+#    kubeControllerManager: false
+#    kubelet: false
+#    kubeProxy: false
+#    kubePrometheusGeneral: false
+#    kubePrometheusNodeRecording: false
+#    kubernetesApps: false
+#    kubernetesResources: false
+#    kubernetesStorage: false
+#    kubernetesSystem: false
+#    kubeSchedulerAlerting: false
+#    kubeSchedulerRecording: false
+#    kubeStateMetrics: false
+#    network: false
+#    node: false
+#    nodeExporterAlerting: false
+#    nodeExporterRecording: false
+#    prometheus: false
+#    prometheusOperator: false
 
 alertmanager:
-  enabled: true
-  config:
-    global:
-      resolve_timeout: 5m
-    route:
-      group_by:
-        - alertname
-        - job
-      group_wait: 30s
-      group_interval: 5m
-      repeat_interval: 1h
-      receiver: 'nix-alerts'
-      routes:
-        - match:
-            alertname: Watchdog
-          receiver: 'deadmans'
-          group_wait: 0s
-          group_interval: 1m
-          repeat_interval: 1m
-  #    receivers:
-  #      - name: 'null'
-  #      - name: 'deadmans'
-  #        webhook_configs:
-  #          - url: x
-  #            send_resolved: false
-  #      - name: 'nix-alerts'
-  #        slack_configs:
-  #          - channel: "alerts"
-  #            api_url: x
-  #            send_resolved: true
-  #            username: prometheus
-  #            icon_emoji: prometheus
-  #            title: |-
-  #              [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }} for {{ .CommonLabels.job }}
-  #              {{- if gt (len .CommonLabels) (len .GroupLabels) -}}
-  #                {{" "}}(
-  #                {{- with .CommonLabels.Remove .GroupLabels.Names }}
-  #                  {{- range $index, $label := .SortedPairs -}}
-  #                    {{ if $index }}, {{ end }}
-  #                    {{- $label.Name }}="{{ $label.Value -}}"
-  #                  {{- end }}
-  #                {{- end -}}
-  #                )
-  #              {{- end }}
-  #            text: >-
-  #              {{ with index .Alerts 0 -}}
-  #                :chart_with_upwards_trend: *<{{ .GeneratorURL }}|Graph>*
-  #                {{- if .Annotations.runbook }}   :notebook: *<{{ .Annotations.runbook }}|Runbook>*{{ end }}
-  #              {{ end }}
-  #
-  #              *Alert details*:
-  #
-  #              {{ range .Alerts -}}
-  #                *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
-  #              *Description:* {{ .Annotations.description }}
-  #              *Details:*
-  #                {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
-  #                {{ end }}
-  #              {{ end }}
-  ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/tls-acme: "true"
-      nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.web.svc.cluster.local/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.ornea.kix.co.il/oauth2/start?rd=%2Fgo%2Falerts$escaped_request_uri"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
-      nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email,X-Auth-Request-Username
-      nginx.ingress.kubernetes.io/configuration-snippet: |
-        auth_request_set $remote_email $upstream_http_x_auth_request_email;
-        add_header X-Auth-Request-Email $remote_email;
-    hosts:
-      - alerts.ornea.kix.co.il
-      - alertmanager.ornea.kix.co.il
-    paths:
-      - /
-    tls:
-      - hosts:
-          - alerts.ornea.kix.co.il
-          - alertmanager.ornea.kix.co.il
-        secretName: alertmanager-tls
-  ## Settings affecting alertmanagerSpec
-  ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#alertmanagerspec
-  ##
-  alertmanagerSpec:
-    retention: 120h
-    storage: {}
-    #      volumeClaimTemplate:
-    #        spec:
-    #          storageClassName: nfs
-    #          accessModes: ["ReadWriteOnce"]
-    #          resources:
-    #            requests:
-    #              storage: 100Mi
-    externalUrl: https://alerts.ornea.kix.co.il/
-    containers:
-      - image: phntom/s3-sync:do-fra1
-        imagePullPolicy: Always
-        name: s3-sync
-        env:
-          - name: S3_URL
-            value: s3://prometheus-gcp/alertmanager/
-          - name: S3_DIRECTORY
-            value: /alertmanager/
-          - name: SLEEP_AFTER_PUSH
-            value: "300"
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: s3-prometheus-prod-key
-                key: AWS_ACCESS_KEY_ID
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: s3-prometheus-prod-key
-                key: AWS_SECRET_ACCESS_KEY
-        volumeMounts:
-          - mountPath: /alertmanager
-            name: alertmanager-kube-prometheus-stack-alertmanager-db
-        resources:
-          limits:
-            cpu: "50m"
-    initContainers:
-      - name: s3-sync-startup
-        command: [ "startup" ]
-        image: phntom/s3-sync:do-fra1
-        imagePullPolicy: Always
-        env:
-          - name: S3_URL
-            value: s3://prometheus-gcp/alertmanager/
-          - name: S3_DIRECTORY
-            value: /alertmanager/
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: s3-prometheus-prod-key
-                key: AWS_ACCESS_KEY_ID
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: s3-prometheus-prod-key
-                key: AWS_SECRET_ACCESS_KEY
-        volumeMounts:
-          - mountPath: /alertmanager
-            name: alertmanager-kube-prometheus-stack-alertmanager-db
-#  nodeSelector:
-#    doks.digitalocean.com/node-pool: pool-production
-## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
-##
+  enabled: false
+
 grafana:
+  enabled: false
+
+kubeApiServer:
+  enabled: false
+
+kubelet:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+kube-state-metrics:
+  prometheus:
+    monitor:
+      interval: 60s
+      scrapeTimeout: 60s
+
+coreDns:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+kubeStateMetrics:
+  enabled: false
+
+nodeExporter:
+  enabled: false
+
+prometheusOperator:
   enabled: true
-  namespaceOverride: ""
 
-  ## Deploy default dashboards.
-  ##
-  defaultDashboardsEnabled: true
-
-  # adminPassword: x
-  # ^ not used in anonymous mode protected by oauth2-proxy
-
-  resources: {}
-
-  grafana.ini:
-    server:
-      domain: grafana.ornea.kix.co.il
-      root_url: https://grafana.ornea.kix.co.il
-      enforce_domain: true
-    users:
-      viewers_can_edit: true
-      editors_can_admin: true
-      hidden_users: admin
-      auto_assign_org_role: Admin
-      login_hint: request PHANTOm for access at kix.co.il
-      home_page: /d/efa86fd1d0c121a26444b636a3f509a8/kubernetes-compute-resources-cluster?orgId=1&refresh=10s
-    auth:
-      disable_login_form: true
-      disable_signout_menu: true
-    snapshots:
-      public_mode: true
-    security:
-      x_xss_protection: true
-      admin_user: phantom@kix.co.il
-    auth.anonymous:
-      enabled: false
-      org_role: Admin
-    auth.proxy:
-      enabled: true
-      header_name: X-Auth-Request-Email
-      header_property: email
-      headers: Name:X-Auth-Request-Username
-      auto_sign_up: true
-      sync_ttl: 60
-      enable_login_token: false
-    analytics:
-      check_for_updates: false
-      reporting_enabled: false
-    alerting:
-      enabled: false
-    date_formats:
-      use_browser_locale: true
-      default_timezone: browser
-    dataproxy:
-      send_user_header: true
-      timeout: 498
-
-    # image:
-    # tag: 7.1.5
-
-  ingress:
+  admissionWebhooks:
     enabled: true
-    annotations:
-      kubernetes.io/tls-acme: "true"
-      nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.web.svc.cluster.local/oauth2/auth"
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.ornea.kix.co.il/oauth2/start?rd=%2Fgo%2Fgrafana$escaped_request_uri"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "500"
-      nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email,X-Auth-Request-Username
-      nginx.ingress.kubernetes.io/configuration-snippet: |
-        auth_request_set $remote_email $upstream_http_x_auth_request_email;
-        add_header X-Auth-Request-Email $remote_email;
-    labels: {}
-    hosts:
-      - grafana.ornea.kix.co.il
-    path: /
-    tls:
-      - hosts:
-          - grafana.ornea.kix.co.il
-        secretName: grafana-tls
 
-  sidecar:
-    # image:
-    #   tag: 0.1.151
-    dashboards:
-      enabled: true
-      label: grafana_dashboard
+  namespaces:
+    releaseNamespace: true
+    additional:
+      - default
+      - clusterwide
+      - cert-manager
+      - circleci
+      - web
+      - chat
+      - db
 
-      ## Annotations for Grafana dashboard configmaps
-      ##
-      annotations: {}
-    datasources:
-      enabled: true
-      defaultDatasourceEnabled: true
+  ## The clusterDomain value will be added to the cluster.peer option of the alertmanager.
+  ## Without this specified option cluster.peer will have value alertmanager-monitoring-alertmanager-0.alertmanager-operated:9094 (default value)
+  ## With this specified option cluster.peer will have value alertmanager-monitoring-alertmanager-0.alertmanager-operated.namespace.svc.cluster-domain:9094
+  ##
+  clusterDomain: "cluster.local"
 
-      ## Annotations for Grafana datasource configmaps
-      ##
-      annotations: {}
-
-      ## Create datasource for each Pod of Prometheus StatefulSet;
-      ## this uses headless service `prometheus-operated` which is
-      ## created by Prometheus Operator
-      ## ref: https://git.io/fjaBS
-      createPrometheusReplicasDatasources: false
-      label: grafana_datasource
-
-  extraConfigmapMounts: []
-  # - name: certs-configmap
-  #   mountPath: /etc/grafana/ssl/
-  #   configMap: certs-configmap
-  #   readOnly: true
-
-  ## Configure additional grafana datasources (passed through tpl)
-  ## ref: http://docs.grafana.org/administration/provisioning/#datasources
-  additionalDataSources:
-    - name: Prometheus
-      type: prometheus
-      url: http://kube-prometheus-stack-prometheus:9090
-    - name: Loki
-      type: loki
-      url: http://loki.clusterwide.svc:3100
-  # - name: prometheus-sample
-  #   access: proxy
-  #   basicAuth: true
-  #   basicAuthPassword: pass
-  #   basicAuthUser: daco
-  #   editable: false
-  #   jsonData:
-  #       tlsSkipVerify: true
-  #   orgId: 1
-  #   type: prometheus
-  #   url: https://{{ printf "%s-prometheus.svc" .Release.Name }}:9090
-  #   version: 1
-
-  dashboardProviders:
-    dashboardproviders.yaml:
-      apiVersion: 1
-      providers:
-        - name: 'anton'
-          orgId: 1
-          folder: ''
-          type: file
-          disableDeletion: true
-          editable: false
-          options:
-            path: /var/lib/grafana/dashboards/anton
-  dashboards:
-    anton:
-      nginx-ingress-controller:
-        json: |
-          {
-            "annotations": {
-              "list": [
-                {
-                  "builtIn": 1,
-                  "datasource": "-- Grafana --",
-                  "enable": true,
-                  "hide": true,
-                  "iconColor": "rgba(0, 211, 255, 1)",
-                  "name": "Annotations & Alerts",
-                  "type": "dashboard"
-                },
-                {
-                  "datasource": "Prometheus",
-                  "enable": true,
-                  "expr": "sum(changes(nginx_ingress_controller_config_last_reload_successful_timestamp_seconds{instance!=\"unknown\",controller_class=~\"$controller_class\",namespace=~\"$namespace\"}[30s])) by (controller_class)",
-                  "hide": false,
-                  "iconColor": "rgba(255, 96, 96, 1)",
-                  "limit": 100,
-                  "name": "Config Reloads",
-                  "showIn": 0,
-                  "step": "30s",
-                  "tagKeys": "controller_class",
-                  "tags": [],
-                  "titleFormat": "Config Reloaded",
-                  "type": "tags"
-                }
-              ]
-            },
-            "description": "Ingress-nginx supports a rich collection of prometheus metrics. If you have prometheus and grafana installed on your cluster then prometheus will already be scraping this data due to the scrape annotation on the deployment.",
-            "editable": true,
-            "gnetId": 9614,
-            "graphTooltip": 0,
-            "id": 27,
-            "iteration": 1587642410984,
-            "links": [],
-            "panels": [
-              {
-                "cacheTimeout": null,
-                "colorBackground": false,
-                "colorValue": false,
-                "colors": [
-                  "rgba(245, 54, 54, 0.9)",
-                  "rgba(237, 129, 40, 0.89)",
-                  "rgba(50, 172, 45, 0.97)"
-                ],
-                "datasource": "Prometheus",
-                "format": "ops",
-                "gauge": {
-                  "maxValue": 100,
-                  "minValue": 0,
-                  "show": false,
-                  "thresholdLabels": false,
-                  "thresholdMarkers": true
-                },
-                "id": 20,
-                "interval": null,
-                "links": [],
-                "mappingType": 1,
-                "mappingTypes": [
-                  {
-                    "name": "value to text",
-                    "value": 1
-                  },
-                  {
-                    "name": "range to text",
-                    "value": 2
-                  }
-                ],
-                "maxDataPoints": 100,
-                "nullPointMode": "connected",
-                "nullText": null,
-                "postfix": "",
-                "postfixFontSize": "50%",
-                "prefix": "",
-                "prefixFontSize": "50%",
-                "rangeMaps": [
-                  {
-                    "from": "null",
-                    "text": "N/A",
-                    "to": "null"
-                  }
-                ],
-                "sparkline": {
-                  "fillColor": "rgba(31, 118, 189, 0.18)",
-                  "full": true,
-                  "lineColor": "rgb(31, 120, 193)",
-                  "show": true
-                },
-                "tableColumn": "",
-                "targets": [
-                  {
-                    "expr": "round(sum(irate(nginx_ingress_controller_requests{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",namespace=~\"$namespace\"}[2m])), 0.001)",
-                    "format": "time_series",
-                    "intervalFactor": 1,
-                    "refId": "A",
-                    "step": 4
-                  }
-                ],
-                "thresholds": "",
-                "title": "Controller Request Volume",
-                "type": "singlestat",
-                "valueFontSize": "80%",
-                "valueMaps": [
-                  {
-                    "op": "=",
-                    "text": "N/A",
-                    "value": "null"
-                  }
-                ],
-                "valueName": "avg"
-              },
-              {
-                "cacheTimeout": null,
-                "colorBackground": false,
-                "colorValue": false,
-                "colors": [
-                  "rgba(245, 54, 54, 0.9)",
-                  "rgba(237, 129, 40, 0.89)",
-                  "rgba(50, 172, 45, 0.97)"
-                ],
-                "datasource": "Prometheus",
-                "format": "none",
-                "gauge": {
-                  "maxValue": 100,
-                  "minValue": 0,
-                  "show": false,
-                  "thresholdLabels": false,
-                  "thresholdMarkers": true
-                },
-                "gridPos": {
-                  "h": 3,
-                  "w": 6,
-                  "x": 6,
-                  "y": 0
-                },
-                "id": 82,
-                "interval": null,
-                "links": [],
-                "mappingType": 1,
-                "mappingTypes": [
-                  {
-                    "name": "value to text",
-                    "value": 1
-                  },
-                  {
-                    "name": "range to text",
-                    "value": 2
-                  }
-                ],
-                "maxDataPoints": 100,
-                "nullPointMode": "connected",
-                "nullText": null,
-                "postfix": "",
-                "postfixFontSize": "50%",
-                "prefix": "",
-                "prefixFontSize": "50%",
-                "rangeMaps": [
-                  {
-                    "from": "null",
-                    "text": "N/A",
-                    "to": "null"
-                  }
-                ],
-                "sparkline": {
-                  "fillColor": "rgba(31, 118, 189, 0.18)",
-                  "full": true,
-                  "lineColor": "rgb(31, 120, 193)",
-                  "show": true
-                },
-                "tableColumn": "",
-                "targets": [
-                  {
-                    "expr": "sum(avg_over_time(nginx_ingress_controller_nginx_process_connections{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\"}[2m]))",
-                    "format": "time_series",
-                    "instant": false,
-                    "intervalFactor": 1,
-                    "refId": "A",
-                    "step": 4
-                  }
-                ],
-                "thresholds": "",
-                "title": "Controller Connections",
-                "type": "singlestat",
-                "valueFontSize": "80%",
-                "valueMaps": [
-                  {
-                    "op": "=",
-                    "text": "N/A",
-                    "value": "null"
-                  }
-                ],
-                "valueName": "avg"
-              },
-              {
-                "cacheTimeout": null,
-                "colorBackground": false,
-                "colorValue": false,
-                "colors": [
-                  "rgba(245, 54, 54, 0.9)",
-                  "rgba(237, 129, 40, 0.89)",
-                  "rgba(50, 172, 45, 0.97)"
-                ],
-                "datasource": "Prometheus",
-                "format": "percentunit",
-                "gauge": {
-                  "maxValue": 100,
-                  "minValue": 80,
-                  "show": false,
-                  "thresholdLabels": false,
-                  "thresholdMarkers": false
-                },
-                "gridPos": {
-                  "h": 3,
-                  "w": 6,
-                  "x": 12,
-                  "y": 0
-                },
-                "id": 21,
-                "interval": null,
-                "links": [],
-                "mappingType": 1,
-                "mappingTypes": [
-                  {
-                    "name": "value to text",
-                    "value": 1
-                  },
-                  {
-                    "name": "range to text",
-                    "value": 2
-                  }
-                ],
-                "maxDataPoints": 100,
-                "nullPointMode": "connected",
-                "nullText": null,
-                "postfix": "",
-                "postfixFontSize": "50%",
-                "prefix": "",
-                "prefixFontSize": "50%",
-                "rangeMaps": [
-                  {
-                    "from": "null",
-                    "text": "N/A",
-                    "to": "null"
-                  }
-                ],
-                "sparkline": {
-                  "fillColor": "rgba(31, 118, 189, 0.18)",
-                  "full": true,
-                  "lineColor": "rgb(31, 120, 193)",
-                  "show": true
-                },
-                "tableColumn": "",
-                "targets": [
-                  {
-                    "expr": "sum(rate(nginx_ingress_controller_requests{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",namespace=~\"$namespace\",status!~\"[4-5].*\"}[2m])) / sum(rate(nginx_ingress_controller_requests{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",namespace=~\"$namespace\"}[2m]))",
-                    "format": "time_series",
-                    "intervalFactor": 1,
-                    "refId": "A",
-                    "step": 4
-                  }
-                ],
-                "thresholds": "95, 99, 99.5",
-                "title": "Controller Success Rate (non-4|5xx responses)",
-                "type": "singlestat",
-                "valueFontSize": "80%",
-                "valueMaps": [
-                  {
-                    "op": "=",
-                    "text": "N/A",
-                    "value": "null"
-                  }
-                ],
-                "valueName": "avg"
-              },
-              {
-                "cacheTimeout": null,
-                "colorBackground": false,
-                "colorValue": false,
-                "colors": [
-                  "rgba(245, 54, 54, 0.9)",
-                  "rgba(237, 129, 40, 0.89)",
-                  "rgba(50, 172, 45, 0.97)"
-                ],
-                "datasource": "Prometheus",
-                "decimals": 0,
-                "format": "none",
-                "gauge": {
-                  "maxValue": 100,
-                  "minValue": 0,
-                  "show": false,
-                  "thresholdLabels": false,
-                  "thresholdMarkers": true
-                },
-                "gridPos": {
-                  "h": 3,
-                  "w": 3,
-                  "x": 18,
-                  "y": 0
-                },
-                "id": 81,
-                "interval": null,
-                "links": [],
-                "mappingType": 1,
-                "mappingTypes": [
-                  {
-                    "name": "value to text",
-                    "value": 1
-                  },
-                  {
-                    "name": "range to text",
-                    "value": 2
-                  }
-                ],
-                "maxDataPoints": 100,
-                "nullPointMode": "connected",
-                "nullText": null,
-                "postfix": "",
-                "postfixFontSize": "50%",
-                "prefix": "",
-                "prefixFontSize": "50%",
-                "rangeMaps": [
-                  {
-                    "from": "null",
-                    "text": "N/A",
-                    "to": "null"
-                  }
-                ],
-                "sparkline": {
-                  "fillColor": "rgba(31, 118, 189, 0.18)",
-                  "full": true,
-                  "lineColor": "rgb(31, 120, 193)",
-                  "show": true
-                },
-                "tableColumn": "",
-                "targets": [
-                  {
-                    "expr": "avg(nginx_ingress_controller_success{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\"})",
-                    "format": "time_series",
-                    "instant": true,
-                    "intervalFactor": 1,
-                    "refId": "A",
-                    "step": 4
-                  }
-                ],
-                "thresholds": "",
-                "title": "Config Reloads",
-                "type": "singlestat",
-                "valueFontSize": "80%",
-                "valueMaps": [
-                  {
-                    "op": "=",
-                    "text": "N/A",
-                    "value": "null"
-                  }
-                ],
-                "valueName": "avg"
-              },
-              {
-                "cacheTimeout": null,
-                "colorBackground": false,
-                "colorValue": false,
-                "colors": [
-                  "rgba(245, 54, 54, 0.9)",
-                  "rgba(237, 129, 40, 0.89)",
-                  "rgba(50, 172, 45, 0.97)"
-                ],
-                "datasource": "Prometheus",
-                "decimals": 0,
-                "format": "none",
-                "gauge": {
-                  "maxValue": 100,
-                  "minValue": 0,
-                  "show": false,
-                  "thresholdLabels": false,
-                  "thresholdMarkers": true
-                },
-                "gridPos": {
-                  "h": 3,
-                  "w": 3,
-                  "x": 21,
-                  "y": 0
-                },
-                "id": 83,
-                "interval": null,
-                "links": [],
-                "mappingType": 1,
-                "mappingTypes": [
-                  {
-                    "name": "value to text",
-                    "value": 1
-                  },
-                  {
-                    "name": "range to text",
-                    "value": 2
-                  }
-                ],
-                "maxDataPoints": 100,
-                "nullPointMode": "connected",
-                "nullText": null,
-                "postfix": "",
-                "postfixFontSize": "50%",
-                "prefix": "",
-                "prefixFontSize": "50%",
-                "rangeMaps": [
-                  {
-                    "from": "null",
-                    "text": "N/A",
-                    "to": "null"
-                  }
-                ],
-                "sparkline": {
-                  "fillColor": "rgba(31, 118, 189, 0.18)",
-                  "full": true,
-                  "lineColor": "rgb(31, 120, 193)",
-                  "show": true
-                },
-                "tableColumn": "",
-                "targets": [
-                  {
-                    "expr": "count(nginx_ingress_controller_config_last_reload_successful{controller_pod=~\"$controller\",controller_namespace=~\"$namespace\"} == 0)",
-                    "format": "time_series",
-                    "instant": true,
-                    "intervalFactor": 1,
-                    "refId": "A",
-                    "step": 4
-                  }
-                ],
-                "thresholds": "",
-                "title": "Last Config Failed",
-                "type": "singlestat",
-                "valueFontSize": "80%",
-                "valueMaps": [
-                  {
-                    "op": "=",
-                    "text": "N/A",
-                    "value": "null"
-                  }
-                ],
-                "valueName": "avg"
-              },
-              {
-                "aliasColors": {},
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "decimals": 2,
-                "editable": true,
-                "error": false,
-                "fill": 1,
-                "fillGradient": 0,
-                "grid": {},
-                "gridPos": {
-                  "h": 7,
-                  "w": 12,
-                  "x": 0,
-                  "y": 3
-                },
-                "height": "200px",
-                "hiddenSeries": false,
-                "id": 86,
-                "isNew": true,
-                "legend": {
-                  "alignAsTable": true,
-                  "avg": true,
-                  "current": false,
-                  "hideEmpty": false,
-                  "hideZero": true,
-                  "max": false,
-                  "min": false,
-                  "rightSide": true,
-                  "show": true,
-                  "sideWidth": 300,
-                  "sort": "current",
-                  "sortDesc": true,
-                  "total": false,
-                  "values": true
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [],
-                "nullPointMode": "connected",
-                "options": {
-                  "dataLinks": []
-                },
-                "percentage": false,
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "repeat": null,
-                "repeatDirection": "h",
-                "seriesOverrides": [],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "round(sum(irate(nginx_ingress_controller_requests{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\",ingress=~\"$ingress\"}[2m])) by (ingress), 0.001)",
-                    "format": "time_series",
-                    "hide": false,
-                    "instant": false,
-                    "interval": "",
-                    "intervalFactor": 1,
-                    "legendFormat": "{{ ingress }}",
-                    "metric": "network",
-                    "refId": "A",
-                    "step": 10
-                  }
-                ],
-                "thresholds": [],
-                "timeFrom": null,
-                "timeRegions": [],
-                "timeShift": null,
-                "title": "Ingress Request Volume",
-                "tooltip": {
-                  "msResolution": false,
-                  "shared": true,
-                  "sort": 2,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": []
-                },
-                "yaxes": [
-                  {
-                    "format": "reqps",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "Bps",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": false
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-                  "max - istio-proxy": "#890f02",
-                  "max - master": "#bf1b00",
-                  "max - prometheus": "#bf1b00"
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "decimals": 2,
-                "editable": false,
-                "error": false,
-                "fill": 0,
-                "fillGradient": 0,
-                "grid": {},
-                "gridPos": {
-                  "h": 7,
-                  "w": 12,
-                  "x": 12,
-                  "y": 3
-                },
-                "hiddenSeries": false,
-                "id": 87,
-                "isNew": true,
-                "legend": {
-                  "alignAsTable": true,
-                  "avg": true,
-                  "current": false,
-                  "hideEmpty": true,
-                  "hideZero": false,
-                  "max": false,
-                  "min": false,
-                  "rightSide": true,
-                  "show": true,
-                  "sideWidth": 300,
-                  "sort": "avg",
-                  "sortDesc": true,
-                  "total": false,
-                  "values": true
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [],
-                "nullPointMode": "connected",
-                "options": {
-                  "dataLinks": []
-                },
-                "percentage": false,
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum(rate(nginx_ingress_controller_requests{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",namespace=~\"$namespace\",ingress=~\"$ingress\",status!~\"[4-5].*\"}[2m])) by (ingress) / sum(rate(nginx_ingress_controller_requests{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",namespace=~\"$namespace\",ingress=~\"$ingress\"}[2m])) by (ingress)",
-                    "format": "time_series",
-                    "instant": false,
-                    "interval": "10s",
-                    "intervalFactor": 1,
-                    "legendFormat": "{{ ingress }}",
-                    "metric": "container_memory_usage:sort_desc",
-                    "refId": "A",
-                    "step": 10
-                  }
-                ],
-                "thresholds": [],
-                "timeFrom": null,
-                "timeRegions": [],
-                "timeShift": null,
-                "title": "Ingress Success Rate (non-4|5xx responses)",
-                "tooltip": {
-                  "msResolution": false,
-                  "shared": true,
-                  "sort": 1,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": []
-                },
-                "yaxes": [
-                  {
-                    "format": "percentunit",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": false
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {},
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "decimals": 2,
-                "editable": true,
-                "error": false,
-                "fill": 1,
-                "fillGradient": 0,
-                "grid": {},
-                "gridPos": {
-                  "h": 6,
-                  "w": 8,
-                  "x": 0,
-                  "y": 10
-                },
-                "height": "200px",
-                "hiddenSeries": false,
-                "id": 32,
-                "isNew": true,
-                "legend": {
-                  "alignAsTable": false,
-                  "avg": true,
-                  "current": true,
-                  "max": false,
-                  "min": false,
-                  "rightSide": false,
-                  "show": false,
-                  "sideWidth": 200,
-                  "sort": "current",
-                  "sortDesc": true,
-                  "total": false,
-                  "values": true
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [],
-                "nullPointMode": "connected",
-                "options": {
-                  "dataLinks": []
-                },
-                "percentage": false,
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum (irate (nginx_ingress_controller_request_size_sum{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\"}[2m]))",
-                    "format": "time_series",
-                    "instant": false,
-                    "interval": "10s",
-                    "intervalFactor": 1,
-                    "legendFormat": "Received",
-                    "metric": "network",
-                    "refId": "A",
-                    "step": 10
-                  },
-                  {
-                    "expr": "- sum (irate (nginx_ingress_controller_response_size_sum{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\"}[2m]))",
-                    "format": "time_series",
-                    "hide": false,
-                    "interval": "10s",
-                    "intervalFactor": 1,
-                    "legendFormat": "Sent",
-                    "metric": "network",
-                    "refId": "B",
-                    "step": 10
-                  }
-                ],
-                "thresholds": [],
-                "timeFrom": null,
-                "timeRegions": [],
-                "timeShift": null,
-                "title": "Network I/O pressure",
-                "tooltip": {
-                  "msResolution": false,
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": []
-                },
-                "yaxes": [
-                  {
-                    "format": "Bps",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "Bps",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": false
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-                  "max - istio-proxy": "#890f02",
-                  "max - master": "#bf1b00",
-                  "max - prometheus": "#bf1b00"
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "decimals": 2,
-                "editable": false,
-                "error": false,
-                "fill": 0,
-                "fillGradient": 0,
-                "grid": {},
-                "gridPos": {
-                  "h": 6,
-                  "w": 8,
-                  "x": 8,
-                  "y": 10
-                },
-                "hiddenSeries": false,
-                "id": 77,
-                "isNew": true,
-                "legend": {
-                  "alignAsTable": true,
-                  "avg": true,
-                  "current": true,
-                  "max": false,
-                  "min": false,
-                  "rightSide": false,
-                  "show": false,
-                  "sideWidth": 200,
-                  "sort": "current",
-                  "sortDesc": true,
-                  "total": false,
-                  "values": true
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [],
-                "nullPointMode": "connected",
-                "options": {
-                  "dataLinks": []
-                },
-                "percentage": false,
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "avg(nginx_ingress_controller_nginx_process_resident_memory_bytes{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\"}) ",
-                    "format": "time_series",
-                    "instant": false,
-                    "interval": "10s",
-                    "intervalFactor": 1,
-                    "legendFormat": "nginx",
-                    "metric": "container_memory_usage:sort_desc",
-                    "refId": "A",
-                    "step": 10
-                  }
-                ],
-                "thresholds": [],
-                "timeFrom": null,
-                "timeRegions": [],
-                "timeShift": null,
-                "title": "Average Memory Usage",
-                "tooltip": {
-                  "msResolution": false,
-                  "shared": true,
-                  "sort": 2,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": []
-                },
-                "yaxes": [
-                  {
-                    "format": "bytes",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": false
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-                  "max - istio-proxy": "#890f02",
-                  "max - master": "#bf1b00"
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "decimals": 3,
-                "editable": false,
-                "error": false,
-                "fill": 0,
-                "fillGradient": 0,
-                "grid": {},
-                "gridPos": {
-                  "h": 6,
-                  "w": 8,
-                  "x": 16,
-                  "y": 10
-                },
-                "height": "",
-                "hiddenSeries": false,
-                "id": 79,
-                "isNew": true,
-                "legend": {
-                  "alignAsTable": true,
-                  "avg": true,
-                  "current": true,
-                  "max": false,
-                  "min": false,
-                  "rightSide": false,
-                  "show": false,
-                  "sort": null,
-                  "sortDesc": null,
-                  "total": false,
-                  "values": true
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [],
-                "nullPointMode": "connected",
-                "options": {
-                  "dataLinks": []
-                },
-                "percentage": false,
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum (rate (nginx_ingress_controller_nginx_process_cpu_seconds_total{controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\"}[2m])) ",
-                    "format": "time_series",
-                    "interval": "10s",
-                    "intervalFactor": 1,
-                    "legendFormat": "nginx",
-                    "metric": "container_cpu",
-                    "refId": "A",
-                    "step": 10
-                  }
-                ],
-                "thresholds": [
-                  {
-                    "colorMode": "critical",
-                    "fill": true,
-                    "line": true,
-                    "op": "gt"
-                  }
-                ],
-                "timeFrom": null,
-                "timeRegions": [],
-                "timeShift": null,
-                "title": "Average CPU Usage",
-                "tooltip": {
-                  "msResolution": true,
-                  "shared": true,
-                  "sort": 2,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": []
-                },
-                "yaxes": [
-                  {
-                    "format": "none",
-                    "label": "cores",
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "columns": [],
-                "datasource": "Prometheus",
-                "fontSize": "100%",
-                "gridPos": {
-                  "h": 8,
-                  "w": 24,
-                  "x": 0,
-                  "y": 16
-                },
-                "hideTimeOverride": false,
-                "id": 75,
-                "links": [],
-                "pageSize": 7,
-                "repeat": null,
-                "repeatDirection": "h",
-                "scroll": true,
-                "showHeader": true,
-                "sort": {
-                  "col": 1,
-                  "desc": true
-                },
-                "styles": [
-                  {
-                    "alias": "Ingress",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 2,
-                    "pattern": "ingress",
-                    "preserveFormat": false,
-                    "sanitize": false,
-                    "thresholds": [],
-                    "type": "string",
-                    "unit": "short"
-                  },
-                  {
-                    "alias": "Requests",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 2,
-                    "pattern": "Value #A",
-                    "thresholds": [
-                      ""
-                    ],
-                    "type": "number",
-                    "unit": "ops"
-                  },
-                  {
-                    "alias": "Errors",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 2,
-                    "pattern": "Value #B",
-                    "thresholds": [],
-                    "type": "number",
-                    "unit": "ops"
-                  },
-                  {
-                    "alias": "P50 Latency",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 0,
-                    "link": false,
-                    "pattern": "Value #C",
-                    "thresholds": [],
-                    "type": "number",
-                    "unit": "dtdurations"
-                  },
-                  {
-                    "alias": "P90 Latency",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 0,
-                    "pattern": "Value #D",
-                    "thresholds": [],
-                    "type": "number",
-                    "unit": "dtdurations"
-                  },
-                  {
-                    "alias": "P99 Latency",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 0,
-                    "pattern": "Value #E",
-                    "thresholds": [],
-                    "type": "number",
-                    "unit": "dtdurations"
-                  },
-                  {
-                    "alias": "IN",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 2,
-                    "pattern": "Value #F",
-                    "thresholds": [
-                      ""
-                    ],
-                    "type": "number",
-                    "unit": "Bps"
-                  },
-                  {
-                    "alias": "",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 2,
-                    "pattern": "Time",
-                    "thresholds": [],
-                    "type": "hidden",
-                    "unit": "short"
-                  },
-                  {
-                    "alias": "OUT",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 2,
-                    "mappingType": 1,
-                    "pattern": "Value #G",
-                    "thresholds": [],
-                    "type": "number",
-                    "unit": "Bps"
-                  }
-                ],
-                "targets": [
-                  {
-                    "expr": "histogram_quantile(0.50, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress!=\"\",controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\",ingress=~\"$ingress\"}[2m])) by (le, ingress))",
-                    "format": "table",
-                    "hide": false,
-                    "instant": true,
-                    "intervalFactor": 1,
-                    "legendFormat": "{{ ingress }}",
-                    "refId": "C"
-                  },
-                  {
-                    "expr": "histogram_quantile(0.90, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress!=\"\",controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\",ingress=~\"$ingress\"}[2m])) by (le, ingress))",
-                    "format": "table",
-                    "hide": false,
-                    "instant": true,
-                    "intervalFactor": 1,
-                    "legendFormat": "{{ ingress }}",
-                    "refId": "D"
-                  },
-                  {
-                    "expr": "histogram_quantile(0.99, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress!=\"\",controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\",ingress=~\"$ingress\"}[2m])) by (le, ingress))",
-                    "format": "table",
-                    "hide": false,
-                    "instant": true,
-                    "intervalFactor": 1,
-                    "legendFormat": "{{ destination_service }}",
-                    "refId": "E"
-                  },
-                  {
-                    "expr": "sum(irate(nginx_ingress_controller_request_size_sum{ingress!=\"\",controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\",ingress=~\"$ingress\"}[2m])) by (ingress)",
-                    "format": "table",
-                    "hide": false,
-                    "instant": true,
-                    "interval": "",
-                    "intervalFactor": 1,
-                    "legendFormat": "{{ ingress }}",
-                    "refId": "F"
-                  },
-                  {
-                    "expr": "sum(irate(nginx_ingress_controller_response_size_sum{ingress!=\"\",controller_pod=~\"$controller\",controller_class=~\"$controller_class\",controller_namespace=~\"$namespace\",ingress=~\"$ingress\"}[2m])) by (ingress)",
-                    "format": "table",
-                    "instant": true,
-                    "intervalFactor": 1,
-                    "legendFormat": "{{ ingress }}",
-                    "refId": "G"
-                  }
-                ],
-                "timeFrom": null,
-                "title": "Ingress Percentile Response Times and Transfer Rates",
-                "transform": "table",
-                "type": "table"
-              },
-              {
-                "columns": [
-                  {
-                    "text": "Current",
-                    "value": "current"
-                  }
-                ],
-                "datasource": "Prometheus",
-                "fontSize": "100%",
-                "gridPos": {
-                  "h": 8,
-                  "w": 24,
-                  "x": 0,
-                  "y": 24
-                },
-                "height": "1024",
-                "id": 85,
-                "links": [],
-                "pageSize": 7,
-                "scroll": true,
-                "showHeader": true,
-                "sort": {
-                  "col": 1,
-                  "desc": false
-                },
-                "styles": [
-                  {
-                    "alias": "Time",
-                    "align": "auto",
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "pattern": "Time",
-                    "type": "date"
-                  },
-                  {
-                    "alias": "TTL",
-                    "align": "auto",
-                    "colorMode": "cell",
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
-                    "decimals": 0,
-                    "pattern": "Current",
-                    "thresholds": [
-                      "0",
-                      "691200"
-                    ],
-                    "type": "number",
-                    "unit": "s"
-                  },
-                  {
-                    "alias": "",
-                    "align": "auto",
-                    "colorMode": null,
-                    "colors": [
-                      "rgba(245, 54, 54, 0.9)",
-                      "rgba(237, 129, 40, 0.89)",
-                      "rgba(50, 172, 45, 0.97)"
-                    ],
-                    "decimals": 2,
-                    "pattern": "/.*/",
-                    "thresholds": [],
-                    "type": "number",
-                    "unit": "short"
-                  }
-                ],
-                "targets": [
-                  {
-                    "expr": "avg(nginx_ingress_controller_ssl_expire_time_seconds{kubernetes_pod_name=~\"$controller\",namespace=~\"$namespace\",ingress=~\"$ingress\"}) by (host) - time()",
-                    "format": "time_series",
-                    "intervalFactor": 1,
-                    "legendFormat": "{{ host }}",
-                    "metric": "gke_letsencrypt_cert_expiration",
-                    "refId": "A",
-                    "step": 1
-                  }
-                ],
-                "title": "Ingress Certificate Expiry",
-                "transform": "timeseries_aggregations",
-                "type": "table"
-              }
-            ],
-            "refresh": "5s",
-            "schemaVersion": 22,
-            "style": "dark",
-            "tags": [
-              "nginx"
-            ],
-            "templating": {
-              "list": [
-                {
-                  "allValue": ".*",
-                  "current": {
-                    "selected": false,
-                    "text": "All",
-                    "value": "$__all"
-                  },
-                  "datasource": "Prometheus",
-                  "definition": "",
-                  "hide": 0,
-                  "includeAll": true,
-                  "index": -1,
-                  "label": "Namespace",
-                  "multi": false,
-                  "name": "namespace",
-                  "options": [],
-                  "query": "label_values(nginx_ingress_controller_config_hash, controller_namespace)",
-                  "refresh": 1,
-                  "regex": "",
-                  "skipUrlSync": false,
-                  "sort": 0,
-                  "tagValuesQuery": "",
-                  "tags": [],
-                  "tagsQuery": "",
-                  "type": "query",
-                  "useTags": false
-                },
-                {
-                  "allValue": ".*",
-                  "current": {
-                    "selected": false,
-                    "text": "All",
-                    "value": "$__all"
-                  },
-                  "datasource": "Prometheus",
-                  "definition": "",
-                  "hide": 0,
-                  "includeAll": true,
-                  "index": -1,
-                  "label": "Controller Class",
-                  "multi": false,
-                  "name": "controller_class",
-                  "options": [],
-                  "query": "label_values(nginx_ingress_controller_config_hash{namespace=~\"$namespace\"}, controller_class) ",
-                  "refresh": 1,
-                  "regex": "",
-                  "skipUrlSync": false,
-                  "sort": 0,
-                  "tagValuesQuery": "",
-                  "tags": [],
-                  "tagsQuery": "",
-                  "type": "query",
-                  "useTags": false
-                },
-                {
-                  "allValue": ".*",
-                  "current": {
-                    "selected": false,
-                    "text": "All",
-                    "value": "$__all"
-                  },
-                  "datasource": "Prometheus",
-                  "definition": "",
-                  "hide": 0,
-                  "includeAll": true,
-                  "index": -1,
-                  "label": "Controller",
-                  "multi": false,
-                  "name": "controller",
-                  "options": [],
-                  "query": "label_values(nginx_ingress_controller_config_hash{namespace=~\"$namespace\",controller_class=~\"$controller_class\"}, controller_pod) ",
-                  "refresh": 1,
-                  "regex": "",
-                  "skipUrlSync": false,
-                  "sort": 0,
-                  "tagValuesQuery": "",
-                  "tags": [],
-                  "tagsQuery": "",
-                  "type": "query",
-                  "useTags": false
-                },
-                {
-                  "allValue": ".*",
-                  "current": {
-                    "selected": false,
-                    "text": "All",
-                    "value": "$__all"
-                  },
-                  "datasource": "Prometheus",
-                  "definition": "",
-                  "hide": 0,
-                  "includeAll": true,
-                  "index": -1,
-                  "label": "Ingress",
-                  "multi": false,
-                  "name": "ingress",
-                  "options": [],
-                  "query": "label_values(nginx_ingress_controller_requests{namespace=~\"$namespace\",controller_class=~\"$controller_class\",controller=~\"$controller\"}, ingress) ",
-                  "refresh": 1,
-                  "regex": "",
-                  "skipUrlSync": false,
-                  "sort": 2,
-                  "tagValuesQuery": "",
-                  "tags": [],
-                  "tagsQuery": "",
-                  "type": "query",
-                  "useTags": false
-                }
-              ]
-            },
-            "time": {
-              "from": "now-1h",
-              "to": "now"
-            },
-            "timepicker": {
-              "refresh_intervals": [
-                "5s",
-                "10s",
-                "30s",
-                "2m",
-                "5m",
-                "15m",
-                "30m",
-                "1h",
-                "2h",
-                "1d"
-              ],
-              "time_options": [
-                "5m",
-                "15m",
-                "1h",
-                "6h",
-                "12h",
-                "24h",
-                "2d",
-                "7d",
-                "30d"
-              ]
-            },
-            "timezone": "browser",
-            "title": "NGINX Ingress controller",
-            "uid": "nginx",
-            "variables": {
-              "list": []
-            },
-            "version": 1
-          }
-  
-
-  #  notifiers:
-  #    notifiers.yaml:
-  #      notifiers:
-  #        - name: alertsmanager
-  #          type: prometheus-alertmanager
-  #          uid: alertsmanager
-  #          org_id: 1
-  #          is_default: true
-  #          send_reminder: false
-  #          frequency: 12h
-  #          disable_resolve_message: false
-  #          settings:
-  #            url: http://alertmanager-operated.clusterwide.svc.cluster.local:9093
-  #        - name: mattermost-limnad-alerts
-  #          type: slack
-  #          uid: mattermost
-  #          org_id: 1
-  #          is_default: true
-  #          send_reminder: false
-  #          frequency: 3h
-  #          disable_resolve_message: true
-  #          settings:
-  #            uploadImage: true
-  #            recipient: alerts
-  #            icon_emoji: grafana
-  #            username: grafana
-  #          secure_settings:
-  #            url: x
-
-  annotations:
-    keel.sh/pollSchedule: "@every 60m"
-
-  labels:
-    keel.sh/policy: patch
-    keel.sh/trigger: poll
-
-  persistence:
+  networkPolicy:
+    ## Enable creation of NetworkPolicy resources.
+    ##
     enabled: false
 
-#  nodeSelector:
-#    doks.digitalocean.com/node-pool: pool-labs
+  ## Define Log Format
+  # Use logfmt (default) or json logging
+  logFormat: json
 
-  ## Passed to grafana subchart and used by servicemonitor below
-  ##
-  service:
-    portName: service
+  ## Decrease log verbosity to errors only
+  # logLevel: error
 
-  ## If true, create a serviceMonitor for grafana
+  kubeletService:
+    enabled: false
+
+  resources:
+   requests:
+     cpu: 10m
+     memory: 30Mi
+   limits:
+     cpu: 50m
+     memory: 300Mi
+
+
+  ## Prometheus-config-reloader
   ##
+  prometheusConfigReloader:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 10Mi
+      limits:
+        cpu: 20m
+        memory: 25Mi
+
   serviceMonitor:
-    ## Scrape interval. If not set, the Prometheus default scrape interval is used.
-    ##
-    interval: ""
-    selfMonitor: true
-
-    ## 	metric relabel configs to apply to samples before ingestion.
-    ##
-    metricRelabelings: []
-    # - action: keep
-    #   regex: 'kube_(daemonset|deployment|pod|namespace|node|statefulset).+'
-    #   sourceLabels: [__name__]
-
-    # 	relabel configs to apply to samples before ingestion.
-    ##
-    relabelings: []
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+    selfMonitor: false
 
 prometheus:
   enabled: true
-  admissionWebhooks:
-    enabled: true
-  cleanupCustomResource: true
+
+  ## ExtraSecret can be used to store various data in an extra secret
+  ## (use it for example to store hashed basic auth credentials)
+  #extraSecret:
+  #  name: "grafana-net"
+  #  data:
+  #    auth: |
+  #      foo:$apr1$OFG3Xybp$ckL0FHDAkoXYIlH9.cysT0
+
   ingress:
     enabled: true
     annotations:
@@ -1876,108 +154,167 @@ prometheus:
         auth_request_set $remote_email $upstream_http_x_auth_request_email;
         add_header X-Auth-Request-Email $remote_email;
     labels: {}
-
-    ## Hostnames.
-    ## Must be provided if Ingress is enabled.
-    ##
-    # hosts:
-    #   - prometheus.domain.com
     hosts:
       - prometheus.ornea.kix.co.il
-
-    ## Paths to use for ingress rules - one path should match the prometheusSpec.routePrefix
-    ##
     paths:
       - /
-
-    ## TLS configuration for Prometheus Ingress
-    ## Secret must be manually created in the namespace
-    ##
     tls:
       - hosts:
           - prometheus.ornea.kix.co.il
         secretName: prometheus-tls
 
   prometheusSpec:
-    disableCompaction: false
-    replicas: 1
-    ruleSelector:
+    scrapeInterval: "120s"
+    scrapeTimeout: "120s"
+
+    ## Alertmanagers to which alerts will be sent
+    ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#alertmanagerendpoints
+    ##
+    ## Default configuration will connect to the alertmanager deployed as part of this release
+    ##
+    alertingEndpoints: []
+#      - name: ""
+#        namespace: ""
+#        port: http
+#        scheme: http
+#        pathPrefix: ""
+#        tlsConfig: {}
+#        bearerTokenFile: ""
+#        apiVersion: v2
+
+    ruleNamespaceSelector:
       matchLabels: {}
-    serviceMonitorSelector:
+
+    serviceMonitorSelector: # {} ***
       matchLabels: {}
-    podMonitorSelector:
+
+    serviceMonitorNamespaceSelector:
       matchLabels: {}
-    retention: 7d
-    podAntiAffinity: soft
-    remoteWriteDashboards: true
-    containers:
-      - name: prometheus
-        livenessProbe:
-          failureThreshold: 120
-          httpGet:
-            path: /-/ready
-            port: http-web
-            scheme: HTTP
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 3
-        readinessProbe:
-          failureThreshold: 1000
-          httpGet:
-            path: /-/ready
-            port: http-web
-            scheme: HTTP
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 3
-      - image: "phntom/s3-sync:do-fra1"
-        imagePullPolicy: Always
-        name: s3-sync
-        env:
-          - name: S3_URL
-            value: s3://prometheus-gcp/prometheus/
-          - name: S3_DIRECTORY
-            value: /prometheus/
-          - name: SLEEP_AFTER_PUSH
-            value: "300"
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: s3-prometheus-prod-key
-                key: AWS_ACCESS_KEY_ID
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: s3-prometheus-prod-key
-                key: AWS_SECRET_ACCESS_KEY
-        volumeMounts:
-          - mountPath: /prometheus
-            name: prometheus-kube-prometheus-stack-prometheus-db
-        resources:
-          limits:
-            cpu: "100m"
-    initContainers:
-      - name: s3-sync-startup
-        command: [ "startup" ]
-        image: phntom/s3-sync:do-fra1
-        imagePullPolicy: Always
-        env:
-          - name: S3_URL
-            value: s3://prometheus-gcp/prometheus/
-          - name: S3_DIRECTORY
-            value: /prometheus/
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: s3-prometheus-prod-key
-                key: AWS_ACCESS_KEY_ID
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: s3-prometheus-prod-key
-                key: AWS_SECRET_ACCESS_KEY
-        volumeMounts:
-          - mountPath: /prometheus
-            name: prometheus-kube-prometheus-stack-prometheus-db
-#  nodeSelector:
-#    doks.digitalocean.com/node-pool: pool-labs
+
+    podMonitorSelector: # {} ***
+      matchLabels: {}
+
+    podMonitorNamespaceSelector:
+      matchLabels: {}
+
+    probeSelector: # {} ***
+      matchLabels: {}
+
+    probeNamespaceSelector:
+      matchLabels: {}
+
+    logLevel: info
+    logFormat: json
+
+    remoteWrite:
+      - url: https://prometheus-prod-05-gb-south-0.grafana.net/api/prom/push
+        basicAuth:
+          username:
+            name: prometheus-remote-push
+            key: username
+          password:
+            name: prometheus-remote-push
+            key: password
+    # - url: http://remote1/push
+    ## additionalRemoteWrite is appended to remoteWrite
+    additionalRemoteWrite: []
+
+    ## Enable/Disable Grafana dashboards provisioning for prometheus remote write feature
+    remoteWriteDashboards: false
+
+    ## Resource limits & requests
+    ##
+    resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+      limits:
+        cpu: 400m
+        memory: 1200Mi
+
+    ## Prometheus StorageSpec for persistent data
+    ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
+    ##
+    storageSpec: {}
+    ## Using PersistentVolumeClaim
+    ##
+    #  volumeClaimTemplate:
+    #    spec:
+    #      storageClassName: gluster
+    #      accessModes: ["ReadWriteOnce"]
+    #      resources:
+    #        requests:
+    #          storage: 50Gi
+    #    selector: {}
+
+    ## Using tmpfs volume
+    ##
+    #  emptyDir:
+    #    medium: Memory
+
+    additionalScrapeConfigs: []
+    # - job_name: kube-etcd
+    #   kubernetes_sd_configs:
+    #     - role: node
+    #   scheme: https
+    #   tls_config:
+    #     ca_file:   /etc/prometheus/secrets/etcd-client-cert/etcd-ca
+    #     cert_file: /etc/prometheus/secrets/etcd-client-cert/etcd-client
+    #     key_file:  /etc/prometheus/secrets/etcd-client-cert/etcd-client-key
+    #   relabel_configs:
+    #   - action: labelmap
+    #     regex: __meta_kubernetes_node_label_(.+)
+    #   - source_labels: [__address__]
+    #     action: replace
+    #     targetLabel: __address__
+    #     regex: ([^:;]+):(\d+)
+    #     replacement: ${1}:2379
+    #   - source_labels: [__meta_kubernetes_node_name]
+    #     action: keep
+    #     regex: .*mst.*
+    #   - source_labels: [__meta_kubernetes_node_name]
+    #     action: replace
+    #     targetLabel: node
+    #     regex: (.*)
+    #     replacement: ${1}
+    #   metric_relabel_configs:
+    #   - regex: (kubernetes_io_hostname|failure_domain_beta_kubernetes_io_region|beta_kubernetes_io_os|beta_kubernetes_io_arch|beta_kubernetes_io_instance_type|failure_domain_beta_kubernetes_io_zone)
+    #     action: labeldrop
+    #
+    ## If scrape config contains a repetitive section, you may want to use a template.
+    ## In the following example, you can see how to define `gce_sd_configs` for multiple zones
+    # additionalScrapeConfigs: |
+    #  - job_name: "node-exporter"
+    #    gce_sd_configs:
+    #    {{range $zone := .Values.gcp_zones}}
+    #    - project: "project1"
+    #      zone: "{{$zone}}"
+    #      port: 9100
+    #    {{end}}
+    #    relabel_configs:
+    #    ...
+
+
+    ## AdditionalAlertManagerConfigs allows for manual configuration of alertmanager jobs in the form as specified
+    ## in the official Prometheus documentation https://prometheus.io/docs/prometheus/latest/configuration/configuration/#<alertmanager_config>.
+    ## AlertManager configurations specified are appended to the configurations generated by the Prometheus Operator.
+    ## As AlertManager configs are appended, the user is responsible to make sure it is valid. Note that using this
+    ## feature may expose the possibility to break upgrades of Prometheus. It is advised to review Prometheus release
+    ## notes to ensure that no incompatible AlertManager configs are going to break Prometheus after the upgrade.
+    ##
+    additionalAlertManagerConfigs: []
+    # - consul_sd_configs:
+    #   - server: consul.dev.test:8500
+    #     scheme: http
+    #     datacenter: dev
+    #     tag_separator: ','
+    #     services:
+    #       - metrics-prometheus-alertmanager
+
+
+    retention: 1h
+  serviceMonitor:
+    selfMonitor: false
+
+thanosRuler:
+  enabled: false

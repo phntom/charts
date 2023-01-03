@@ -155,6 +155,7 @@ extraInitContainers:
         subPath: config.json
       - mountPath: /mattermost/config
         name: config-json-rw
+    resources: {}
   # This is an example of extra Init Container when using with the deployment with GitLab Helm Charts
   # - name: bootstrap-database
   #   image: "postgres:9.6-alpine"

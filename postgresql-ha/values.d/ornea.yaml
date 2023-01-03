@@ -1,0 +1,64 @@
+# helm upgrade postgresql-ha -n db bitnami/postgresql-ha --debug --atomic --reset-values -f postgresql-ha/values.d/ornea.yaml -f postgresql-ha/values.d/ornea.secret.yaml --kube-context gke_evident-gecko-364317_europe-west8-b_ornea
+
+postgresql:
+  podAntiAffinityPreset: soft
+  initContainers: []
+  # add auto repair here
+  pdb:
+    create: true
+    minAvailable: 1
+  username: postgres
+  password: xxx
+  repmgrUsername: repmgr
+  repmgrPassword: xxx
+  maxConnections: 200
+  replicaCount: 2
+  upgradeRepmgrExtension: false
+  resources:
+    requests:
+      memory: 50Mi
+      cpu: 10m
+
+pgpool:
+  replicaCount: 1
+  livenessProbe:
+    enabled: true
+    timeoutSeconds: 600
+  customUsers:
+    usernames: xxx,xxx
+    passwords: xxx,xxx
+  pdb:
+    create: true
+    minAvailable: 1
+  maxPool: 3
+  childMaxConnections: 200
+  authenticationMethod: scram-sha-256
+  # adminPassword: xxx
+  # extraEnvVars:
+  #   - name: "PGPOOL_AES_KEY"
+  #     value: "xxx"
+  resources:
+    requests:
+      memory: 50Mi
+      cpu: 10m
+
+
+#  nodeSelector:
+#    doks.digitalocean.com/node-pool: pool-production
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 60s
+    scrapeTimeout: 60s
+
+  prometheusRule:
+    enabled: false
+    rules: []
+
+persistence:
+  enabled: true
+  storageClass: standard-rwo
+  size: 2Gi
+

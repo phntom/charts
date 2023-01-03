@@ -2,10 +2,12 @@
 {{- $fullName := include "website-web-nix.fullname" . -}}
 {{- $svcName := .Values.service.name -}}
 {{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
+{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion }}
 apiVersion: extensions/v1beta1
+{{- else if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion }}
+apiVersion: networking.k8s.io/v1beta1
+{{- else }}
+apiVersion: networking.k8s.io/v1
 {{- end }}
 kind: Ingress
 metadata:
@@ -46,6 +48,9 @@ metadata:
       }
       location = /blog/phantom {
         return 302 https://nix.co.il/nix/pl/a8mfohxyjbbyzd4xzkcjnnrhdy;
+      }
+      location = /11 {
+        return 302 https://kan11.media.kan.org.il/hls/live/2024514/2024514/source1_4k/chunklist.m3u8;
       }
       location ~ ^/api/v4/users$ {
         return 200 "[{\"id\":\"jpm573upfjr15xkddbi5en87ko\",\"create_at\":1604009326000,\"update_at\":1604010211924,\"delete_at\":0,\"username\":\"nix-website\",\"auth_data\":\"\",\"auth_service\":\"\",\"email\":\"\",\"nickname\":\"\",\"first_name\":\"\",\"last_name\":\"\",\"position\":\"\",\"roles\":\"system_user\",\"last_picture_update\":1604009326934,\"locale\":\"en\",\"timezone\":{\"automaticTimezone\":\"Asia/Jerusalem\",\"manualTimezone\":\"\",\"useAutomaticTimezone\":\"true\"},\"is_bot\":true,\"bot_description\":\"public website anonymous user - https://join.nix.co.il\"},{\"id\":\"5cmngiuzpbdhfe6h1pywjc7pyy\",\"create_at\":1601471823163,\"update_at\":1603656786821,\"delete_at\":0,\"username\":\"phantom\",\"auth_data\":\"\",\"auth_service\":\"\",\"email\":\"\",\"nickname\":\"PHANTOm\",\"first_name\":\"\",\"last_name\":\"\",\"position\":\"\",\"roles\":\"system_admin system_user\",\"last_picture_update\":1603141974322,\"locale\":\"en\",\"timezone\":{\"automaticTimezone\":\"Asia/Jerusalem\",\"manualTimezone\":\"\",\"useAutomaticTimezone\":\"true\"}},{\"id\":\"ia3q1aep4bdrtf8hy3hzkyzhba\",\"create_at\":1603014714661,\"update_at\":1604006996371,\"delete_at\":0,\"username\":\"x-bot\",\"auth_data\":\"\",\"auth_service\":\"\",\"email\":\"\",\"nickname\":\"X\",\"first_name\":\"\",\"last_name\":\"\",\"position\":\"\",\"roles\":\"system_user system_post_all\",\"last_picture_update\":1603141880698,\"locale\":\"en\",\"timezone\":{\"automaticTimezone\":\"Asia/Jerusalem\",\"manualTimezone\":\"\",\"useAutomaticTimezone\":\"true\"},\"is_bot\":true}]";
@@ -97,8 +102,16 @@ spec:
           {{- range .paths }}
           - path: {{ . }}
             backend:
+            {{- if semverCompare "<1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               serviceName: {{ $svcName }}
               servicePort: {{ $svcPort }}
+            {{- else }}
+              service:
+                name: {{ $svcName }}
+                port:
+                  number: {{ $svcPort }}
+            pathType: Prefix
+            {{- end }}
           {{- end }}
     {{- end }}
   {{- end }}

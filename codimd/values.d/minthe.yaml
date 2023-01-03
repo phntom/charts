@@ -38,7 +38,7 @@ codimd:
     password: xxx
     databaseName: hackmd
   imageUpload:
-    storageType: s3
+    storeType: s3
     s3:
       endpoint: xxx
       region: eu-central-1

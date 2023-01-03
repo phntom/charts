@@ -1,12 +1,12 @@
-# helm upgrade --install binaryvision -n phantom website-binaryvision-static
+# helm upgrade binaryvision -n web website-binaryvision-static
 
 replicaCount: 1
 
 image:
   repository: phntom/binaryvision-static-wordpress
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "0.0.4"
+  hash: sha256:96bc34e0ddd275e8c1f70c6d1108daea6ea62e2ed4e8c88751106b7ae105c8a8
 
 imagePullSecrets: []
 nameOverride: ""
@@ -57,13 +57,9 @@ ingress:
     - host: www.binaryvision.org.il
       paths:
         - /
-    - host: binaryvision.minthe.kix.co.il
-      paths:
-        - /
   tls:
    - secretName: binaryvision-static-tls
      hosts:
-       - binaryvision.minthe.kix.co.il
        - www.binaryvision.co.il
        - binaryvision.co.il
        - www.binaryvision.org.il
@@ -88,8 +84,8 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-nodeSelector:
-  doks.digitalocean.com/node-pool: pool-production
+#nodeSelector:
+#  doks.digitalocean.com/node-pool: pool-production
 
 tolerations: []
 
