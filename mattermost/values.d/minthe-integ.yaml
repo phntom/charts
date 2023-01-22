@@ -170,7 +170,7 @@ config:
     UseChannelInEmailNotifications: true
   RateLimitSettings:
     Enable: true
-    VaryByHeader: X-Forward-For
+    VaryByHeader: X-Forwarded-For
     PerSec: 15
     VaryByRemoteAddr: false
     VaryByUser: true

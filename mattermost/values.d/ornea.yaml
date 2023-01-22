@@ -86,7 +86,7 @@ config:
     BannerTextColor: '#333333'
     AllowBannerDismissal: true
   ServiceSettings:
-    EnableSecurityFixAlert: false
+    EnableSecurityFixAlert: true
     SiteURL: https://kix.co.il
     EnableOAuthServiceProvider: true
     EnablePostUsernameOverride: true
@@ -104,6 +104,18 @@ config:
     AllowCookiesForSubdomains: false
     ManagedResourcePaths: "proxy,blog"
     CollapsedThreads: default_off
+    ExtendSessionLengthWithActivity: true
+    SessionLengthWebInDays: 90
+    SessionLengthWebInHours: 2160
+    SessionLengthMobileInDays: 30
+    SessionLengthMobileInHours: 720
+    SessionLengthSSOInDays: 30
+    SessionLengthSSOInHours: 720
+    SessionCacheInMinutes: 10
+    SessionIdleTimeoutInMinutes: 20160
+    EnableAWSMetering: true
+    EnableSVGs: true
+    EnableLatex: true
   ImageProxySettings:
     Enable: true
     ImageProxyType: "atmos/camo"
@@ -172,7 +184,7 @@ config:
     UseChannelInEmailNotifications: true
   RateLimitSettings:
     Enable: true
-    VaryByHeader: X-Forward-For
+    VaryByHeader: X-Forwarded-For
     PerSec: 15
     VaryByRemoteAddr: false
     VaryByUser: true
