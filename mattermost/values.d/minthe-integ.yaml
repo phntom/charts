@@ -240,77 +240,13 @@ config:
     IndexDir: '/mattermost/data/'
   PluginSettings:
     EnableUploads: true
-    Plugins:
-      focalboard:
-        EnablePublicSharedBoards: true
-      com.github.matterpoll.matterpoll:
-        ExperimentalUI: true
-      com.mattermost.custom-attributes:
-        CustomAttributes:
-          - Name: "_Member since 2003_ :trident::zero::three:"
-            UserIDs:
-              - 5cmngiuzpbdhfe6h1pywjc7pyy
-            TeamIDs: []
-            GroupIDs: []
-          - Name: "_Member since 2005_ :trophy::zero::five:"
-            UserIDs:
-              - 7bcqiyod47g1unzwykt9nubz1e
-              - 3hbw3ejowjy8ujdjacuqqs4d5w
-              - d3gjai9dbpyr5cmfpeaihmyw5r
-              - ze5azasij78atp9myqb37dppwc
-            TeamIDs: [ ]
-            GroupIDs: [ ]
-          - Name: "_Member since 2007_ :trophy::zero::seven:"
-            UserIDs:
-              - bj394hna6bgdb88cfth35d6r9h
-            TeamIDs: [ ]
-            GroupIDs: [ ]
-          - Name: "_Member since 2008_ :trophy::zero::eight:"
-            UserIDs:
-              - im19knk5afd9u8izzaztm13d6e
-            TeamIDs: [ ]
-            GroupIDs: [ ]
-          - Name: "_Member since 2009_ :1st_place_medal::zero::nine:"
-            UserIDs:
-              - 4ynuqw6sgbdgpn44qxbk3s83ca
-            TeamIDs: [ ]
-            GroupIDs: [ ]
-          - Name: "_Member since 2010_ :1st_place_medal::one::zero:"
-            UserIDs:
-              - zapdkaxf5fdubdu5qd19ymbjge
-              - sdrrerer83fidg99j785fipc6w
-            TeamIDs: [ ]
-            GroupIDs: [ ]
-          - Name: "_Member since 2011_ :1st_place_medal::one::one:"
-            UserIDs:
-              - 47bdmcsyy7dsprg9b9xb4kz3dy
-              - 9kyhw1h6wi8tbqp1i6skek851a
-              - hrmk8oahriyfmg9jke85pt8c4a
-            TeamIDs: [ ]
-            GroupIDs: [ ]
-          - Name: "_Member since 2013_ :2nd_place_medal::one::three:"
-            UserIDs:
-              - h7eq6mdkq3bupro7rwhx8r7hoo
-              - 75bggjn1rirdikomkz66spjiqe
-            TeamIDs: [ ]
-            GroupIDs: [ ]
-          - Name: "_Member since 2014_ :2nd_place_medal::one::four:"
-            UserIDs:
-              - j7nxq9zcyi8h98irf3166or11e
-            TeamIDs: [ ]
-            GroupIDs: [ ]
-          - Name: "_Member since 2015_ :2nd_place_medal::one::five:"
-            UserIDs:
-              - ak8bua4n1j8mjg6pt6gfg844ur
-            TeamIDs: [ ]
-            GroupIDs: [ ]
     PluginStates:
       com.mattermost.plugin-todo:
         Enable: true
       com.github.matterpoll.matterpoll:
         Enable: true
       focalboard:
-        Enable: true
+        Enable: false
       com.mattermost.custom-attributes:
         Enable: false
       playbooks:
@@ -319,6 +255,85 @@ config:
         Enable: false
       zoom:
         Enable: false
+#    Plugins:
+#      focalboard:
+#        EnablePublicSharedBoards: true
+#      com.github.matterpoll.matterpoll:
+#        ExperimentalUI: true
+#      com.mattermost.custom-attributes:
+#        CustomAttributes:
+#          - Name: "_Member since 2003_ :trident::zero::three:"
+#            UserIDs:
+#              - 5cmngiuzpbdhfe6h1pywjc7pyy
+#            TeamIDs: []
+#            GroupIDs: []
+#          - Name: "_Member since 2005_ :trophy::zero::five:"
+#            UserIDs:
+#              - 7bcqiyod47g1unzwykt9nubz1e
+#              - 3hbw3ejowjy8ujdjacuqqs4d5w
+#              - d3gjai9dbpyr5cmfpeaihmyw5r
+#              - ze5azasij78atp9myqb37dppwc
+#            TeamIDs: [ ]
+#            GroupIDs: [ ]
+#          - Name: "_Member since 2007_ :trophy::zero::seven:"
+#            UserIDs:
+#              - bj394hna6bgdb88cfth35d6r9h
+#            TeamIDs: [ ]
+#            GroupIDs: [ ]
+#          - Name: "_Member since 2008_ :trophy::zero::eight:"
+#            UserIDs:
+#              - im19knk5afd9u8izzaztm13d6e
+#            TeamIDs: [ ]
+#            GroupIDs: [ ]
+#          - Name: "_Member since 2009_ :1st_place_medal::zero::nine:"
+#            UserIDs:
+#              - 4ynuqw6sgbdgpn44qxbk3s83ca
+#            TeamIDs: [ ]
+#            GroupIDs: [ ]
+#          - Name: "_Member since 2010_ :1st_place_medal::one::zero:"
+#            UserIDs:
+#              - zapdkaxf5fdubdu5qd19ymbjge
+#              - sdrrerer83fidg99j785fipc6w
+#            TeamIDs: [ ]
+#            GroupIDs: [ ]
+#          - Name: "_Member since 2011_ :1st_place_medal::one::one:"
+#            UserIDs:
+#              - 47bdmcsyy7dsprg9b9xb4kz3dy
+#              - 9kyhw1h6wi8tbqp1i6skek851a
+#              - hrmk8oahriyfmg9jke85pt8c4a
+#            TeamIDs: [ ]
+#            GroupIDs: [ ]
+#          - Name: "_Member since 2013_ :2nd_place_medal::one::three:"
+#            UserIDs:
+#              - h7eq6mdkq3bupro7rwhx8r7hoo
+#              - 75bggjn1rirdikomkz66spjiqe
+#            TeamIDs: [ ]
+#            GroupIDs: [ ]
+#          - Name: "_Member since 2014_ :2nd_place_medal::one::four:"
+#            UserIDs:
+#              - j7nxq9zcyi8h98irf3166or11e
+#            TeamIDs: [ ]
+#            GroupIDs: [ ]
+#          - Name: "_Member since 2015_ :2nd_place_medal::one::five:"
+#            UserIDs:
+#              - ak8bua4n1j8mjg6pt6gfg844ur
+#            TeamIDs: [ ]
+#            GroupIDs: [ ]
+#    PluginStates:
+#      com.mattermost.plugin-todo:
+#        Enable: true
+#      com.github.matterpoll.matterpoll:
+#        Enable: true
+#      focalboard:
+#        Enable: true
+#      com.mattermost.custom-attributes:
+#        Enable: false
+#      playbooks:
+#        Enable: false
+#      com.mattermost.agenda:
+#        Enable: false
+#      zoom:
+#        Enable: false
   ClusterSettings:
     AdvertiseAddress: 'mattermost-team-edition.chat.svc'
     BindAddress: ''
