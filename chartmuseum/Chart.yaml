@@ -1,8 +1,8 @@
 apiVersion: v2
 description: chartmuseum fork with local storage + s3 sync
 name: chartmuseum
-version: 4.0.16
-appVersion: 0.15.3
+version: 4.0.17
+appVersion: 0.15.4
 home: https://github.com/helm/chartmuseum
 icon: https://raw.githubusercontent.com/chartmuseum/charts/main/logo.jpg
 keywords:
