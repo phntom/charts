@@ -11,7 +11,7 @@ gateway:
   replicaCount: 1
   auth:
     s3:
-      serviceEndpoint: https://fra1.digitaloceanspaces.com
+      serviceEndpoint: https://storage.googleapis.com
       accessKey: XXXXXXXXXXXXXXXXXXXX
       secretKey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 

@@ -9,12 +9,12 @@
 restore: false
 
 cronjob:
-  schedule: '5,25,45 * * * *'
+  schedule: '5,35 * * * *'
 s3:
   accessKeyId: xxx
   secretAccessKey: xxx
   bucket: minthe-backup-prod
-  endpoint: "https://fra1.digitaloceanspaces.com"
+  endpoint: "https://storage.googleapis.com"
   prefix: "postgresql-data11/hourly"
   v4signature: true
 postgresql:

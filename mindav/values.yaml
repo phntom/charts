@@ -8,7 +8,7 @@ mindav:
     endpoint: minio.db.svc.cluster.local:9000
     key: xxx
     secret: xxx
-    bucket: minio-prod
+    bucket: kix-minio-prod
     ssl: false
     memoryUpload: false
 
