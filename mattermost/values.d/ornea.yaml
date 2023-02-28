@@ -131,7 +131,8 @@ config:
     EnableTeamCreation: false
     EnableCustomBrand: true
     CustomBrandText: >
-      Registration is closed, email invites to @nix.co.il addresses are still valid.
+      Note: At this time registration is available via invites only.
+      Please use the link you received to complete the registration process.
       
       
       kix.co.il is a self-hosted, private and free platform including chat and other collaboration tools.
@@ -189,7 +190,7 @@ config:
   RateLimitSettings:
     Enable: true
     VaryByHeader: X-Forwarded-For
-    PerSec: 15
+    PerSec: 20
     VaryByRemoteAddr: false
     VaryByUser: true
   PrivacySettings:

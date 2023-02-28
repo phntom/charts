@@ -21,10 +21,10 @@ env:
     CONTEXT_PATH: /charts
     STORAGE: amazon
     STORAGE_TIMESTAMP_TOLERANCE: 1s
-    STORAGE_AMAZON_BUCKET: chartmuseum-prod
+    STORAGE_AMAZON_BUCKET: kix-chartmuseum-prod
     STORAGE_AMAZON_PREFIX: v1
-    STORAGE_AMAZON_REGION: eu-central-1
-    STORAGE_AMAZON_ENDPOINT: https://fra1.digitaloceanspaces.com
+    STORAGE_AMAZON_REGION: gs
+    STORAGE_AMAZON_ENDPOINT: https://storage.googleapis.com
     LOG_JSON: true
     DISABLE_STATEFILES: false
     ENABLE_METRICS: true
