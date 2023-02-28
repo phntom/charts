@@ -26,8 +26,8 @@ secrets:
     accessKey: xxx
     secretKey: xxx
 s3:
-  region: eu-central-1
-  regionEndpoint: fra1.digitaloceanspaces.com
-  bucket: docker-prod
+  region: gs
+  regionEndpoint: https://storage.googleapis.com
+  bucket: kix-docker-prod
   encrypt: true
   secure: true
