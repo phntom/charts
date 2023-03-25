@@ -73,6 +73,10 @@ ingress:
     # - secretName: mattermost.example.com-tls
     #   hosts:
     #     - mattermost.example.com
+  cdn:
+    hosts: []
+    annotations: {}
+    tls: []
 
 nodeSelector: {}
 

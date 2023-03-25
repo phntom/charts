@@ -40,6 +40,12 @@ ingress:
       if ( $nix = ab ) {
         return 302 https://nix.co.il/?kix=n&redirect_to=$arg_redirect_to;
       }
+      location ~ /static/(.*)$ {
+        return 301 https://cdn.kix.co.il/static/$1;
+      }
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/";
+      more_set_headers "Referrer-Policy: same-origin";
     # real_ip_header CF-Connecting-IP;
     # if ($http_cf_connecting_ip != $remote_addr) { return 403; }
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -58,6 +64,11 @@ ingress:
       hosts:
         - kix.co.il
         - www.kix.co.il
+  cdn:
+    hosts:
+      - cdn.kix.co.il
+    annotations:
+      nginx.ingress.kubernetes.io/service-upstream: "true"
 
 #nodeSelector:
 #  doks.digitalocean.com/node-pool: pool-production

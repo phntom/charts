@@ -11,43 +11,44 @@ apiVersion: networking.k8s.io/v1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ include "mattermost-team-edition.fullname" . }}
+  name: {{ include "mattermost-team-edition.fullname" . }}-cdn
   labels:
     app.kubernetes.io/name: {{ include "mattermost-team-edition.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "mattermost-team-edition.chart" . }}
   annotations:
-    {{- if .Values.ingress.tls }}
+    {{- if $ingress.cdn.tls }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     kubernetes.io/tls-acme: "true"
+    acme.kubernetes.io/enable: "true"
     {{- else }}
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     {{- end }}
-    {{- with $ingress.annotations }}
+    {{- with $ingress.cdn.annotations }}
     {{- . | toYaml | nindent 4 }}
     {{- end }}
 spec:
   rules:
-  {{ range $host := $ingress.hosts }}
-  - host: {{ $host }}
-    http:
-      paths:
-      - path: {{ $ingress.path }}
-        backend:
+  {{ range $host := $ingress.cdn.hosts }}
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: /static/
+            backend:
         {{- if semverCompare "<1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-          serviceName: {{ $serviceName }}
-          servicePort: {{ $servicePort }}
+              serviceName: {{ $serviceName }}
+              servicePort: {{ $servicePort }}
         {{- else }}
-          service:
-            name: {{ $serviceName }}
-            port:
-              number: {{ $servicePort }}
-        pathType: Prefix
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
+            pathType: Prefix
         {{- end }}
   {{ end }}
-  {{ if $ingress.tls }}
+  {{ if $ingress.cdn.tls }}
   tls:
-    {{- $ingress.tls | toYaml | nindent 4 }}
+    {{- $ingress.cdn.tls | toYaml | nindent 4 }}
   {{ end }}
 {{ end }}

@@ -22,7 +22,6 @@ ingress:
   path: /
   annotations:
     acme.kubernetes.io/enable: "true"
-    acme.kubernetes.io/dns: "dns_cf"
     #nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.web.svc.cluster.local/oauth2/auth"
     #nginx.ingress.kubernetes.io/auth-signin: "https://auth.ornea.kix.co.il/oauth2/start?rd=%2Fgo%2Fmmbeta$escaped_request_uri"
     #nginx.ingress.kubernetes.io/default-backend: mattermost-defaultbackend
@@ -31,7 +30,6 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     nginx.ingress.kubernetes.io/server-snippet: |
       if ( $cookie_MMUSERID = "" ) {
         set $nix b;
@@ -42,6 +40,12 @@ ingress:
       if ( $nix = ab ) {
         return 302 https://nix.co.il/?kix=n&redirect_to=$arg_redirect_to;
       }
+      location ~ /static/(.*)$ {
+          return 301 https://cdn-integ.kix.co.il/static/$1;
+      }
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Content-Security-Policy: script-src 'self' cdn-integ.kix.co.il/";
+      more_set_headers "Referrer-Policy: same-origin";
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
     #      proxy_cache mattermost_cache;
     #      proxy_cache_revalidate on;
@@ -57,6 +61,19 @@ ingress:
     - secretName: mattermost-chat-beta-kix-tls
       hosts:
         - mmbeta.ornea.kix.co.il
+  cdn:
+    hosts:
+      - cdn-integ.kix.co.il
+    annotations:
+      nginx.ingress.kubernetes.io/service-upstream: "true"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+      nginx.ingress.kubernetes.io/cors-allow-origin: https://mmbeta.ornea.kix.co.il
+      nginx.ingress.kubernetes.io/cors-allow-methods: GET
+      nginx.ingress.kubernetes.io/http2-push-preload: "true"
+    tls:
+      - secretName: cdn-integ-kix-tls
+        hosts:
+          - cdn-integ.kix.co.il
 
 resources:
   requests:
