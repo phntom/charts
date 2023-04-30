@@ -1,0 +1,82 @@
+# helm upgrade jupyterhub jupyterhub/jupyterhub --version 3.0.0-0.dev.git.6139.h796c59b6 --kube-context staging-aks --debug --atomic --namespace job-offer-matching -f charts/jupyerhub.yaml
+hub:
+  config:
+    Authenticator:
+      auto_login: true
+      enable_auth_state: true
+      admin_users:
+        - awolkov.ext
+        - nredin
+        - dwattier
+      allowed_users:
+        - alexis
+        - alassoued
+        - jfranclin
+        - liliassich.ext
+        - pventura
+        - rvaladares
+    JupyterHub:
+      admin_access: true
+      authenticator_class: google
+    GoogleOAuthenticator:
+      client_id: xxx
+      client_secret: xxx
+      oauth_callback_url: https://jupyter.kix.co.il/hub/oauth_callback
+      hosted_domain:
+        - kix.co.il
+      login_service: kix.co.il
+  nodeSelector:
+    regular: "true"
+imagePullSecrets:
+  - name: gitlab-registry
+singleuser:
+  image:
+    name: phntom/jupyterhub-tensorflow-gpu
+    tag: "test5@sha256:d886d16d1278e99c9cd555983255449e2c2123c67dad6d0e0070d4c2b5bf0937"
+  extraEnv:
+    CUDA_PATH: /usr/local/cuda-12.1
+    LD_LIBRARY_PATH: ":/lib/:/opt/conda/lib/python3.10/site-packages/nvidia/cudnn/lib:/usr/local/cuda-12.1/lib64"
+    OPENAI_API_BASE: https://eastus.api.cognitive.microsoft.com/
+    OPENAI_API_KEY: xxx
+    OPENAI_API_TYPE: azure
+    MLFLOW_TRACKING_URI: http://mlflow.:5000
+    # JUPYTERHUB_SINGLEUSER_APP: "..."
+  nodeSelector:
+    gpu: "true"
+  storage:
+    capacity: 10Gi
+    homeMountPath: /home/jovyan
+    extraVolumes:
+      - name: jupyterhub-shared
+        persistentVolumeClaim:
+          claimName: jupyterhub-shared-volume
+    extraVolumeMounts:
+      - name: jupyterhub-shared
+        mountPath: /home/jovyan/shared
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0
+    nginx.ingress.kubernetes.io/service-upstream: "true"  # allows downtime free upgrades for a single instance
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 4m
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "8"
+    nginx.ingress.kubernetes.io/proxy-body-size: 350m
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/client-body-buffer-size: 350m
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: https://colab.research.google.com
+  hosts:
+    - jupyter.kix.co.il
+  tls:
+    - secretName: jupyter-kix-tls
+      hosts:
+        - jupyter.kix.co.il
+  ingressClassName:
+  pathSuffix:
+  pathType: Prefix
+prePuller:
+  continuous:
+    enabled: false
