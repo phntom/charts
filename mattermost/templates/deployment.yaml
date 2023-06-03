@@ -68,7 +68,7 @@ spec:
         startupProbe:
           initialDelaySeconds: 10
           timeoutSeconds: 500
-          periodSeconds: 5
+          periodSeconds: 60
           httpGet:
             path: /api/v4/system/ping
             port: http

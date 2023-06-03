@@ -13,12 +13,12 @@ cronjob:
 s3:
   accessKeyId: xxx
   secretAccessKey: xxx
-  bucket: minthe-backup-prod
+  bucket: ornea-backup-prod
   endpoint: "https://storage.googleapis.com"
   prefix: "postgresql-data11/hourly"
   v4signature: true
 postgresql:
-  database: "mattermost hackmd fireflyiii mattermost_integ"
+  database: "mattermost hackmd fireflyiii"
   host: postgresql-ha-pgpool.db.svc.cluster.local
   port: 5432
   user: xxx

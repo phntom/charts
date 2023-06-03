@@ -1,5 +1,5 @@
 # helm repo add mattermost https://helm.mattermost.com
-# helm upgrade mattermost-team-edition -n chat phntom/mattermost -f mattermost/values.d/ornea.yaml -f mattermost/values.d/ornea.secret.yaml --atomic --debug
+# helm upgrade mattermost-team-edition -n chat mattermost -f mattermost/values.d/ornea.yaml -f mattermost/values.d/ornea.secret.yaml --atomic --debug
 
 nameOverride: mattermost-team-edition
 
@@ -40,12 +40,15 @@ ingress:
       if ( $nix = ab ) {
         return 302 https://nix.co.il/?kix=n&redirect_to=$arg_redirect_to;
       }
-      location ~ /static/(.*)$ {
-        return 301 https://cdn.kix.co.il/static/$1;
+      location ~ /static/(.+\.)(js|css|png|woff|woff2|map)$ {
+        return 301 https://cdn.kix.co.il/static/$1$2;
       }
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/";
       more_set_headers "Referrer-Policy: same-origin";
+#      sub_filter_types *;
+#      sub_filter_once off;
+#      sub_filter '"/static/' '"https://cdn.kix.co.il/static/';
     # real_ip_header CF-Connecting-IP;
     # if ($http_cf_connecting_ip != $remote_addr) { return 403; }
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -69,6 +72,12 @@ ingress:
       - cdn.kix.co.il
     annotations:
       nginx.ingress.kubernetes.io/service-upstream: "true"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+      nginx.ingress.kubernetes.io/cors-allow-origin: https://kix.co.il
+      nginx.ingress.kubernetes.io/cors-allow-methods: GET
+      nginx.ingress.kubernetes.io/http2-push-preload: "true"
+      nginx.ingress.kubernetes.io/server-snippet: |
+        if ($http_cf_connecting_ip != $remote_addr) { return 403; }
 
 #nodeSelector:
 #  doks.digitalocean.com/node-pool: pool-production
@@ -336,7 +345,9 @@ config:
       com.mattermost.custom-attributes:
         Enable: false
       playbooks:
-        Enable: false
+        Enable: true
+      com.github.moussetc.mattermost.plugin.giphy:
+        Enable: true
       com.mattermost.agenda:
         Enable: false
       zoom:

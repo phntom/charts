@@ -11,7 +11,12 @@ postgresql:
   password: xxx
   repmgrUsername: repmgr
   repmgrPassword: xxx
-  maxConnections: 200
+  repmgrLogLevel: INFO
+  audit:
+    logConnections: true
+  maxConnections: 300
+  postgresConnectionLimit: 250
+  dbUserConnectionLimit: 250
   replicaCount: 2
   upgradeRepmgrExtension: false
   resources:
