@@ -85,6 +85,7 @@ ingress:
 resources:
   requests:
     cpu: 10m
+    memory: 420Mi
 #route:
 #  enabled: false
 
@@ -337,17 +338,17 @@ config:
 #            GroupIDs: [ ]
     PluginStates:
       com.mattermost.plugin-todo:
-        Enable: true
+        Enable: false
       com.github.matterpoll.matterpoll:
-        Enable: true
+        Enable: false
       focalboard:
-        Enable: true
+        Enable: false
       com.mattermost.custom-attributes:
         Enable: false
       playbooks:
-        Enable: true
+        Enable: false
       com.github.moussetc.mattermost.plugin.giphy:
-        Enable: true
+        Enable: false
       com.mattermost.agenda:
         Enable: false
       zoom:

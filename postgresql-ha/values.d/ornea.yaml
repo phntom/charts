@@ -13,7 +13,7 @@ postgresql:
   repmgrPassword: xxx
   repmgrLogLevel: INFO
   audit:
-    logConnections: true
+    logConnections: false
   maxConnections: 300
   postgresConnectionLimit: 250
   dbUserConnectionLimit: 250
@@ -21,8 +21,16 @@ postgresql:
   upgradeRepmgrExtension: false
   resources:
     requests:
-      memory: 50Mi
+      memory: 100Mi
       cpu: 10m
+  extraVolumes:
+    - name: dshm
+      emptyDir:
+        medium: Memory
+        sizeLimit: 256Mi
+  extraVolumeMounts:
+    - name: dshm
+      mountPath: /dev/shm
 
 pgpool:
   replicaCount: 1
@@ -44,7 +52,7 @@ pgpool:
   #     value: "xxx"
   resources:
     requests:
-      memory: 50Mi
+      memory: 36Mi
       cpu: 10m
 
 
@@ -65,5 +73,5 @@ metrics:
 persistence:
   enabled: true
   storageClass: standard-rwo
-  size: 2Gi
+  size: 3Gi
 
