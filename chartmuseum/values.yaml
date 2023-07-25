@@ -7,8 +7,8 @@ strategy:
     maxUnavailable: 0
 image:
   repository: phntom/chartmuseum
-  tag: v0.15.6
-  digest: sha256:85e40aab7cba0372f155610b2255a91a50d390a8dff6a887a50b627bb5b936ab
+  tag: v0.16.0
+  digest: sha256:53883b65d9b7cf4728f42c5eb41519b5454754a1a229989b19cd187c04383f13
   pullPolicy: IfNotPresent
 secret:
   labels: {}
