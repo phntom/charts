@@ -48,6 +48,10 @@ service:
   # loadBalancerIP:
   loadBalancerSourceRanges: []
 
+serviceAccount:
+  create: true
+  annotations: {}
+
 ingress:
   enabled: false
   path: /
@@ -207,6 +211,8 @@ extraVolumeMounts: []
 # with these defaults. Also note that this is YAML, so you can choose to use
 # either JSON or YAML as JSON is a subset of YAML. No matter what you choose,
 # the config.json file that will be generated will be correctly JSON formatted.
+cdnDomain: cdn-integ.kix.co.il
+
 config:
   AnalyticsSettings:
     MaxUsersForStatistics: 2500

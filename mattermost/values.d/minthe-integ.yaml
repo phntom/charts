@@ -2,6 +2,7 @@
 # helm upgrade --install mattermost-integ -n chat mattermost -f mattermost/values.d/minthe-integ.yaml -f mattermost/values.d/minthe-integ.secret.yaml --atomic --debug
 
 nameOverride: mattermost-integ
+cdnDomain: cdn-integ.kix.co.il
 
 persistence:
   data:
@@ -30,6 +31,10 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-samesite: "strict"
+    nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: "true"
     nginx.ingress.kubernetes.io/server-snippet: |
       if ( $cookie_MMUSERID = "" ) {
         set $nix b;
@@ -40,12 +45,15 @@ ingress:
       if ( $nix = ab ) {
         return 302 https://nix.co.il/?kix=n&redirect_to=$arg_redirect_to;
       }
-      location ~ /static/(.*)$ {
-          return 301 https://cdn-integ.kix.co.il/static/$1;
+      location = / {
+        http2_push https://cdn-integ.kix.co.il/static/main.16879e3c4393eb552f46.js;
+        http2_push https://cdn-integ.kix.co.il/static/remote_entry.js?bt=1696111327928;
+        http2_push https://mmbeta.ornea.kix.co.il/static/6891.1b1c37acadfa9bc7bffb.js;
+        http2_push https://cdn-integ.kix.co.il/static/manifest.json;
       }
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "Content-Security-Policy: script-src 'self' cdn-integ.kix.co.il/";
       more_set_headers "Referrer-Policy: same-origin";
+    #  more_set_headers "Content-Security-Policy: script-src 'self' cdn-integ.kix.co.il/";
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
     #      proxy_cache mattermost_cache;
     #      proxy_cache_revalidate on;
@@ -183,7 +191,7 @@ config:
     PushNotificationContents: full
     PushNotificationServer: https://push-test.mattermost.com
     PushNotificationServerCustom: http://mattermost-push-proxy.chat.svc:8065
-    EnableEmailBatching: true
+    EnableEmailBatching: false
     UseChannelInEmailNotifications: true
   RateLimitSettings:
     Enable: true
@@ -256,13 +264,17 @@ config:
     EnableSearching: false
     IndexDir: '/mattermost/data/'
   PluginSettings:
+    Enable: true
     EnableUploads: true
+    AutomaticPrepackagedPlugins: false
     PluginStates:
-      com.mattermost.plugin-todo:
-        Enable: true
-      com.github.matterpoll.matterpoll:
-        Enable: true
       focalboard:
+        Enable: false
+      com.mattermost.calls:
+        Enable: true
+      com.mattermost.plugin-todo:
+        Enable: false
+      com.github.matterpoll.matterpoll:
         Enable: false
       com.mattermost.custom-attributes:
         Enable: false
@@ -352,10 +364,10 @@ config:
 #      zoom:
 #        Enable: false
   ClusterSettings:
-    AdvertiseAddress: 'mattermost-team-edition.chat.svc'
+    AdvertiseAddress: ''
     BindAddress: ''
-    ClusterName: 'chat-integ'
-    Enable: false
+    ClusterName: 'mattermost-integ'
+    Enable: true
     EnableExperimentalGossipEncryption: false
     GossipPort: 8074
     IdleConnTimeoutMilliseconds: 90000
@@ -366,4 +378,4 @@ config:
     ReadOnlyConfig: true
     StreamingPort: 8075
     UseExperimentalGossip: false
-    UseIpAddress: false
+    UseIpAddress: true

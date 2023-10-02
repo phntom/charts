@@ -2,6 +2,7 @@
 # helm upgrade --install mattermost-prod -n chat phntom/mattermost -f mattermost/values.d/minthe.yaml -f mattermost/values.d/minthe.secret.yaml --atomic --debug
 
 nameOverride: mattermost-team-edition
+cdnDomain: cdn.kix.co.il
 
 persistence:
   data:

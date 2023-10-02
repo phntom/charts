@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "mattermost-team-edition.fullname" . }}
+  labels:
+    {{- include "mattermost-team-edition.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ include "mattermost-team-edition.name" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- include "mattermost-team-edition.selectorLabels" . | nindent 6 }}
+      ports:
+        - protocol: UDP
+          port: {{ .Values.config.ClusterSettings.GossipPort }}
+        - protocol: TCP
+          port: {{ .Values.config.ClusterSettings.GossipPort }}
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              {{- include "mattermost-team-edition.selectorLabels" . | nindent 6 }}
+      ports:
+        - protocol: UDP
+          port: {{ .Values.config.ClusterSettings.GossipPort }}
+        - protocol: TCP
+          port: {{ .Values.config.ClusterSettings.GossipPort }}

@@ -17,6 +17,10 @@ spec:
     targetPort: http
     protocol: TCP
     name: {{  include "mattermost-team-edition.name" . }}
+  - port: 8074
+    targetPort: gossip
+    protocol: TCP
+    name: {{  include "mattermost-team-edition.name" . }}-gossip
 {{- if .Values.service.loadBalancerIP }}
   loadBalancerIP: {{ .Values.service.loadBalancerIP }}
 {{- end }}

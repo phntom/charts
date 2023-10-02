@@ -5,12 +5,12 @@ metadata:
   labels:
     {{- include "mattermost-team-edition.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: 2
+  minReadySeconds: 10
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 0
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
@@ -41,6 +41,10 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.imagePullPolicy }}
         env:
+          - name: NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: MM_CDN_DOMAIN
+            value: {{ .Values.cdnDomain }}
         {{- if .Values.extraEnvVars }}
           {{- .Values.extraEnvVars | toYaml | nindent 10 }}
         {{- end }}
@@ -50,6 +54,9 @@ spec:
           protocol: TCP
         - name: metrics
           containerPort: {{ .Values.service.metricsPort }}
+          protocol: TCP
+        - name: gossip
+          containerPort: 8074
           protocol: TCP
         livenessProbe:
           initialDelaySeconds: 10
@@ -103,6 +110,7 @@ spec:
       {{- with .Values.nodeSelector }}
       nodeSelector: {{- . | toYaml | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "mattermost-team-edition.fullname" . }}
       volumes:
       {{- if .Values.extraVolumes -}}
       {{ .Values.extraVolumes | toYaml | nindent 6 }}
