@@ -33,6 +33,8 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "IngressSession"
+    nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
     nginx.ingress.kubernetes.io/session-cookie-samesite: "strict"
     nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: "true"
     nginx.ingress.kubernetes.io/server-snippet: |
@@ -266,17 +268,19 @@ config:
   PluginSettings:
     Enable: true
     EnableUploads: true
-    AutomaticPrepackagedPlugins: false
+    AutomaticPrepackagedPlugins: true
     PluginStates:
+      com.mattermost.apps:
+        Enable: true
+      com.mattermost.custom-attributes:
+        Enable: true
       focalboard:
-        Enable: false
+        Enable: true
       com.mattermost.calls:
         Enable: true
       com.mattermost.plugin-todo:
         Enable: false
       com.github.matterpoll.matterpoll:
-        Enable: false
-      com.mattermost.custom-attributes:
         Enable: false
       playbooks:
         Enable: false
@@ -284,6 +288,28 @@ config:
         Enable: false
       zoom:
         Enable: false
+      jitsi:
+        Enable: false
+      jenkins:
+        Enable: false
+      com.mattermost.plugin-channel-export:
+        Enable: false
+      mattermost-autolink:
+        Enable: false
+      com.mattermost.aws-sns:
+        Enable: false
+      com.mattermost.confluence:
+        Enable: false
+      com.mattermost.welcomebot:
+        Enable: false
+      antivirus:
+        Enable: false
+    Plugins:
+      com.mattermost.calls:
+        DefaultEnabled: true
+        EnableRinging: true
+        AllowScreenSharing: true
+        MaxCallParticipants: 100
 #    Plugins:
 #      focalboard:
 #        EnablePublicSharedBoards: true

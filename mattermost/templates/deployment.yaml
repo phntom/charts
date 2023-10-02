@@ -81,11 +81,9 @@ spec:
             path: /api/v4/system/ping
             port: http
         volumeMounts:
-        - mountPath: /mattermost/config-ro/config.json
+        - mountPath: /mattermost/config/config.json
           name: config-json
           subPath: config.json
-        - mountPath: /mattermost/config
-          name: config-json-rw
         - mountPath: /mattermost/data
           name: mattermost-data
         - mountPath: /mattermost/{{ trimPrefix "./" .Values.config.PluginSettings.Directory }}
