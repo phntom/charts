@@ -2,6 +2,7 @@
 # helm upgrade mattermost-team-edition -n chat mattermost -f mattermost/values.d/ornea.yaml -f mattermost/values.d/ornea.secret.yaml --atomic --debug
 
 nameOverride: mattermost-team-edition
+cdnDomain: cdn.kix.co.il
 
 persistence:
   data:
@@ -30,6 +31,12 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "IngressSession"
+    nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
+    nginx.ingress.kubernetes.io/session-cookie-samesite: "strict"
+    nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: "true"
     nginx.ingress.kubernetes.io/server-snippet: |
       if ( $cookie_MMUSERID = "" ) {
         set $nix b;
@@ -40,15 +47,9 @@ ingress:
       if ( $nix = ab ) {
         return 302 https://nix.co.il/?kix=n&redirect_to=$arg_redirect_to;
       }
-      location ~ /static/(.+\.)(js|css|png|woff|woff2|map)$ {
-        return 301 https://cdn.kix.co.il/static/$1$2;
-      }
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/";
       more_set_headers "Referrer-Policy: same-origin";
-#      sub_filter_types *;
-#      sub_filter_once off;
-#      sub_filter '"/static/' '"https://cdn.kix.co.il/static/';
+    # more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/";
     # real_ip_header CF-Connecting-IP;
     # if ($http_cf_connecting_ip != $remote_addr) { return 403; }
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -78,6 +79,10 @@ ingress:
       nginx.ingress.kubernetes.io/http2-push-preload: "true"
       nginx.ingress.kubernetes.io/server-snippet: |
         if ($http_cf_connecting_ip != $remote_addr) { return 403; }
+    tls:
+      - secretName: cdn-prod-kix-tls
+        hosts:
+          - cdn.kix.co.il
 
 #nodeSelector:
 #  doks.digitalocean.com/node-pool: pool-production
@@ -206,7 +211,7 @@ config:
     PushNotificationContents: full
     PushNotificationServer: https://push-test.mattermost.com
     PushNotificationServerCustom: http://mattermost-push-proxy.chat.svc:8065
-    EnableEmailBatching: true
+    EnableEmailBatching: false
     UseChannelInEmailNotifications: true
   RateLimitSettings:
     Enable: true
@@ -262,16 +267,68 @@ config:
     AuthEndpoint: https://www.linkedin.com/oauth/v2/authorization
     TokenEndpoint: https://www.linkedin.com/oauth/v2/accessToken
     UserApiEndpoint: "https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))"
-  GitHubSettings:
+  OpenIdSettings:
     Enable: true
     Secret: xxx
     Id: xxx
     Scope: read:user user:email
     AuthEndpoint: https://github.com/login/oauth/authorize
     TokenEndpoint: https://github.com/login/oauth/access_token
-    UserApiEndpoint: https://api.github.com/user
+    UserApiEndpoint: http://localhost:8065/oauth-helper/enricher?service=github
+    ButtonText: GitHub
+    ButtonColor: #171515
+  BleveSettings:
+    BulkIndexingTimeWindowSeconds: 3600
+    EnableIndexing: false
+    EnableAutocomplete: false
+    EnableSearching: false
+    IndexDir: '/mattermost/data/'
+
   PluginSettings:
+    Enable: true
     EnableUploads: true
+    AutomaticPrepackagedPlugins: true
+    PluginStates:
+      com.mattermost.apps:
+        Enable: true
+      com.mattermost.custom-attributes:
+        Enable: true
+      focalboard:
+        Enable: true
+      com.mattermost.calls:
+        Enable: true
+      com.mattermost.plugin-todo:
+        Enable: true
+      com.github.matterpoll.matterpoll:
+        Enable: false
+      playbooks:
+        Enable: false
+      com.mattermost.agenda:
+        Enable: false
+      zoom:
+        Enable: false
+      jitsi:
+        Enable: false
+      jenkins:
+        Enable: false
+      com.mattermost.plugin-channel-export:
+        Enable: false
+      mattermost-autolink:
+        Enable: false
+      com.mattermost.aws-sns:
+        Enable: false
+      com.mattermost.confluence:
+        Enable: false
+      com.mattermost.welcomebot:
+        Enable: false
+      antivirus:
+        Enable: false
+    Plugins:
+      com.mattermost.calls:
+        DefaultEnabled: true
+        EnableRinging: true
+        AllowScreenSharing: true
+        MaxCallParticipants: 100
 #    Plugins:
 #      focalboard:
 #        EnablePublicSharedBoards: true
@@ -336,28 +393,28 @@ config:
 #              - ak8bua4n1j8mjg6pt6gfg844ur
 #            TeamIDs: [ ]
 #            GroupIDs: [ ]
-    PluginStates:
-      com.mattermost.plugin-todo:
-        Enable: false
-      com.github.matterpoll.matterpoll:
-        Enable: false
-      focalboard:
-        Enable: false
-      com.mattermost.custom-attributes:
-        Enable: false
-      playbooks:
-        Enable: false
-      com.github.moussetc.mattermost.plugin.giphy:
-        Enable: false
-      com.mattermost.agenda:
-        Enable: false
-      zoom:
-        Enable: false
+#    PluginStates:
+#      com.mattermost.plugin-todo:
+#        Enable: false
+#      com.github.matterpoll.matterpoll:
+#        Enable: false
+#      focalboard:
+#        Enable: false
+#      com.mattermost.custom-attributes:
+#        Enable: false
+#      playbooks:
+#        Enable: false
+#      com.github.moussetc.mattermost.plugin.giphy:
+#        Enable: false
+#      com.mattermost.agenda:
+#        Enable: false
+#      zoom:
+#        Enable: false
   ClusterSettings:
-    AdvertiseAddress: 'mattermost-team-edition.chat.svc'
+    AdvertiseAddress: ''
     BindAddress: ''
-    ClusterName: 'chat-prod'
-    Enable: false
+    ClusterName: 'mattermost-team-edition'
+    Enable: true
     EnableExperimentalGossipEncryption: false
     GossipPort: 8074
     IdleConnTimeoutMilliseconds: 90000
@@ -368,4 +425,4 @@ config:
     ReadOnlyConfig: true
     StreamingPort: 8075
     UseExperimentalGossip: false
-    UseIpAddress: false
+    UseIpAddress: true
