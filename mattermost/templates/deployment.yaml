@@ -45,6 +45,14 @@ spec:
             value: {{ .Release.Namespace }}
           - name: MM_CDN_DOMAIN
             value: {{ .Values.cdnDomain }}
+          {{- with .Values.config.LinkedInSettings }}
+          {{- if .Enable }}
+          - name: MM_SSO_LINKEDIN_ID
+            value: {{ .Id | default "" }}
+          - name: MM_SSO_LINKEDIN_SECRET
+            value: {{ .Secret | default "" }}
+          {{- end }}
+          {{- end }}
         {{- if .Values.extraEnvVars }}
           {{- .Values.extraEnvVars | toYaml | nindent 10 }}
         {{- end }}

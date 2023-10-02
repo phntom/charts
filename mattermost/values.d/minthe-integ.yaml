@@ -249,14 +249,16 @@ config:
     AuthEndpoint: https://www.linkedin.com/oauth/v2/authorization
     TokenEndpoint: https://www.linkedin.com/oauth/v2/accessToken
     UserApiEndpoint: "https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))"
-  GitHubSettings:
+  OpenIdSettings:
     Enable: true
     Secret: xxx
     Id: xxx
     Scope: read:user user:email
     AuthEndpoint: https://github.com/login/oauth/authorize
     TokenEndpoint: https://github.com/login/oauth/access_token
-    UserApiEndpoint: https://api.github.com/user
+    UserApiEndpoint: http://localhost:8065/oauth-helper/enricher?service=github
+    ButtonText: GitHub
+    ButtonColor: #171515
   TwitterSettings:
     Enable: false
   BleveSettings:

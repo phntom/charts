@@ -467,6 +467,10 @@ config:
     Secret: ''
     TokenEndpoint: https://login.microsoftonline.com/common/oauth2/v2.0/token
     UserApiEndpoint: https://graph.microsoft.com/v1.0/me
+  LinkedInSettings:
+    Enable: false
+    Id: ''
+    Secret: ''
   PasswordSettings:
     Lowercase: true
     MinimumLength: 10
