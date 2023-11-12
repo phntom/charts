@@ -6,7 +6,7 @@ metadata:
     {{- include "mattermost-team-edition.labels" . | nindent 4 }}
 spec:
   replicas: 2
-  minReadySeconds: 10
+  minReadySeconds: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:

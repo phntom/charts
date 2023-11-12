@@ -35,17 +35,11 @@ ingress:
     nginx.ingress.kubernetes.io/affinity-mode: "persistent"
     nginx.ingress.kubernetes.io/session-cookie-name: "IngressSession"
     nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
-    nginx.ingress.kubernetes.io/session-cookie-samesite: "strict"
+    nginx.ingress.kubernetes.io/session-cookie-samesite: "Strict"
     nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: "true"
     nginx.ingress.kubernetes.io/server-snippet: |
-      if ( $cookie_MMUSERID = "" ) {
-        set $nix b;
-      }
-      if ( $arg_redirect_to ~* "^%2Fnix" ) {
-        set $nix a$nix;
-      }
-      if ( $nix = ab ) {
-        return 302 https://nix.co.il/?kix=n&redirect_to=$arg_redirect_to;
+      location ~ /static/(.+\.)(js|css|png|woff|woff2|map)$ {
+        return 301 https://cdn.kix.co.il/static/$1$2;
       }
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "Referrer-Policy: same-origin";
@@ -294,7 +288,7 @@ config:
       com.mattermost.custom-attributes:
         Enable: true
       focalboard:
-        Enable: true
+        Enable: false
       com.mattermost.calls:
         Enable: true
       com.mattermost.plugin-todo:
