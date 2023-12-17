@@ -37,15 +37,15 @@ ingress:
     nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
     nginx.ingress.kubernetes.io/session-cookie-samesite: "Strict"
     nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: "true"
-    nginx.ingress.kubernetes.io/server-snippet: |
-      location ~ /static/(.+\.)(js|css|png|woff|woff2|map)$ {
-        return 301 https://cdn.kix.co.il/static/$1$2;
-      }
+#    nginx.ingress.kubernetes.io/server-snippet: |
+#      location ~ /static/(.+\.)(js|css|png|woff|woff2|map)$ {
+#        return 301 https://cdn.kix.co.il/static/$1$2;
+#      }
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "Referrer-Policy: same-origin";
+      real_ip_header CF-Connecting-IP;
+      if ($http_cf_connecting_ip != $remote_addr) { return 403; }
     # more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/";
-    # real_ip_header CF-Connecting-IP;
-    # if ($http_cf_connecting_ip != $remote_addr) { return 403; }
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
     #      proxy_cache mattermost_cache;
     #      proxy_cache_revalidate on;
@@ -202,7 +202,7 @@ config:
     SMTPServer: smtp.gmail.com
     SMTPPort: "587"
     ConnectionSecurity: STARTTLS
-    PushNotificationContents: full
+    PushNotificationContents: id_loaded
     PushNotificationServer: https://push-test.mattermost.com
     PushNotificationServerCustom: http://mattermost-push-proxy.chat.svc:8065
     EnableEmailBatching: false

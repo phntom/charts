@@ -37,11 +37,11 @@ ingress:
     nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
     nginx.ingress.kubernetes.io/session-cookie-samesite: "Strict"
     nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: "true"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      sub_filter_once off;
-      sub_filter_types *;
-      sub_filter "cdn.kix.co.il" "cdn-integ.kix.co.il";
-      more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/ cdn-integ.kix.co.il/";
+#    nginx.ingress.kubernetes.io/configuration-snippet: |
+#      sub_filter_once off;
+#      sub_filter_types *;
+#      sub_filter "cdn.kix.co.il" "cdn-integ.kix.co.il";
+#      more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/ cdn-integ.kix.co.il/";
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
     #      proxy_cache mattermost_cache;
     #      proxy_cache_revalidate on;
@@ -66,11 +66,11 @@ ingress:
       nginx.ingress.kubernetes.io/cors-allow-origin: https://mmbeta.ornea.kix.co.il
       nginx.ingress.kubernetes.io/cors-allow-methods: GET
       nginx.ingress.kubernetes.io/http2-push-preload: "true"
-      nginx.ingress.kubernetes.io/configuration-snippet: |
-        sub_filter_once off;
-        sub_filter_types *;
-        sub_filter "cdn.kix.co.il" "cdn-integ.kix.co.il";
-        more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/ cdn-integ.kix.co.il/";
+#      nginx.ingress.kubernetes.io/configuration-snippet: |
+#        sub_filter_once off;
+#        sub_filter_types *;
+#        sub_filter "cdn.kix.co.il" "cdn-integ.kix.co.il";
+#        more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/ cdn-integ.kix.co.il/";
     tls:
       - secretName: cdn-integ-kix-tls
         hosts:
@@ -181,7 +181,7 @@ config:
     SMTPServer: smtp.gmail.com
     SMTPPort: "587"
     ConnectionSecurity: STARTTLS
-    PushNotificationContents: full
+    PushNotificationContents: id_loaded
     PushNotificationServer: https://push-test.mattermost.com
     PushNotificationServerCustom: http://mattermost-push-proxy.chat.svc:8065
     EnableEmailBatching: false
