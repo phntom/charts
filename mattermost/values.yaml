@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 image:
   repository: phntom/mattermost-team-edition
-  tag: "9.2.3@sha256:5d326e7e3541ce5d50d1fb20bb99af652993168267d40825650fb8c02296920b"
+  tag: "9.3.0@sha256:51cf9da4aa2eb788019c00fba6a2e4ba3ebc955ad12ac6b02f9a95c6318b44ad"
   imagePullPolicy: IfNotPresent
 
 initContainerImage:
