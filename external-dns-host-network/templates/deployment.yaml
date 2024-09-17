@@ -44,8 +44,8 @@ spec:
                 - /tmp
                 - -name
                 - healthy
-                - -mtime
-                - "-0.001"
+                - -mmin
+                - "-1"
           readinessProbe:
             exec:
               command:
@@ -53,8 +53,8 @@ spec:
                 - /tmp
                 - -name
                 - healthy
-                - -mtime
-                - "-0.001"
+                - -mmin
+                - "-1"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:

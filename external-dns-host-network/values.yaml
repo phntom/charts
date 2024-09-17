@@ -1,6 +1,4 @@
-# Default values for external-dns-host-network.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+# helm upgrade external-dns-host-network external-dns-host-network -f external-dns-host-network/values.secret.yaml -n clusterwide --kube-context gke_evident-gecko-364317_europe-west8-b_ornea --reset-values --debug --atomic
 
 settings:
   linode:
@@ -19,8 +17,8 @@ replicaCount: 1
 image:
   repository: phntom/external-dns-host-network
   pullPolicy: IfNotPresent
-  tag: "0.0.12"
-  digest: sha256:3adadbac84432f603e3457ca4e663fbd448a439afba4eef8a2c55cc3d03739e2
+  tag: "0.0.16"
+  digest: sha256:7770a8a0e31fc4b8da6fd3b66c52f0a263da14ea9b301c372c808813c1c99bd1
 
 imagePullSecrets: []
 nameOverride: ""
