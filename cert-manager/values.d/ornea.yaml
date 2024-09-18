@@ -1,5 +1,6 @@
-# kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.crds.yaml
 # helm upgrade --install --create-namespace cert-manager -n cert-manager cert-manager/cert-manager --atomic --debug -f cert-manager/values.d/ornea.yaml
+
+installCRDs: true
 
 global:
   leaderElection:
@@ -44,6 +45,8 @@ webhook:
     limits:
       cpu: 10m
       memory: 32Mi
+  hostNetwork: true
+  securePort: 10250
   #nodeSelector:
   #  cloud.google.com/gke-nodepool: pool-dev
 

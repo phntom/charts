@@ -30,7 +30,7 @@ config:
 
 image:
   repository: "phntom/oauth2-proxy"
-  tag: "v7.4.0@sha256:cd0ac2b1b5ac4574a6c575ee655740cf9a70c37d1787087f3c9ea295e6697bce"
+  tag: "v7.4.1@sha256:cd0ac2b1b5ac4574a6c575ee655740cf9a70c37d1787087f3c9ea295e6697bce"
   pullPolicy: "IfNotPresent"
 
 # Optionally specify an array of imagePullSecrets.

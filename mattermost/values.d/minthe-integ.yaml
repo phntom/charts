@@ -27,7 +27,7 @@ ingress:
     #nginx.ingress.kubernetes.io/auth-signin: "https://auth.ornea.kix.co.il/oauth2/start?rd=%2Fgo%2Fmmbeta$escaped_request_uri"
     #nginx.ingress.kubernetes.io/default-backend: mattermost-defaultbackend
     nginx.ingress.kubernetes.io/service-upstream: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    nginx.ingress.kubernetes.io/proxy-body-size: 350m
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
@@ -112,13 +112,13 @@ config:
     EnableBotAccountCreation: true
     EnableUserAccessTokens: true
     EnableMultifactorAuthentication: true
-    PostEditTimeLimit: 300
+    PostEditTimeLimit: 500
     ExperimentalChannelSidebarOrganization: default_off
     GoogleDeveloperKey: xxx
-    AllowedUntrustedInternalConnections: "chadbot.chat.svc"
+    AllowedUntrustedInternalConnections: "chadbot.chat.svc email-manager.web.svc"
     EnableEmailInvitations: false
     EnableTutorial: true
-    TimeBetweenUserTypingUpdatesMilliseconds: 6000
+    TimeBetweenUserTypingUpdatesMilliseconds: 8000
     AllowCookiesForSubdomains: false
     ManagedResourcePaths: "proxy,blog"
     CollapsedThreads: default_off
@@ -134,7 +134,12 @@ config:
     MaxUsersPerTeam: 50000
     EnableTeamCreation: false
     EnableCustomBrand: true
-    CustomBrandText: "Registration is closed. kix.co.il is a self-hosted, private and free platform including chat and other collaboration tools."
+    CustomBrandText: >
+      Note: At this time registration is available via invites only.
+      Please use the link you received to complete the registration process.
+      
+      
+      kix.co.il is a self-hosted, private and free platform including chat and other collaboration tools.
     CustomDescriptionText: to continue please sign-in
     RestrictDirectMessage: team
     EnableTeamListing: false
@@ -157,7 +162,7 @@ config:
   NotificationLogSettings:
     ConsoleLevel: INFO
   FileSettings:
-    MaxFileSize: 104857600
+    MaxFileSize: 367001600
     PublicLinkSalt: xxx
     DriverName: amazons3
     AmazonS3AccessKeyId: xxx
@@ -175,6 +180,7 @@ config:
     RequireEmailVerification: true
     FeedbackName: Kix Chat
     FeedbackEmail: support@kix.co.il
+    ReplyToAddress: support@kix.co.il
     FeedbackOrganization: kix
     SMTPUsername: xxx
     SMTPPassword: xxx
@@ -189,7 +195,7 @@ config:
   RateLimitSettings:
     Enable: true
     VaryByHeader: X-Forwarded-For
-    PerSec: 15
+    PerSec: 20
     VaryByRemoteAddr: false
     VaryByUser: true
   PrivacySettings:
@@ -254,7 +260,7 @@ config:
     Enable: false
   BleveSettings:
     BulkIndexingTimeWindowSeconds: 3600
-    EnableIndexing: true
+    EnableIndexing: false
     EnableAutocomplete: false
     EnableSearching: false
     IndexDir: '/mattermost/data/'

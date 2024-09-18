@@ -144,7 +144,7 @@ config:
     Enable: true
     ImageProxyType: "atmos/camo"
     RemoteImageProxyOptions: xxx
-    RemoteImageProxyURL: https://cdn.kix.co.il/proxy
+    RemoteImageProxyURL: https://kix.co.il/proxy
   TeamSettings:
     SiteName: kix.co.il
     MaxUsersPerTeam: 50000
@@ -277,7 +277,6 @@ config:
     EnableAutocomplete: false
     EnableSearching: false
     IndexDir: '/mattermost/data/'
-
   PluginSettings:
     Enable: true
     EnableUploads: true

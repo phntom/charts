@@ -14,7 +14,7 @@ postgresql:
   repmgrLogLevel: INFO
   audit:
     logConnections: false
-  maxConnections: 300
+  maxConnections: 1200
   postgresConnectionLimit: 250
   dbUserConnectionLimit: 250
   replicaCount: 2
