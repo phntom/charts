@@ -1,0 +1,47 @@
+# helm repo add rm3l https://helm-charts.rm3l.org
+# helm upgrade adguard-home adguard-home/adguard-home -f adguard-home/values.yaml -f adguard-home/values.secret.yaml -n web --kube-context gke_evident-gecko-364317_europe-west8-b_ornea --debug --atomic
+
+ingresses:
+  http:
+    enabled: true
+    className: nginx
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/whitelist-source-range: "109.67.128.0/19,85.130.217.124,2a06:c701::/32,2a0d:6fc7::/32"
+      #nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.web.svc.cluster.local/oauth2/auth"
+      #nginx.ingress.kubernetes.io/auth-signin: "https://auth.ornea.kix.co.il/oauth2/start?rd=%2Fgo%2Fadguard$escaped_request_uri"
+    hosts:
+      - host: adguard.ornea.kix.co.il
+        paths:
+          - path: /
+            pathType: Prefix
+      - host: dns.l6.ee
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: adguard-dns-l6-ee-tls
+        hosts:
+          - dns.l6.ee
+          - dns.powerbs.net
+          - anton.dns.l6.ee
+          - gaia.dns.l6.ee
+          - hila.dns.l6.ee
+          - julia.dns.l6.ee
+          - olga.dns.l6.ee
+          - adguard.ornea.kix.co.il
+
+services:
+  dns:
+    enabled: false
+  https:
+    enabled: false
+  dnsOverTls:
+    enabled: true
+    type: ClusterIP
+  dnscrypt:
+    enabled: false
+  dnsOverQuic:
+    enabled: false
+bootstrapEnabled: false
+
