@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 image:
   repository: phntom/mattermost-team-edition
-  tag: "9.5.0-test1@sha256:b5b3eaad5b9988637aa8713438ee98796d5a5614c7f5b29a14368e5bc3b28143"
+  tag: "10.4.1@sha256:e8b567bd22e95fd6b06afb2513b976363a21fc1fd1f855d103a0d37cc99d855a"
   imagePullPolicy: IfNotPresent
 
 initContainerImage:
@@ -317,7 +317,7 @@ config:
     SMTPServer: localhost
     SMTPServerTimeout: 10
     SMTPUsername: ''
-    SendEmailNotifications: true
+    SendEmailNotifications: false
     SendPushNotifications: true
     SkipServerCertificateVerification: false
     UseChannelInEmailNotifications: false
