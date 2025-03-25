@@ -1,0 +1,310 @@
+# helm upgrade dify1 -n dify charts/dify -f charts/dify/values.secret.yaml --reset-values --atomic --debug --kube-context=gke_xxx-staging-0_us-east1_ds-0
+
+config:
+  create: true
+  debug: false
+  dbUsername: dbuser
+  dbHost: 10.130.94.10
+  dbPort: 5432
+  dbName: dbname
+  dbCharset: UTF8
+  redisHost: redis-headless.dev.svc.cluster.local
+  redisPort: 6379
+  redisDB: 0
+  redisUseSSL: False
+  consoleWebURL: https://dify1.ds-staging.l6.ee
+  consoleAPIURL: https://dify1.ds-staging.l6.ee
+  serviceAPIURL: https://dify1.ds-staging.l6.ee
+  appWebURL: https://dify1.ds-staging.l6.ee
+  filesURL: https://dify1.ds-staging.l6.ee
+  s3AddressStyle: path
+  s3BucketName: l6ee-ds-staging-0-dify0
+  s3Endpoint: https://storage.googleapis.com
+  s3Region: auto
+  storageType: google-storage
+  storageLocalPath: storage
+  checkUpdateURL: ""
+  deployEnv: "PRODUCTION"
+  sqlAlchemyPoolSize: 30
+  sqlAlchemyPoolRecycle: 3600
+  sqlAlchemyEcho: True
+  sentryTracesSampleRate: "1.0"
+  sentryProfilesSampleRate: "1.0"
+  vectorStore: weaviate
+  weaviateGrpcEnabled: True
+  weaviateBatchSize: 100
+  weaviateEndpoint: "http://weaviate.dify.svc.cluster.local"
+  qdrantClientTimeout: 20
+  celeryBackend: ""
+  logLevel: INFO
+  hostedOpenAIQuotaLimit: 200
+  hostedOpenAITrialEnabled: "False"
+  hostedOpenAITrialModels: gpt-3.5-turbo,gpt-3.5-turbo-1106,gpt-3.5-turbo-instruct,gpt-3.5-turbo-16k,gpt-3.5-turbo-16k-0613,gpt-3.5-turbo-0613,gpt-3.5-turbo-0125,text-davinci-003
+  hostedOpenAIPaidEnabled: "True"
+  hostedOpenAIPaidModels: gpt-4,gpt-4-turbo-preview,gpt-4-turbo-2024-04-09,gpt-4-1106-preview,gpt-4-0125-preview,gpt-3.5-turbo,gpt-3.5-turbo-16k,gpt-3.5-turbo-16k-0613,gpt-3.5-turbo-1106,gpt-3.5-turbo-0613,gpt-3.5-turbo-0125,gpt-3.5-turbo-instruct,text-davinci-003
+  uploadFileSizeLimit: "1000000"
+  uploadFileBatchLimit: 250000
+  uploadImageFileSizeLimit: 250000
+  moderationBufferSize: 300
+  apiCompressionEnabled: False
+  mailType: ""
+  mailDefaultSendFrom: ""
+  loginDisabled: False
+  cleanDaySetting: 30
+  resendAPIURL: ""
+  smtpServer: ""
+  smtpPort: 587
+  smtpUsername: ""
+  smtpUseTLS: True
+  llmMonitorURL: https://api.lunary.ai
+  maxTemplateTransformOutputLength: 120000
+  appMaxActiveRequests: 0
+
+image:
+  pullPolicy: IfNotPresent
+  api:
+    repository: us-east1-docker.pkg.dev/l6ee-hub/containers/dify-api
+    tag: "deploy-dev@sha256:ccd92cb0e366904a376ea64241f0e2b34f679e4b4834d12c42abe3515948d9fc"
+  web:
+    repository: us-east1-docker.pkg.dev/l6ee-hub/containers/dify-web
+    tag: "deploy-dev@sha256:01aadbd664d6b864751ed2f2f4b88c11c6af989d887b3db936c9dc930f945430"
+  sandbox:
+    repository: langgenius/dify-sandbox
+    tag: "0.2.4"
+
+service:
+  type: ClusterIP
+  apiPort: 5001
+  sandboxPort: 8194
+  webPort: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/auth-signin: https://auth.ds-staging.l6.ee/oauth2/start?rd=%2Fgo%2Fdify1$escaped_request_uri
+    nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.clusterwide.svc.cluster.local/oauth2/auth?allowed_groups=dify1-staging-access@l6ee.com
+    nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      auth_request_set $remote_email $upstream_http_x_auth_request_email;
+      add_header X-Auth-Request-Email $remote_email;
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location = /signin {
+        return 302 /console/api/oauth/login/google;
+      }
+      location = /_z_metrics {
+        return 404;
+      }
+  hosts:
+    - host: dify1.ds-staging.l6.ee
+      webPaths:
+        - path: /
+          pathType: Prefix
+      apiPaths:
+        - path: /console/api
+          pathType: Prefix
+        - path: /api
+          pathType: Prefix
+        - path: /v1
+          pathType: Prefix
+        - path: /files
+          pathType: Prefix
+  tls:
+    - secretName: dify1-tls
+      hosts:
+        - dify1.ds-staging.l6.ee
+        - dify1-api.ds-staging.l6.ee
+  api:
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/service-upstream: "true"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 100m
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-buffering: "on"
+      nginx.ingress.kubernetes.io/server-snippet: |
+        location = /_z_metrics {
+          return 404;
+        }
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        if ($http_authorization !~* "^Bearer\s+app-[A-Za-z0-9]{24}$") {
+          return 401;
+        }
+    hosts:
+      - host: dify1-api.ds-staging.l6.ee
+        apiPaths:
+          - path: /console/api
+            pathType: Prefix
+          - path: /api
+            pathType: Prefix
+          - path: /v1
+            pathType: Prefix
+          - path: /files
+            pathType: Prefix
+    tls:
+      - secretName: dify1-api-tls
+        hosts:
+          - dify1-api.ds-staging.l6.ee
+
+replicaCount: 2
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations:
+    iam.gke.io/gcp-service-account: dify-dify1@l6ee-ds-staging-0.iam.gserviceaccount.com
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+secret:
+  create: true
+  dbPassword: ""
+  redisPassword: ""
+  googleClientId: ""
+  googleClientSecret: ""
+  secretKey: ""
+  notionIntegrationToken: ""
+  s3AccessKey: ""
+  s3SecretKey: ""
+  weaviateApiKey: ""
+  resendApiKey: ""
+  smtpPassword: ""
+  celeryBrokerUrl: ""
+  sentryDSN: ""
+  lunaryProjectID: ""
+  sandboxAPIKey: ""
+  initPassword: ""
+
+backup:
+  restore: false
+  image:
+    tag: "16.3.26@sha256:5741959f11412b4996b11852b3c222b910d28c1e0c0d375f08918084ec6385c4"
+  s3:
+    prefix: "backups"
+    v4signature: false  # AWS Signature Version 4, required for minio servers
+  postgresql:
+    extraArgs: ""
+  encryption:
+    enabled: true
+    password: xxx
+  cronjob:
+    schedule: '36 * * * *'
+    concurrencyPolicy: Forbid
+    failedJobsHistoryLimit: 1
+    successfulJobsHistoryLimit: 1
+    restartPolicy: OnFailure
+  resources: {}
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+sandboxSecurityContext:
+  capabilities:
+    add:
+      - "SYS_ADMIN"
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+sandboxResources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 100m
+    memory: 100m
+
+apiLivenessProbe:
+  httpGet:
+    path: /v1/
+    port: http
+
+apiReadinessProbe:
+  httpGet:
+    path: /v1/
+    port: http
+
+apiStartupProbe:
+  httpGet:
+    path: /v1/
+    port: http
+  failureThreshold: 100
+  periodSeconds: 6
+  # 5 minutes (100*6=600 seconds)
+
+metrics:
+  enable: true
+  serviceMonitor:
+    create: true
+    path: /_z_metrics
+    interval: 30s
+
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+global:
+  dify:
+    configName: ""
+    secretName: ""
+
+# gsutil iam ch serviceAccount:dify-dify1@l6ee-ds-staging-0.iam.gserviceaccount.com:admin gs://l6ee-ds-staging-0-dify0
+
+# gcloud config set project l6ee-ds-staging-0
+# gcloud iam service-accounts add-iam-policy-binding daily-workout-ds-aii@l6ee-ds-staging-0.iam.gserviceaccount.com --role roles/iam.workloadIdentityUser --member "serviceAccount:l6ee-ds-staging-0.svc.id.goog[staging/daily-workout-ds-aii]"

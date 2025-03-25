@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dify.fullname" . }}-sandbox
+  labels:
+    {{- include "dify.labels" . | nindent 4 }}
+    role: sandbox
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "dify.selectorLabels" . | nindent 6 }}
+      role: sandbox
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dify.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        role: sandbox
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum | trunc 12}}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "dify.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-sandbox
+          securityContext:
+            {{- toYaml .Values.sandboxSecurityContext | nindent 12 }}
+          image: "{{ .Values.image.sandbox.repository }}:{{ .Values.image.sandbox.tag | default "0.1.0" }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: sandbox
+              containerPort: {{ .Values.service.sandboxPort }}
+              protocol: TCP
+{{/*          livenessProbe:*/}}
+{{/*            {{- toYaml .Values.apiLivenessProbe | nindent 12 }}*/}}
+{{/*          readinessProbe:*/}}
+{{/*            {{- toYaml .Values.apiReadinessProbe | nindent 12 }}*/}}
+          resources:
+            {{- toYaml .Values.sandboxResources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: GIN_MODE
+              value: "release"
+            - name: WORKER_TIMEOUT
+              value: "15"
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.secretName }}
+                  key: CODE_EXECUTION_API_KEY
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+

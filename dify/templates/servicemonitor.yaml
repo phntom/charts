@@ -1,0 +1,17 @@
+{{- if and .Values.metrics.enable .Values.metrics.serviceMonitor.create }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "dify.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "dify.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "dify.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: {{ default "/metrics" .Values.metrics.serviceMonitor.path | quote }}
+      interval: {{ default "15s" .Values.metrics.serviceMonitor.interval }}
+{{- end }}

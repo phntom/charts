@@ -1,0 +1,83 @@
+{{- if .Values.config.create }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dify.fullname" . }}
+  labels:
+    {{- include "dify.labels" . | nindent 4 }}
+data:
+  EDITION: "SHELF_HOSTED"
+  DEBUG: {{ default "false" .Values.config.debug | quote }}
+  DEBUG_METRICS: "1"
+  LUNARY_VERBOSE: "1"
+  PROMETHEUS_MULTIPROC_DIR: {{ default "/tmp" .Values.config.tmpWritableDir | quote }}
+  DB_USERNAME: {{ default "postgres" .Values.config.dbUsername | quote }}
+  DB_HOST: {{ default "localhost" .Values.config.dbHost | quote }}
+  DB_PORT: {{ default 5432 .Values.config.dbPort | quote }}
+  DB_DATABASE: {{ default "dify" .Values.config.dbName | quote }}
+  DB_CHARSET: {{ default "" .Values.config.dbCharset | quote }}
+  REDIS_HOST: {{ default "localhost" .Values.config.redisHost | quote }}
+  REDIS_PORT: {{ default 6379 .Values.config.redisPort | quote }}
+  REDIS_USERNAME: {{ default "" .Values.config.redisUsername | quote }}
+  REDIS_DB: {{ default 0 .Values.config.redisDB | quote }}
+  REDIS_USE_SSL: {{ default "False" .Values.config.redisUseSSL | quote }}
+  OAUTH_REDIRECT_PATH: {{ default "/console/api/oauth/authorize" .Values.config.oauthRedirectPath | quote }}
+  OAUTH_REDIRECT_INDEX_PATH: {{ default "/" .Values.config.oauthRedirectIndexPath | quote }}
+  CONSOLE_WEB_URL: {{ default "https://cloud.dify.ai" .Values.config.consoleWebURL | quote }}
+  CONSOLE_API_URL: {{ default "https://cloud.dify.ai" .Values.config.consoleAPIURL | quote }}
+  SERVICE_API_URL: {{ default "https://api.dify.ai" .Values.config.serviceAPIURL | quote }}
+  APP_WEB_URL: {{ default "https://udify.app" .Values.config.appWebURL | quote }}
+  FILES_URL: {{ default "" .Values.config.filesURL | quote }}
+  INTERNAL_API_URL: {{ printf "http://%s-api.%s.svc.cluster.local:%d" (include "dify.fullname" .) .Release.Namespace (.Values.service.apiPort | int) | quote }}
+  {{- with (index .Values.ingress.api.hosts 0) }}
+  EXTERNAL_API_URL: {{ printf "https://%s" .host | quote }}
+  {{- end }}
+  GOOGLE_STORAGE_BUCKET_NAME: {{ default "" .Values.config.s3BucketName | quote }}
+  S3_BUCKET_NAME: {{ default "" .Values.config.s3BucketName | quote }}
+  S3_ADDRESS_STYLE: {{ default "auto" .Values.config.s3AddressStyle | quote }}
+  S3_ENDPOINT: {{ default "" .Values.config.s3Endpoint | quote }}
+  AWS_ENDPOINT_URL: {{ default "" .Values.config.s3Endpoint | quote }}
+  AWS_ENDPOINT_URL_S3: {{ default "" .Values.config.s3Endpoint | quote }}
+  S3_REGION: {{ default "" .Values.config.s3Region | quote }}
+  STORAGE_TYPE: {{ default "local" .Values.config.storageType | quote }}
+  STORAGE_LOCAL_PATH: {{ default "storage" .Values.config.storageLocalPath | quote }}
+  CHECK_UPDATE_URL: {{ default "https://updates.dify.ai" .Values.config.checkUpdateURL | quote }}
+  DEPLOY_ENV: {{ default "" .Values.config.deployEnv | quote }}
+  SQLALCHEMY_POOL_SIZE: {{ default 30 .Values.config.sqlAlchemyPoolSize | quote }}
+  SQLALCHEMY_POOL_RECYCLE: {{ default 3600 .Values.config.sqlAlchemyPoolRecycle | quote }}
+  SQLALCHEMY_ECHO: {{ default "False" .Values.config.sqlAlchemyEcho | quote }}
+  SENTRY_TRACES_SAMPLE_RATE: {{ default "1.0" .Values.config.sentryTracesSampleRate | quote }}
+  SENTRY_PROFILES_SAMPLE_RATE: {{ default "1.0" .Values.config.sentryProfilesSampleRate | quote }}
+  SENTRY_DSN: {{ default .Values.config.sentryDSN "" | quote }}
+  VECTOR_STORE: {{ default "weaviate" .Values.config.vectorStore | quote }}
+  WEAVIATE_GRPC_ENABLED: {{ default "True" .Values.config.weaviateGrpcEnabled | quote }}
+  WEAVIATE_BATCH_SIZE: {{ default 100 .Values.config.weaviateBatchSize | quote }}
+  WEAVIATE_ENDPOINT: {{ default "" .Values.config.weaviateEndpoint | quote }}
+  QDRANT_CLIENT_TIMEOUT: {{ default 20 .Values.config.qdrantClientTimeout | quote }}
+  CELERY_BACKEND: {{ default "database" .Values.config.celeryBackend | quote }}
+  LOG_LEVEL: {{ default "INFO" .Values.config.logLevel | quote }}
+  HOSTED_OPENAI_QUOTA_LIMIT: {{ default 200 .Values.config.hostedOpenAIQuotaLimit | quote }}
+  HOSTED_OPENAI_TRIAL_ENABLED: {{ default "False" .Values.config.hostedOpenAITrialEnabled | quote }}
+  HOSTED_OPENAI_TRIAL_MODELS: {{ default "" .Values.config.hostedOpenAITrialModels | quote }}
+  HOSTED_OPENAI_PAID_ENABLED: {{ default "False" .Values.config.hostedOpenAIPaidEnabled | quote }}
+  HOSTED_OPENAI_PAID_MODELS: {{ default "" .Values.config.hostedOpenAIPaidModels | quote }}
+  UPLOAD_FILE_SIZE_LIMIT: {{ default 1000000 .Values.config.uploadFileSizeLimit | quote }}
+  UPLOAD_FILE_BATCH_LIMIT: {{ default 250000 .Values.config.uploadFileBatchLimit | quote }}
+  UPLOAD_IMAGE_FILE_SIZE_LIMIT: {{ default 250000 .Values.config.uploadImageFileSizeLimit | quote }}
+  MODERATION_BUFFER_SIZE: {{ default 300 .Values.config.moderationBufferSize | quote }}
+  API_COMPRESSION_ENABLED: {{ default "False" .Values.config.apiCompressionEnabled | quote }}
+  MAIL_TYPE: {{ default "" .Values.config.mailType | quote }}
+  MAIL_DEFAULT_SEND_FROM: {{ default "" .Values.config.mailDefaultSendFrom | quote }}
+  RESEND_API_URL: {{ default "" .Values.config.resendAPIURL | quote }}
+  SMTP_SERVER: {{ default "" .Values.config.smtpServer | quote }}
+  LOGIN_DISABLED: {{ default "False" .Values.config.loginDisabled | quote }}
+  CLEAN_DAY_SETTING: {{ default 30 .Values.config.cleanDaySetting | quote }}
+  SMTP_PORT: {{ default 25 .Values.config.smtpPort | quote }}
+  SMTP_USERNAME: {{ default "" .Values.config.smtpUsername | quote }}
+  SMTP_USE_TLS: {{ default "False" .Values.config.smtpUseTLS | quote }}
+  LLMONITOR_API_URL: {{ default "" .Values.config.llmMonitorURL | quote }}
+  CODE_EXECUTION_ENDPOINT: "http://{{ include "dify.fullname" . }}-sandbox.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.sandboxPort }}"
+  PROMETHEUS_APP_NAME: {{ .Release.Name | quote }}
+  TEMPLATE_TRANSFORM_MAX_LENGTH: {{ .Values.config.maxTemplateTransformOutputLength | quote }}
+  APP_MAX_ACTIVE_REQUESTS: {{ .Values.config.appMaxActiveRequests | quote }}
+{{- end }}

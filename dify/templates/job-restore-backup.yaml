@@ -1,0 +1,102 @@
+{{- if .Values.backup.restore }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "dify.fullname" . }}-restore"
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "dify.labels" . | nindent 4 }}
+    role: restore
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "dify.serviceAccountName" . }}
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+        - name: postgresql-restore
+          image: "phntom/postgresql-backup-s3:{{ .Values.backup.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          command:
+            - restore.sh
+          env:
+            - name: POSTGRES_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DB_DATABASE
+            - name: PGHOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DB_HOST
+            - name: PGPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DB_PORT
+            - name: PGUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DB_USERNAME
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.secretName }}
+                  key: DB_PASSWORD
+            - name: POSTGRES_EXTRA_OPTS
+              value: {{ default "" .Values.backup.postgresql.extraArgs | quote }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.secretName }}
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.secretName }}
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: S3_BUCKET_NAME
+            - name: S3_PREFIX
+              value: {{ trimSuffix "/" .Values.backup.s3.prefix | quote }}
+            - name: AWS_DEFAULT_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: S3_REGION
+            {{- if .Values.config.s3Endpoint }}
+            - name: S3_ENDPOINT
+              value: {{ printf "https://%s" (trimPrefix "https://" .Values.config.s3Endpoint) | quote }}
+            {{- end }}
+            - name: S3_S3V4
+              value: {{ ternary "yes" "no" .Values.backup.s3.v4signature | quote }}
+            {{- if .Values.backup.encryption.enabled }}
+            - name: ENCRYPTION_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.secretName }}
+                  key: ENCRYPTION_PASSWORD
+            {{- end }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          securityContext: {{- toYaml .Values.securityContext | nindent 12 }}
+{{- end }}

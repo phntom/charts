@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "dify.fullname" . }}-sandbox-egress
+  labels:
+    {{- include "dify.labels" . | nindent 4 }}
+    role: sandbox
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "dify.selectorLabels" . | nindent 6 }}
+      role: sandbox
+  policyTypes:
+    - Egress
+  egress: []
