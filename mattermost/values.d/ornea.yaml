@@ -45,7 +45,7 @@ ingress:
       more_set_headers "Referrer-Policy: same-origin";
       real_ip_header CF-Connecting-IP;
       if ($http_cf_connecting_ip != $remote_addr) { return 403; }
-    # more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/";
+      more_set_headers "Content-Security-Policy: script-src 'self' cdn.kix.co.il/";
     #    nginx.ingress.kubernetes.io/configuration-snippet: |
     #      proxy_cache mattermost_cache;
     #      proxy_cache_revalidate on;
@@ -122,7 +122,7 @@ config:
     ExperimentalChannelSidebarOrganization: default_off
     GoogleDeveloperKey: xxx
     AllowedUntrustedInternalConnections: "chadbot.chat.svc email-manager.web.svc"
-    EnableEmailInvitations: false
+    EnableEmailInvitations: true
     EnableTutorial: true
     TimeBetweenUserTypingUpdatesMilliseconds: 8000
     AllowCookiesForSubdomains: false
@@ -199,14 +199,15 @@ config:
     FeedbackOrganization: kix
     SMTPUsername: xxx
     SMTPPassword: xxx
-    SMTPServer: smtp.gmail.com
+    SMTPServer: smtp.protonmail.ch
     SMTPPort: "587"
-    ConnectionSecurity: STARTTLS
+    ConnectionSecurity: TLS
     PushNotificationContents: id_loaded
     PushNotificationServer: https://push-test.mattermost.com
     PushNotificationServerCustom: http://mattermost-push-proxy.chat.svc:8065
     EnableEmailBatching: false
     UseChannelInEmailNotifications: true
+    SendEmailNotifications: true
   RateLimitSettings:
     Enable: true
     VaryByHeader: X-Forwarded-For
