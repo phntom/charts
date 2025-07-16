@@ -83,6 +83,7 @@ their default values.
 | `affinity`                  | affinity settings                                                                          | `{}`            |
 | `tolerations`               | pod tolerations                                                                            | `[]`            |
 | `ingress.enabled`           | If true, Ingress will be created                                                           | `false`         |
+| `ingress.ingressClassName`  | Defines the ingressClass to be used                                                        | `nginx`         |
 | `ingress.annotations`       | Ingress annotations                                                                        | `{}`            |
 | `ingress.labels`            | Ingress labels                                                                             | `{}`            |
 | `ingress.path`              | Ingress service path                                                                       | `/`             |
