@@ -2,8 +2,8 @@
 # helm upgrade mattermost-push-proxy -n chat mattermost/mattermost-push-proxy --version 0.14.3 -f mattermost-push-proxy/values.yaml -f mattermost-push-proxy/values.secret.yaml
 
 image:
-  repository: mattermost/mattermost-push-proxy
-  tag: "6.4.6"
+  repository: phntom/mattermost-push-proxy
+  tag: "6.4.6@sha256:8c0ca7252c65f81c3d9d37b6049d1b896d0935095cba5ce7837ed899118ba5b5"
   pullPolicy: IfNotPresent
 
 service:
