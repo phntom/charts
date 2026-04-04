@@ -1,0 +1,14 @@
+IMAP Settings
+Address:   127.0.0.1
+IMAP port: 1143
+Username:  notification-kix@pm.me
+Password:  u5cthF7j0Ja36TXyOeSugw
+Security:  STARTTLS
+
+SMTP Settings
+Address:   127.0.0.1
+SMTP port: 1025
+Username:  notification-kix@pm.me
+Password:  u5cthF7j0Ja36TXyOeSugw
+Security:  STARTTLS
+

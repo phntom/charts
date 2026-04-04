@@ -1,0 +1,201 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dify.fullname" . }}-plugin
+  labels:
+    {{- include "dify.labels" . | nindent 4 }}
+    role: plugin
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "dify.selectorLabels" . | nindent 6 }}
+      role: plugin
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dify.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        role: plugin
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum | trunc 12}}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "dify.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-plugin
+          securityContext:
+            {{- toYaml .Values.pluginSecurityContext | nindent 12 }}
+          image: "{{ .Values.image.plugin.repository }}:{{ .Values.image.plugin.tag | default "0.1.0" }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: plugin
+              containerPort: {{ .Values.service.pluginPort }}
+              protocol: TCP
+            - name: plugin-debug
+              containerPort: {{ .Values.service.pluginDebugPort }}
+              protocol: TCP
+{{/*          livenessProbe:*/}}
+{{/*            {{- toYaml .Values.apiLivenessProbe | nindent 12 }}*/}}
+{{/*          readinessProbe:*/}}
+{{/*            {{- toYaml .Values.apiReadinessProbe | nindent 12 }}*/}}
+          resources:
+            {{- toYaml .Values.pluginResources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: DB_DATABASE
+              value: "dify_plugin2"
+            - name: SERVER_PORT
+              value: "5002"
+            - name: SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.secretName }}
+                  key: INNER_API_KEY_FOR_PLUGIN
+            - name: MAX_PLUGIN_PACKAGE_SIZE
+              value: "52428800"
+            - name: PPROF_ENABLED
+              value: "false"
+            - name: DIFY_INNER_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: INTERNAL_API_URL
+            - name: DIFY_INNER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.secretName }}
+                  key: INNER_API_KEY_FOR_PLUGIN
+            - name: EDITION
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: EDITION
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DEBUG
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DB_PASSWORD
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DB_PORT
+            - name: DB_CHARSET
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: DB_CHARSET
+            - name: INTERNAL_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: INTERNAL_API_URL
+            - name: PLUGIN_DIFY_INNER_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: PLUGIN_DIFY_INNER_API_URL
+            - name: PLUGIN_DIFY_INNER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: PLUGIN_DIFY_INNER_API_KEY
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: REDIS_PORT
+            - name: REDIS_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: REDIS_USERNAME
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.secretName }}
+                  key: REDIS_PASSWORD
+            - name: REDIS_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: REDIS_DB
+            - name: REDIS_USE_SSL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ default (include "dify.fullname" .) .Values.global.dify.configName }}
+                  key: REDIS_USE_SSL
+            - name: PLUGIN_REMOTE_INSTALLING_HOST
+              value: {{ .Values.config.pluginRemoteInstallHost | quote }}
+            - name: PLUGIN_REMOTE_INSTALLING_PORT
+              value: {{ .Values.config.pluginRemoteInstallPort | quote }}
+            - name: PLUGIN_WORKING_PATH
+              value: "/app/storage/cwd"
+            - name: PLUGIN_REMOTE_INSTALLING_ENABLED
+              value: "false"
+            - name: PLUGIN_DAEMON_PORT
+              value: "5002"
+            - name: EXPOSE_PLUGIN_DAEMON_PORT
+              value: "5002"
+            - name: PLUGIN_DEBUGGING_HOST
+              value: 0.0.0.0
+            - name: PLUGIN_DEBUGGING_PORT
+              value: "5003"
+            - name: EXPOSE_PLUGIN_DEBUGGING_HOST
+              value: 0.0.0.0
+            - name: EXPOSE_PLUGIN_DEBUGGING_PORT
+              value: "5003"
+
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
