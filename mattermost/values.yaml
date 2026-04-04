@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 image:
   repository: phntom/mattermost-team-edition
-  tag: "11.3.1-beta1@sha256:9e23ab7c0f4f41b1751442f5ab12f4f93865e3fe74b12c2a59fe5ee9f8630609"
+  tag: "11.3.1-beta3@sha256:4ce5fbdd0e35272d27f6cb5fb69e5c10f9ae253bbc5bd059028062a910e70e59"
   imagePullPolicy: IfNotPresent
 
 initContainerImage:
@@ -228,37 +228,26 @@ config:
     NoticesSkipCache: false
     NoticesURL: https://notices.mattermost.com/
     UserNoticesEnabled: true
-  BleveSettings:
-    BulkIndexingTimeWindowSeconds: 3600
-    EnableAutocomplete: false
-    EnableIndexing: false
-    EnableSearching: false
-    IndexDir: ''
   ClientRequirements: {}
   CloudSettings:
-    CWSUrl: https://customers.mattermost.com
+    CWSURL: https://customers.mattermost.com
+    Disable: false
   ClusterSettings:
     AdvertiseAddress: ''
     BindAddress: ''
     ClusterName: ''
     Enable: false
-    EnableExperimentalGossipEncryption: false
+    EnableGossipCompression: true
+    EnableGossipEncryption: false
     GossipPort: 8074
-    IdleConnTimeoutMilliseconds: 90000
-    MaxIdleConns: 100
-    MaxIdleConnsPerHost: 128
     NetworkInterface: ''
     OverrideHostname: ''
     ReadOnlyConfig: true
-    StreamingPort: 8075
-    UseExperimentalGossip: false
-    UseIpAddress: true
+    UseIPAddress: true
   ComplianceSettings:
     Directory: ./data/
     Enable: false
     EnableDaily: false
-  Config:
-    TeammateNameDisplay: username
   DataRetentionSettings:
     DeletionJobStartTime: 02:00
     EnableFileDeletion: false
@@ -266,17 +255,20 @@ config:
     FileRetentionDays: 365
     MessageRetentionDays: 365
   DisplaySettings:
-    CustomUrlSchemes: []
-    ExperimentalTimezone: true
+    CustomURLSchemes: []
+    MaxMarkdownNodes: 0
   ElasticsearchSettings:
     AggregatePostsAfterDays: 365
+    Backend: ''
+    BatchSize: 10000
     BulkIndexingTimeWindowSeconds: 3600
     ChannelIndexReplicas: 1
     ChannelIndexShards: 1
-    ConnectionUrl: http://localhost:9200
+    ConnectionURL: http://localhost:9200
     EnableAutocomplete: false
     EnableIndexing: false
     EnableSearching: false
+    IgnoredPurgeIndexes: ''
     IndexPrefix: ''
     LiveIndexingBatchSize: 1
     Password: changeme
@@ -322,7 +314,7 @@ config:
     SkipServerCertificateVerification: false
     UseChannelInEmailNotifications: false
   ExperimentalAuditSettings:
-    AdvancedLoggingConfig: ''
+    AdvancedLoggingJSON: ''
     FileCompress: false
     FileEnabled: false
     FileMaxAgeDays: 0
@@ -331,15 +323,15 @@ config:
     FileMaxSizeMB: 100
     FileName: ''
   ExperimentalSettings:
-    ClientSideCertCheck: secondary
     ClientSideCertEnable: false
-    CloudBilling: false
-    CloudUserLimit: 0
-    EnableClickToReply: false
+    DelayChannelAutocomplete: false
+    DisableAppBar: false
+    DisableRefetchingOnBrowserFocus: false
+    DisableWakeUpReconnectHandler: false
+    EnableRemoteClusterService: false
     EnableSharedChannels: false
     LinkMetadataTimeoutMilliseconds: 5000
     RestrictSystemAdmin: false
-    UseNewSAMLLibrary: false
   FileSettings:
     AmazonS3AccessKeyId: ''
     AmazonS3Bucket: ''
@@ -360,12 +352,6 @@ config:
     InitialFont: nunito-bold.ttf
     MaxFileSize: 52428800
     PublicLinkSalt: ''
-  GlobalRelayMessageExportSettings:
-    CustomerType: A9
-    EmailAddress: ''
-    SMTPServerTimeout: 1800
-    SmtpPassword: ''
-    SmtpUsername: ''
   GuestAccountsSettings:
     AllowEmailAccounts: true
     Enable: false
@@ -415,7 +401,6 @@ config:
     QueryTimeout: 60
     SkipCertificateVerification: false
     SyncIntervalMinutes: 60
-    Trace: false
     UserFilter: ''
     UsernameAttribute: ''
   LocalizationSettings:
@@ -423,7 +408,7 @@ config:
     DefaultClientLocale: en
     DefaultServerLocale: en
   LogSettings:
-    AdvancedLoggingConfig: ''
+    AdvancedLoggingJSON: ''
     ConsoleJson: true
     ConsoleLevel: DEBUG
     EnableConsole: true
@@ -449,15 +434,6 @@ config:
     AndroidAppDownloadLink: https://about.mattermost.com/mattermost-android-app/
     AppDownloadLink: https://mattermost.com/download/#mattermostApps
     IosAppDownloadLink: https://about.mattermost.com/mattermost-ios-app/
-  NotificationLogSettings:
-    AdvancedLoggingConfig: ''
-    ConsoleJson: true
-    ConsoleLevel: DEBUG
-    EnableConsole: true
-    EnableFile: true
-    FileJson: true
-    FileLevel: INFO
-    FileLocation: ''
   Office365Settings:
     AuthEndpoint: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
     DirectoryId: ''
@@ -467,11 +443,7 @@ config:
     Scope: User.Read
     Secret: ''
     TokenEndpoint: https://login.microsoftonline.com/common/oauth2/v2.0/token
-    UserApiEndpoint: https://graph.microsoft.com/v1.0/me
-  LinkedInSettings:
-    Enable: false
-    Id: ''
-    Secret: ''
+    UserAPIEndpoint: https://graph.microsoft.com/v1.0/me
   PasswordSettings:
     Lowercase: true
     MinimumLength: 10
@@ -479,8 +451,9 @@ config:
     Symbol: true
     Uppercase: true
   PluginSettings:
-    AllowInsecureDownloadUrl: false
+    AllowInsecureDownloadURL: false
     AutomaticPrepackagedPlugins: true
+    ChimeraOAuthProxyURL: ''
     ClientDirectory: ./client/plugins
     Directory: ./plugins
     Enable: true
@@ -488,10 +461,9 @@ config:
     EnableMarketplace: true
     EnableRemoteMarketplace: true
     EnableUploads: false
-    MarketplaceUrl: https://api.integrations.mattermost.com
+    MarketplaceURL: https://api.integrations.mattermost.com
     RequirePluginSignature: false
     SignaturePublicKeyFiles: []
-  PluginState: {}
   PrivacySettings:
     ShowEmailAddress: true
     ShowFullName: true
@@ -502,17 +474,6 @@ config:
     PerSec: 10
     VaryByRemoteAddr: true
     VaryByUser: false
-  SSOSettings:
-    AuthEndpoint: authEndpoint
-    ButtonColor: buttonColor
-    ButtonText: ''
-    DiscoveryEndpoint: ''
-    Enable: false
-    Id: ''
-    Scope: scope
-    Secret: ''
-    TokenEndpoint: tokenEndpoint
-    UserApiEndpoint: userApiEndpoint
   SamlSettings:
     AdminAttribute: ''
     AssertionConsumerServiceURL: ''
@@ -527,9 +488,9 @@ config:
     GuestAttribute: ''
     IdAttribute: ''
     IdpCertificateFile: ''
-    IdpDescriptorUrl: ''
-    IdpMetadataUrl: ''
-    IdpUrl: ''
+    IdpDescriptorURL: ''
+    IdpMetadataURL: ''
+    IdpURL: ''
     IgnoreGuestsLdapSync: false
     LastNameAttribute: ''
     LocaleAttribute: ''
@@ -551,8 +512,10 @@ config:
   ServiceSettings:
     AllowCookiesForSubdomains: false
     AllowCorsFrom: ''
+    AllowPersistentNotifications: true
+    AllowPersistentNotificationsForGuests: false
+    AllowSyncedDrafts: true
     AllowedUntrustedInternalConnections: ''
-    CloseUnusedDirectMessages: false
     ClusterLogTimeoutMilliseconds: 2000
     CollapsedThreads: disabled
     ConnectionSecurity: ''
@@ -560,33 +523,38 @@ config:
     CorsDebug: false
     CorsExposedHeaders: ''
     DebugSplit: false
+    DeveloperFlags: ''
     DisableBotsWhenOwnerIsDeactivated: true
-    DisableLegacyMFA: true
     EnableAPIChannelDeletion: false
     EnableAPITeamDeletion: false
     EnableAPIUserDeletion: false
     EnableAWSMetering: false
     EnableBotAccountCreation: false
     EnableChannelViewedMessages: true
+    EnableClientPerformanceDebugging: false
     EnableCommands: true
     EnableCustomEmoji: true
+    EnableCustomGroups: true
     EnableDeveloper: false
     EnableEmailInvitations: true
     EnableEmojiPicker: true
+    EnableFileSearch: true
     EnableGifPicker: true
     EnableIncomingWebhooks: true
+    EnableInlineLatex: true
     EnableInsecureOutgoingConnections: false
     EnableLatex: false
     EnableLinkPreviews: true
     EnableLocalMode: false
     EnableMultifactorAuthentication: false
     EnableOAuthServiceProvider: false
-    EnableOpenTracing: false
+    EnableOnboardingFlow: true
+    EnableOutgoingOAuthConnections: false
     EnableOutgoingWebhooks: true
+    EnablePermalinkPreviews: true
     EnablePostIconOverride: false
     EnablePostSearch: true
     EnablePostUsernameOverride: false
-    EnablePreviewFeatures: true
     EnableSVGs: false
     EnableSecurityFixAlert: true
     EnableTesting: false
@@ -595,8 +563,6 @@ config:
     EnableUserStatuses: true
     EnableUserTypingMessages: true
     EnforceMultifactorAuthentication: false
-    ExperimentalChannelOrganization: true
-    ExperimentalChannelSidebarOrganization: disabled
     ExperimentalEnableAuthenticationTransfer: true
     ExperimentalEnableDefaultChannelLeaveJoinMessages: true
     ExperimentalEnableHardenedMode: false
@@ -605,8 +571,7 @@ config:
     ExtendSessionLengthWithActivity: true
     FeatureFlagSyncIntervalSeconds: 30
     Forward80To443: false
-    GfycatApiKey: 2_KtH_W5
-    GfycatApiSecret: 3wLVZPiswc3DnaiaFoLkDvB4X0IV6CpMkj4tf2inJRsBY6-FnkT08zGmppWFgeof
+    GiphySdkKey: ''
     GoogleDeveloperKey: ''
     GoroutineHealthThreshold: -1
     IdleTimeout: 60
@@ -616,10 +581,19 @@ config:
     LocalModeSocketLocation: /var/tmp/mattermost_local.socket
     ManagedResourcePaths: ''
     MaximumLoginAttempts: 10
+    MaximumPayloadSizeBytes: 300000
+    MaximumURLLength: 2048
     MinimumHashtagLength: 3
-    AllowEditPost: time_limit
+    OutgoingIntegrationRequestsTimeout: 30
+    PersistentNotificationIntervalMinutes: 5
+    PersistentNotificationMaxCount: 6
+    PersistentNotificationMaxRecipients: 5
     PostEditTimeLimit: "3600"
+    PostPriority: true
     ReadTimeout: 300
+    RefreshPostStatsRunTime: '00:00'
+    RestrictLinkPreviews: ''
+    ScheduledPosts: true
     SessionCacheInMinutes: 10
     SessionIdleTimeoutInMinutes: 43200
     SessionLengthMobileInDays: 30
@@ -633,9 +607,11 @@ config:
     TLSOverwriteCiphers: [ ]
     TLSStrictTransport: false
     TLSStrictTransportMaxAge: 63072000
+    TerminateSessionsOnPasswordChange: false
     ThreadAutoFollow: true
     TimeBetweenUserTypingUpdatesMilliseconds: 5000
     TrustedProxyIPHeader: [ ]
+    UniqueEmojiReactionLimitPerPost: 50
     UseLetsEncrypt: false
     WebserverMode: gzip
     WebsocketPort: 80
@@ -669,15 +645,15 @@ config:
     CustomDescriptionText: ''
     EnableConfirmNotificationsToChannel: true
     EnableCustomBrand: false
+    EnableCustomUserStatuses: true
+    EnableJoinLeaveMessageByDefault: true
+    EnableLastActiveTime: true
     EnableOpenServer: false
     EnableUserCreation: true
     EnableUserDeactivation: false
-    EnableXToLeaveChannelsFromLHS: false
     ExperimentalDefaultChannels: [ ]
     ExperimentalEnableAutomaticReplies: false
-    ExperimentalHideTownSquareinLHS: false
     ExperimentalPrimaryTeam: ''
-    ExperimentalTownSquareIsReadOnly: true
     ExperimentalViewArchivedChannels: true
     LockTeammateNameDisplay: false
     MaxChannelsPerTeam: 2000

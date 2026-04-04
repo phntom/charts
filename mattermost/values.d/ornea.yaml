@@ -119,7 +119,6 @@ config:
     EnableUserAccessTokens: true
     EnableMultifactorAuthentication: true
     PostEditTimeLimit: 500
-    ExperimentalChannelSidebarOrganization: default_off
     GoogleDeveloperKey: xxx
     AllowedUntrustedInternalConnections: "chadbot.chat.svc email-manager.web.svc"
     EnableEmailInvitations: true
@@ -148,7 +147,6 @@ config:
   TeamSettings:
     SiteName: kix.co.il
     MaxUsersPerTeam: 50000
-    EnableTeamCreation: false
     EnableCustomBrand: true
     CustomBrandText: >
       Note: At this time registration is available via invites only.
@@ -158,15 +156,9 @@ config:
       kix.co.il is a self-hosted, private and free platform including chat and other collaboration tools.
     CustomDescriptionText: to continue please sign-in
     RestrictDirectMessage: team
-    EnableTeamListing: false
-    EnableXToLeaveChannelsFromLHS: true
     TeammateNameDisplay: nickname_full_name
     ExperimentalEnableAutomaticReplies: true
     MaxChannelsPerTeam: 50000
-    RestrictPrivateChannelManageMembers: all
-    RestrictPrivateChannelDeletion: team_admin
-    RestrictPublicChannelDeletion: team_admin
-    RestrictTeamInvite: all
     EnableUserDeactivation: true
   SqlSettings:
     AtRestEncryptKey: xxx
@@ -174,8 +166,6 @@ config:
     ConsoleLevel: INFO
     EnableWebhookDebugging: false
     EnableDiagnostics: false
-  NotificationLogSettings:
-    ConsoleLevel: INFO
   FileSettings:
     MaxFileSize: 367001600
     PublicLinkSalt: xxx
@@ -191,7 +181,6 @@ config:
     AmazonS3SignV2: false
     AmazonS3Trace: false
   EmailSettings:
-    InviteSalt: xxx
     RequireEmailVerification: true
     FeedbackName: Kix Chat
     FeedbackEmail: support@kix.co.il
@@ -204,7 +193,6 @@ config:
     ConnectionSecurity: TLS
     PushNotificationContents: id_loaded
     PushNotificationServer: https://push-test.mattermost.com
-    PushNotificationServerCustom: http://mattermost-push-proxy.chat.svc:8065
     EnableEmailBatching: false
     UseChannelInEmailNotifications: true
     SendEmailNotifications: true
@@ -231,7 +219,7 @@ config:
     Scope: read_user
     AuthEndpoint: https://gitlab.com/oauth/authorize
     TokenEndpoint: https://gitlab.com/oauth/token
-    UserApiEndpoint: https://gitlab.com/api/v4/user
+    UserAPIEndpoint: https://gitlab.com/api/v4/user
   GoogleSettings:
     Enable: true
     Secret: xxx
@@ -239,29 +227,10 @@ config:
     Scope: profile email
     AuthEndpoint: https://accounts.google.com/o/oauth2/v2/auth
     TokenEndpoint: https://oauth2.googleapis.com/token
-    UserApiEndpoint: https://openidconnect.googleapis.com/v1/userinfo
+    UserAPIEndpoint: https://openidconnect.googleapis.com/v1/userinfo
     DiscoveryEndpoint: https://accounts.google.com/.well-known/openid-configuration
     ButtonText: ""
     ButtonColor: ""
-  FacebookSettings:
-    Enable: true
-    Secret: xxx
-    Id: xxx
-    Scope: public_profile email
-    AuthEndpoint: https://www.facebook.com/v11.0/dialog/oauth
-    TokenEndpoint: https://graph.facebook.com/v11.0/oauth/access_token
-    UserApiEndpoint: "https://graph.facebook.com/v11.0/me?fields=id,name,email,first_name,last_name,picture"
-    DiscoveryEndpoint: ""
-    ButtonText: ""
-    ButtonColor: ""
-  LinkedInSettings:
-    Enable: true
-    Secret: xxx
-    Id: xxx
-    Scope: r_liteprofile r_emailaddress
-    AuthEndpoint: https://www.linkedin.com/oauth/v2/authorization
-    TokenEndpoint: https://www.linkedin.com/oauth/v2/accessToken
-    UserApiEndpoint: "https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))"
   OpenIdSettings:
     Enable: true
     Secret: xxx
@@ -269,20 +238,18 @@ config:
     Scope: read:user user:email
     AuthEndpoint: https://github.com/login/oauth/authorize
     TokenEndpoint: https://github.com/login/oauth/access_token
-    UserApiEndpoint: http://localhost:8065/oauth-helper/enricher?service=github
+    UserAPIEndpoint: http://localhost:8065/oauth-helper/enricher?service=github
     ButtonText: GitHub
     ButtonColor: #171515
-  BleveSettings:
-    BulkIndexingTimeWindowSeconds: 3600
-    EnableIndexing: false
-    EnableAutocomplete: false
-    EnableSearching: false
-    IndexDir: '/mattermost/data/'
   PluginSettings:
     Enable: true
     EnableUploads: true
     AutomaticPrepackagedPlugins: true
+    RequirePluginSignature: false
+    EnableRemoteMarketplace: false
     PluginStates:
+      ee.l6.collab-doc:
+        Enable: true
       com.mattermost.apps:
         Enable: true
       com.mattermost.custom-attributes:
@@ -409,14 +376,10 @@ config:
     BindAddress: ''
     ClusterName: 'mattermost-team-edition'
     Enable: true
-    EnableExperimentalGossipEncryption: false
+    EnableGossipCompression: true
+    EnableGossipEncryption: false
     GossipPort: 8074
-    IdleConnTimeoutMilliseconds: 90000
-    MaxIdleConns: 100
-    MaxIdleConnsPerHost: 128
     NetworkInterface: ''
     OverrideHostname: ''
     ReadOnlyConfig: true
-    StreamingPort: 8075
-    UseExperimentalGossip: false
-    UseIpAddress: true
+    UseIPAddress: true
