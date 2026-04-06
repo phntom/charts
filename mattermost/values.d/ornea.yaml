@@ -193,6 +193,7 @@ config:
     ConnectionSecurity: TLS
     PushNotificationContents: id_loaded
     PushNotificationServer: https://push-test.mattermost.com
+    PushNotificationServerCustom: http://mattermost-push-proxy.chat.svc:8065
     EnableEmailBatching: false
     UseChannelInEmailNotifications: true
     SendEmailNotifications: true

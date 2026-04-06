@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 image:
   repository: phntom/mattermost-team-edition
-  tag: "11.3.1-beta3@sha256:4ce5fbdd0e35272d27f6cb5fb69e5c10f9ae253bbc5bd059028062a910e70e59"
+  tag: "11.3.2-beta1@sha256:b4adb5eebdcfaa50b3e3111aa8b1453cde81de1bf73bbdc7511a2555b0ce9631"
   imagePullPolicy: IfNotPresent
 
 initContainerImage:
@@ -259,7 +259,7 @@ config:
     MaxMarkdownNodes: 0
   ElasticsearchSettings:
     AggregatePostsAfterDays: 365
-    Backend: ''
+    Backend: elasticsearch
     BatchSize: 10000
     BulkIndexingTimeWindowSeconds: 3600
     ChannelIndexReplicas: 1
