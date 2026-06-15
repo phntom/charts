@@ -1,9 +1,9 @@
 apiVersion: v2
 name: mindav
-description: Basic AWS S3 WebDAV interface implemented in Rust
+description: WebDAV interface to Google Cloud Storage
 type: application
-version: 0.1.7
-appVersion: "0.1.7-kix3"
+version: 0.2.0
+appVersion: "0.2.0"
 dependencies:
   - name: oauth2-proxy
     alias: oauth2proxy

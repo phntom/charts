@@ -1,16 +1,12 @@
-mindav:
-  debug: true
-  webdav:
-    driver: minio
-    user: xxx
-    password: xxx
-  minio:
-    endpoint: minio.db.svc.cluster.local:9000
-    key: xxx
-    secret: xxx
-    bucket: kix-minio-prod
-    ssl: false
-    memoryUpload: false
+# Target Google Cloud Storage bucket. Auth uses Workload Identity (see
+# serviceAccount.annotations below) - no static credentials.
+gcs:
+  bucket: kix-minio-prod
+
+# Mattermost API base used to validate personal access tokens for the
+# kixtoken@ basic-auth flow.
+mattermost:
+  url: https://kix.co.il
 
 replicaCount: 1
 
@@ -26,7 +22,9 @@ fullnameOverride: ""
 
 serviceAccount:
   create: true
-  annotations: {}
+  # Binds this KSA to the GCP service account via GKE Workload Identity.
+  annotations:
+    iam.gke.io/gcp-service-account: mindav@evident-gecko-364317.iam.gserviceaccount.com
   name: ""
 
 podAnnotations: {}
