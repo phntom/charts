@@ -53,10 +53,12 @@ webhook:
 cainjector:
   resources:
     requests:
-      cpu: 5m
+      # cainjector watches all Secrets cluster-wide; 10m CPU starved its
+      # startup cache sync and caused a crash loop. Give it real CPU.
+      cpu: 20m
       memory: 54Mi
     limits:
-      cpu: 10m
+      cpu: 100m
       memory: 256Mi
   #nodeSelector:
   #  cloud.google.com/gke-nodepool: pool-dev
