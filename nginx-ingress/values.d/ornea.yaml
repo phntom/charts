@@ -103,6 +103,10 @@ controller:
             summary: More than 5% of the all requests did return 4XX, this require your attention
 
   config:
+    # Required since ingress-nginx 1.12 to keep configuration-snippet and regex
+    # paths working (mindav /m + /webdav, goalert, camo, website-kix blog, etc.).
+    annotations-risk-level: "Critical"
+    strict-validate-path-type: "false"
     redirect-to-https: "true"
     force-ssl-redirect: "true"
     log-format-escape-json: "true"
